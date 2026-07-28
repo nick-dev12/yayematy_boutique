@@ -6,6 +6,7 @@
 
 // Inclusion du fichier de connexion à la BDD
 require_once __DIR__ . '/../conn/conn.php';
+require_once __DIR__ . '/../includes/db_helpers.php';
 
 /**
  * Récupère tous les produits
@@ -14,7 +15,10 @@ require_once __DIR__ . '/../conn/conn.php';
  */
 function get_all_produits($statut = null)
 {
-    global $db;
+    $db = app_db();
+    if (!$db) {
+        return [];
+    }
 
     try {
         if ($statut) {
@@ -101,7 +105,10 @@ function get_produit_by_id($id)
  */
 function get_all_produits_paginated($offset = 0, $limit = 20)
 {
-    global $db;
+    $db = app_db();
+    if (!$db) {
+        return [];
+    }
 
     try {
         $stmt = $db->prepare("

@@ -2,6 +2,8 @@
 require_once __DIR__ . '/includes/session_user.php';
 session_start_persistent();
 
+require_once __DIR__ . '/conn/conn.php';
+require_once __DIR__ . '/includes/db_helpers.php';
 
 // Inclusion du fichier de connexion à la BDD
 

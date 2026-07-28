@@ -6,6 +6,7 @@
 
 // Inclusion du fichier de connexion à la BDD
 require_once __DIR__ . '/../conn/conn.php';
+require_once __DIR__ . '/../includes/db_helpers.php';
 
 /**
  * Enregistre une visite d'un produit
@@ -87,7 +88,10 @@ function count_visites_by_user($user_id) {
  * @return array Tableau des produits les plus visités ou tous les produits mélangés si moins de $limit
  */
 function get_produits_plus_visites($limit = 10) {
-    global $db;
+    $db = app_db();
+    if (!$db) {
+        return [];
+    }
     
     try {
         // Récupérer les produits les plus visités avec le nombre de visites

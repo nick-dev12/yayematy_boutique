@@ -4,6 +4,7 @@
  */
 
 require_once __DIR__ . '/../conn/conn.php';
+require_once __DIR__ . '/../includes/db_helpers.php';
 
 if (!function_exists('site_brand_default_logo_path')) {
     function site_brand_default_logo_path(): string
@@ -32,6 +33,10 @@ function get_site_brand_config(): array
         'logo_alt' => site_brand_default_alt(),
         'date_modification' => null,
     ];
+
+    if (!db_is_available()) {
+        return $defaults;
+    }
 
     try {
         $stmt = $db->prepare('SELECT * FROM site_brand_config WHERE id = 1 LIMIT 1');
@@ -95,6 +100,10 @@ function site_brand_logo_file_exists(string $web_path): bool
 function update_site_brand_config(array $data): array
 {
     global $db;
+
+    if (!db_is_available()) {
+        return ['success' => false, 'message' => 'Connexion à la base de données indisponible'];
+    }
 
     try {
         $logo_path = isset($data['logo_path']) ? trim((string) $data['logo_path']) : null;

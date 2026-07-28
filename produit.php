@@ -9,6 +9,7 @@ require_once __DIR__ . '/models/model_visites.php';
 require_once __DIR__ . '/models/model_variantes.php';
 require_once __DIR__ . '/controllers/controller_panier.php';
 require_once __DIR__ . '/includes/render_product_card.php';
+require_once __DIR__ . '/includes/image_optimizer.php';
 
 // Récupérer l'ID du produit depuis l'URL ou POST
 $produit_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
@@ -90,7 +91,7 @@ require_once __DIR__ . '/includes/site_url.php';
 $base = get_site_base_url();
 $seo_title = $produit['nom'] . ' - Yaye Maty';
 $desc = !empty($produit['description']) ? strip_tags($produit['description']) : $produit['nom'] . ' - Produit décoratif pour gâteau Yaye Maty. Décoration comestible et non comestible.';
-$seo_description = mb_substr($desc, 0, 160);
+$seo_description = function_exists('mb_substr') ? mb_substr($desc, 0, 160) : substr($desc, 0, 160);
 $seo_canonical = $base . '/produit.php?id=' . (int) $produit['id'];
 $seo_og_type = 'product';
 $img = !empty($produit['image_principale']) ? $produit['image_principale'] : '';
@@ -1314,10 +1315,11 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
                 if (empty($galerie_images) && !empty($produit['image_principale'])) {
                     $galerie_images = [$produit['image_principale']];
                 }
+                $main_image_src = upload_image_url_from_src($galerie_images[0] ?? ($produit['image_principale'] ?? ''), 'md');
                 ?>
                 <div class="produit-gallery-main">
                     <?php require __DIR__ . '/includes/partials/product_share_button.php'; ?>
-                    <img src="/upload/<?php echo htmlspecialchars($galerie_images[0] ?? $produit['image_principale']); ?>"
+                    <img src="<?php echo htmlspecialchars($main_image_src); ?>"
                         alt="<?php echo htmlspecialchars($produit['nom']); ?>" class="produit-image-main"
                         id="produit-image-main" onerror="this.src='/image/produit1.jpg'">
                 </div>
@@ -1328,10 +1330,11 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
                         </button>
                         <div class="gallery-thumbs-list">
                             <?php foreach ($galerie_images as $idx => $img_path): ?>
+                                <?php $thumb_src = upload_image_url_from_src($img_path, 'sm'); ?>
                                 <button type="button" class="gallery-thumb <?php echo $idx === 0 ? 'active' : ''; ?>"
                                     data-index="<?php echo $idx; ?>"
-                                    data-src="/upload/<?php echo htmlspecialchars($img_path); ?>">
-                                    <img src="/upload/<?php echo htmlspecialchars($img_path); ?>"
+                                    data-src="<?php echo htmlspecialchars(upload_image_url_from_src($img_path, 'md')); ?>">
+                                    <img src="<?php echo htmlspecialchars($thumb_src); ?>"
                                         alt="Vue <?php echo $idx + 1; ?>" onerror="this.src='/image/produit1.jpg'">
                                 </button>
                             <?php endforeach; ?>
@@ -1667,16 +1670,19 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
 
     <?php include('footer.php') ?>
 
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js" defer></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
         // Calcul automatique du prix total (variante + surcoûts)
-        const prixBase = <?php echo $prix_affichage; ?>;
+        const prixBase = <?php echo json_encode((float) $prix_affichage); ?>;
+        const produitNomBase = <?php echo json_encode($produit['nom'], JSON_UNESCAPED_UNICODE); ?>;
+        const produitImageFallback = <?php echo json_encode(upload_image_url_from_src($produit['image_principale'] ?? '', 'md'), JSON_UNESCAPED_UNICODE); ?>;
         const quantiteInput = document.getElementById('quantite');
         const prixTotalElement = document.getElementById('prix-total');
         const prixUnitaireInput = document.getElementById('option-prix-unitaire');
         const decreaseBtn = document.getElementById('decrease-qty');
         const increaseBtn = document.getElementById('increase-qty');
-        const maxStock = <?php echo $produit['stock']; ?>;
+        const maxStock = <?php echo json_encode((int) ($produit['stock'] ?? 0)); ?>;
 
         function getPrixUnitaire() {
             var prix = prixBase;
@@ -1706,14 +1712,14 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
             if (btnAdd) btnAdd.disabled = (quantite > maxStock || quantite <= 0);
         }
 
-        var produitNomBase = '<?php echo addslashes(htmlspecialchars($produit['nom'])); ?>';
+        var produitNomBaseRef = produitNomBase;
 
         function updatePrixEtNomAffichage() {
             var prixUnitaire = getPrixUnitaire();
             var selVariante = document.querySelector('.variante-option.selected, .variante-option input:checked');
             var el = selVariante && selVariante.classList ? selVariante : (selVariante ? selVariante.closest(
                 '.variante-option') : null);
-            var nomAffichage = produitNomBase;
+            var nomAffichage = produitNomBaseRef;
             if (el && el.dataset.nom) nomAffichage = el.dataset.nom;
 
             var elNom = document.getElementById('produit-nom');
@@ -1757,9 +1763,11 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
                 if (hnom) hnom.value = el.dataset.nom || '';
                 if (himg) himg.value = el.dataset.image || '';
                 var mainImg = document.getElementById('produit-image-main');
-                if (mainImg && el.dataset.image) mainImg.src = '/upload/' + el.dataset.image;
-                else if (mainImg && !el.dataset.id) mainImg.src =
-                    '/upload/<?php echo htmlspecialchars($produit['image_principale'] ?? ''); ?>';
+                if (mainImg && el.dataset.image) {
+                    mainImg.src = '/upload/' + el.dataset.image;
+                } else if (mainImg) {
+                    mainImg.src = produitImageFallback;
+                }
                 updatePrixTotal();
                 if (typeof updatePrixEtNomAffichage === 'function') updatePrixEtNomAffichage();
             });
@@ -1956,13 +1964,12 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
         }
 
         // Fermer automatiquement après 3 secondes si c'est un message de succès
-        document.addEventListener('DOMContentLoaded', function () {
-            const message = document.getElementById('message-alert');
-            if (message && message.classList.contains('success')) {
-                setTimeout(() => {
-                    closeMessage();
-                }, 3000);
-            }
+        const messageAlert = document.getElementById('message-alert');
+        if (messageAlert && messageAlert.classList.contains('success')) {
+            setTimeout(function () {
+                closeMessage();
+            }, 3000);
+        }
         });
     </script>
 

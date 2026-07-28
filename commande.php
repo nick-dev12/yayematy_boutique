@@ -103,8 +103,6 @@ $user_location_label = $commande_invite ? '' : trim((string) ($user['location_la
 
 $post_mode = isset($_POST['mode_livraison']) && $_POST['mode_livraison'] === 'retrait' ? 'retrait' : 'livraison';
 $default_mode = $message_type === 'error' ? $post_mode : 'livraison';
-
-include 'nav_bar.php';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -126,6 +124,8 @@ include 'nav_bar.php';
 </head>
 
 <body class="commande-page">
+
+    <?php include 'nav_bar.php'; ?>
 
     <div class="commande-hub">
         <header class="commande-hero">
@@ -298,7 +298,7 @@ include 'nav_bar.php';
             userLabel: <?php echo json_encode($user_location_label); ?>
         };
     </script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
     <?php include __DIR__ . '/includes/auth_intl_tel_scripts.php'; ?>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -307,7 +307,7 @@ include 'nav_bar.php';
             }
         });
     </script>
-    <script src="/js/commande-checkout.js<?php echo asset_version_query(); ?>"></script>
+    <script src="/js/commande-checkout.js<?php echo asset_version_query(); ?>" defer></script>
 </body>
 
 </html>

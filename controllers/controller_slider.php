@@ -69,10 +69,10 @@ function process_add_slide() {
     if (empty($titre)) {
         $errors[] = 'Le titre est obligatoire.';
     }
-    
-    if (empty($paragraphe)) {
-        $errors[] = 'Le paragraphe est obligatoire.';
-    }
+
+    $paragraphe = $paragraphe !== '' ? $paragraphe : null;
+    $bouton_texte = $bouton_texte !== '' ? $bouton_texte : null;
+    $bouton_lien = $bouton_lien !== '' ? $bouton_lien : null;
     
     // Upload de l'image
     $image = upload_slider_image('image');
@@ -142,10 +142,10 @@ function process_update_slide($slide_id) {
     if (empty($titre)) {
         $errors[] = 'Le titre est obligatoire.';
     }
-    
-    if (empty($paragraphe)) {
-        $errors[] = 'Le paragraphe est obligatoire.';
-    }
+
+    $paragraphe = $paragraphe !== '' ? $paragraphe : null;
+    $bouton_texte = $bouton_texte !== '' ? $bouton_texte : null;
+    $bouton_lien = $bouton_lien !== '' ? $bouton_lien : null;
     
     // Upload de l'image (si nouvelle image fournie)
     $image = upload_slider_image('image', $current_slide['image']);

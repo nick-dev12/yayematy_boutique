@@ -22,6 +22,7 @@ if (isset($_SESSION['success_message'])) {
 
 // Récupérer tous les slides
 require_once __DIR__ . '/../../models/model_slider.php';
+require_once __DIR__ . '/../../includes/image_optimizer.php';
 $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inactifs)
 ?>
 <!DOCTYPE html>
@@ -77,7 +78,7 @@ $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inacti
                     onerror="this.src='/image/produit1.jpg'">
                 <div class="slide-body">
                     <h3 class="slide-titre"><?php echo htmlspecialchars($slide['titre']); ?></h3>
-                    <p class="slide-paragraphe"><?php echo htmlspecialchars($slide['paragraphe']); ?></p>
+                    <p class="slide-paragraphe"><?php echo htmlspecialchars($slide['paragraphe'] ?? ''); ?></p>
                     <div class="slide-info">
                         <span>Ordre: <?php echo $slide['ordre']; ?></span>
                         <span class="statut-badge statut-<?php echo $slide['statut']; ?>">

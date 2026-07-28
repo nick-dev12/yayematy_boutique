@@ -85,7 +85,7 @@ small,
   display: flex !important;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: stretch;
+  align-items: flex-start;
   gap: 0.8rem;
   width: 100%;
   max-width: min(1200px, 100%);

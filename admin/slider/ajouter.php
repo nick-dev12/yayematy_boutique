@@ -166,8 +166,8 @@ if (isset($result['success']) && $result['success']) {
             </div>
 
             <div class="form-group">
-                <label for="paragraphe">Paragraphe *</label>
-                <textarea id="paragraphe" name="paragraphe" rows="4" required
+                <label for="paragraphe">Paragraphe (optionnel)</label>
+                <textarea id="paragraphe" name="paragraphe" rows="4"
                           placeholder="Texte descriptif du slide"><?php echo isset($_POST['paragraphe']) ? htmlspecialchars($_POST['paragraphe']) : ''; ?></textarea>
             </div>
 

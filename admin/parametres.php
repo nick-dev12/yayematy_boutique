@@ -53,6 +53,21 @@ if (isset($_SESSION['success_message'])) {
         <?php endif; ?>
 
         <div class="parametres-grid">
+            <!-- Logo du site -->
+            <div class="parametre-card">
+                <div class="parametre-icon">
+                    <i class="fas fa-image"></i>
+                </div>
+                <h3 class="parametre-title">Logo du site</h3>
+                <p class="parametre-description">
+                    Téléversez le logo affiché dans la navigation, le pied de page, les pages de connexion,
+                    les factures et l’onglet du navigateur. Prévisualisation en direct avant enregistrement.
+                </p>
+                <a href="parametres/logo.php" class="parametre-link">
+                    <i class="fas fa-edit"></i> Configurer le logo
+                </a>
+            </div>
+
             <!-- Bannière d'Accueil -->
             <div class="parametre-card">
                 <div class="parametre-icon">

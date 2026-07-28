@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/../../includes/site_url.php';
+require_once __DIR__ . '/../../includes/site_brand.php';
 require_once __DIR__ . '/../../includes/admin_permissions.php';
 require_once __DIR__ . '/../../includes/admin_ui_flags.php';
 require_once __DIR__ . '/../../models/model_admin.php';
@@ -84,8 +85,10 @@ if (!function_exists('asset_version_query')) {
     <!-- Barre de navigation verticale -->
     <aside class="admin-sidebar" id="adminSidebar">
         <div class="sidebar-header">
-            <i class="fas fa-store logo-icon"></i>
-            <h2>Yaye Maty</h2>
+            <img src="<?php echo htmlspecialchars(site_brand_logo()); ?>"
+                alt="<?php echo htmlspecialchars(site_brand_logo_alt()); ?>"
+                class="sidebar-header__brand-logo">
+            <h2><?php echo htmlspecialchars(site_brand_name()); ?></h2>
             <?php if ($is_livreur_nav): ?>
             <a href="<?php echo htmlspecialchars($nav_href('logout.php')); ?>"
                 class="sidebar-header__logout"

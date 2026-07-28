@@ -23,6 +23,7 @@ if ($slide_id <= 0) {
 
 // Récupérer le slide
 require_once __DIR__ . '/../../models/model_slider.php';
+require_once __DIR__ . '/../../includes/image_optimizer.php';
 $slide = get_slide_by_id($slide_id);
 
 if (!$slide) {
@@ -174,10 +175,10 @@ if (isset($result['success']) && $result['success']) {
         <?php endif; ?>
 
         <div style="margin-bottom: 20px; text-align: center;">
-            <img src="../../upload/slider/<?php echo htmlspecialchars($slide['image']); ?>" 
-                 alt="Image actuelle" 
+            <img src="<?php echo htmlspecialchars(upload_image_url('slider/' . ($slide['image'] ?? ''), 'original')); ?>"
+                 alt="Image actuelle"
                  style="max-width: 100%; max-height: 300px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);"
-                 onerror="this.src='../../image/produit1.jpg'">
+                 onerror="this.src='/image/produit1.jpg'">
             <p style="margin-top: 10px; color: #666; font-size: 14px;">Image actuelle</p>
         </div>
 
@@ -191,9 +192,9 @@ if (isset($result['success']) && $result['success']) {
             </div>
 
             <div class="form-group">
-                <label for="paragraphe">Paragraphe *</label>
-                <textarea id="paragraphe" name="paragraphe" rows="4" required
-                          placeholder="Texte descriptif du slide"><?php echo isset($_POST['paragraphe']) ? htmlspecialchars($_POST['paragraphe']) : htmlspecialchars($slide['paragraphe']); ?></textarea>
+                <label for="paragraphe">Paragraphe (optionnel)</label>
+                <textarea id="paragraphe" name="paragraphe" rows="4"
+                          placeholder="Texte descriptif du slide"><?php echo isset($_POST['paragraphe']) ? htmlspecialchars($_POST['paragraphe']) : htmlspecialchars($slide['paragraphe'] ?? ''); ?></textarea>
             </div>
 
             <div class="form-group">

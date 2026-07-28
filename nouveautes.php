@@ -60,9 +60,11 @@ $seo_canonical = $base . '/nouveautes.php';
         }
 
         .produits-container-wrapper {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px 80px;
+            width: 100%;
+            max-width: 140rem;
+            margin-inline: auto;
+            box-sizing: border-box;
+            padding: 0 clamp(0.75rem, 3vw, 2rem) 5rem;
         }
 
         .empty-state {

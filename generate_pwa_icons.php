@@ -1,14 +1,14 @@
 <?php
 /**
- * Script pour générer les icônes PWA (192x192 et 512x512) depuis image/yayematy-logo.png
+ * Script pour générer les icônes PWA (192x192 et 512x512) depuis image/yaye_maty_logo.png
  * À exécuter si vous modifiez le logo : php generate_pwa_icons.php
  */
 
-$source = __DIR__ . '/image/yayematy-logo.png';
+$source = __DIR__ . '/image/yaye_maty_logo.png';
 $iconsDir = __DIR__ . '/icons';
 
 if (!file_exists($source)) {
-    die("Erreur : image/yayematy-logo.png introuvable.\n");
+    die("Erreur : image/yaye_maty_logo.png introuvable.\n");
 }
 
 if (!extension_loaded('gd')) {

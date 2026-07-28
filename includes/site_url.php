@@ -62,7 +62,7 @@ function get_request_origin_base_url() {
 function get_site_logo_relative_filename() {
     $image_dir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'image' . DIRECTORY_SEPARATOR;
     $root_dir = dirname(__DIR__) . DIRECTORY_SEPARATOR;
-    $candidates_image = ['yayematy-logo.png', 'yaye_maty_logo.png', 'logo.png', 'logo.jpg', 'logo-fpl.png', 'logo fpl_stock.png'];
+    $candidates_image = ['yaye_maty_logo.png', 'yayematy-logo.png', 'logo.png', 'logo.jpg', 'logo-fpl.png', 'logo fpl_stock.png'];
     foreach ($candidates_image as $name) {
         if (is_file($image_dir . $name)) {
             return $name;

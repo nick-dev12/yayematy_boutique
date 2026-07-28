@@ -53,52 +53,48 @@ $seo_canonical = $base . '/produits.php';
     <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
     <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
     <link rel="stylesheet" href="/css/a_style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
     <link rel="stylesheet" href="/css/catalogue-grid.css<?php echo asset_version_query(); ?>">
     <link rel="stylesheet" href="/css/product-cards.css<?php echo asset_version_query(); ?>">
     <link rel="stylesheet" href="/css/catalogue-responsive.css<?php echo asset_version_query(); ?>">
     <link rel="stylesheet" href="/css/responsive-site.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="/css/product-share.css<?php echo asset_version_query(); ?>">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <style>
         .produits-page-header {
             background: var(--couleur-dominante);
-            padding: 40px 20px;
+            padding: 2.5rem 1.25rem;
             text-align: center;
             color: var(--texte-clair);
-            margin-bottom: 40px;
+            margin-bottom: 2.5rem;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .produits-page-header h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: clamp(1.75rem, 4vw, 2rem);
+            margin-bottom: 0.625rem;
             font-weight: 700;
         }
 
         .produits-page-header p {
-            font-size: 16px;
+            font-size: 1rem;
             opacity: 0.9;
         }
 
-        .produits-container-wrapper {
-            max-width: 1400px;
-            margin: 0 auto;
-
-        }
-
         .btn-voir-plus {
-            padding: 15px 40px;
+            padding: 0.9375rem 2.5rem;
             background: var(--couleur-dominante);
             color: #ffffff;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 0.5rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            margin: 30px auto;
+            gap: 0.625rem;
+            margin: 1.875rem auto;
         }
 
         .btn-voir-plus:hover {
@@ -114,13 +110,12 @@ $seo_canonical = $base . '/produits.php';
 
         .produits-count {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 0.9375rem;
             color: #666;
-            font-size: 14px;
+            font-size: 0.875rem;
         }
 
-        /* Assurer que le contenu principal a un espacement suffisant pour le footer */
-        body {
+        body.page-produits {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -128,50 +123,44 @@ $seo_canonical = $base . '/produits.php';
             padding: 0;
         }
 
-        .produits-container-wrapper {
+        body.page-produits .produits-container-wrapper {
             flex: 1;
-            padding-bottom: 100px;
-            margin-bottom: 0;
+            padding-bottom: 6.25rem;
         }
 
-        /* S'assurer que le footer est bien positionné et ne se superpose pas */
-        .footer {
-            margin-top: 80px;
+        body.page-produits .footer {
+            margin-top: 5rem;
             position: relative;
             width: 100%;
             clear: both;
             flex-shrink: 0;
         }
 
-        /* Espacement supplémentaire pour la section des produits */
-        .section00 {
-            margin-bottom: 60px;
-        }
-
-        /* S'assurer que le wrapper principal a un espacement suffisant */
-        .produits-page-header {
-            margin-bottom: 40px;
+        body.page-produits .section00 {
+            margin-bottom: 3.75rem;
+            padding: 0;
+            background: transparent;
         }
 
         .filtres-actifs {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 0.75rem;
             justify-content: center;
-            margin-top: 12px;
-            font-size: 14px;
+            margin-top: 0.75rem;
+            font-size: 0.875rem;
             opacity: 0.95;
         }
 
         .filtres-actifs span {
             background: rgba(255, 255, 255, 0.25);
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 0.375rem 0.75rem;
+            border-radius: 1.25rem;
         }
     </style>
 </head>
 
-<body>
+<body class="page-produits">
     <?php
     require_once __DIR__ . '/includes/render_product_card.php';
     include('nav_bar.php');

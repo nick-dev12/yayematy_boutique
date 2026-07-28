@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>fr</string>
+		<key>CFBundleDisplayName</key>
+		<string>Sugar Paper</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>sugar_paper_app</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>$(FLUTTER_BUILD_NAME)</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleVersion</key>
+		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<!-- Google Sign-In (iOS) — REVERSED_CLIENT_ID du GoogleService-Info.plist -->
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.409713248489-jbj63nudjj42acep9a5aj57jp81tgutf</string>
+				</array>
+			</dict>
+		</array>
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<true/>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
+		<!-- Chaînes d'objectif (Guideline Apple 5.1.1) — usage réel + exemple concret -->
+		<key>NSCameraUsageDescription</key>
+		<string>Sugar Paper utilise l'appareil photo lorsque vous appuyez sur « Prendre une photo » pour illustrer votre profil ou joindre une image à une commande personnalisée (par exemple : photographier un gâteau).</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Sugar Paper accède à vos photos uniquement si vous choisissez « Importer depuis la galerie » pour ajouter une image à votre profil ou à une commande (par exemple : sélectionner une photo existante).</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>Sugar Paper peut enregistrer dans votre photothèque une image que vous téléchargez depuis la plateforme, uniquement lorsque vous utilisez explicitement la fonction d'enregistrement proposée à l'écran.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Sugar Paper utilise votre position pour confirmer une adresse de livraison ou, pendant une livraison active, transmettre votre position au client en direct.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>Pendant une livraison en cours, Sugar Paper continue de transmettre votre position au client même si vous quittez l'application, jusqu'à la fin de la course ou le changement de livraison.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>Pendant une livraison en cours, Sugar Paper transmet votre position au client en direct, y compris en arrière-plan, jusqu'à la fin de la course.</string>
+		<key>NSContactsUsageDescription</key>
+		<string>Sugar Paper accède à vos contacts uniquement lorsque vous appuyez sur « Importer » dans l'espace commercial, pour enregistrer dans votre carnet clients le nom, le téléphone et l'e-mail des contacts que vous sélectionnez. Aucune lecture automatique du répertoire.</string>
+		<!-- Production : HTTPS uniquement (développement local possible via exceptions ciblées si besoin) -->
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<false/>
+		</dict>
+		<key>UIStatusBarHidden</key>
+		<true/>
+		<key>FirebaseAppDelegateProxyEnabled</key>
+		<false/>
+		<!-- Notifications push (APNs / FCM) -->
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>remote-notification</string>
+			<string>location</string>
+		</array>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
+		<false/>
+	</dict>
+</plist>

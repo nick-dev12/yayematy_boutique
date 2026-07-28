@@ -1,0 +1,101 @@
+/**
+ * Page catalogue produits — admin/produits/index.php, categories/produits.php
+ */
+
+@import url("admin-hub-layout.css");
+
+.prod-catalog-grid {
+  margin-top: 4px;
+}
+
+/* Grille produits — 2 colonnes mobile, plus large sur desktop */
+.page-produits-index .prod-catalog-grid.dash-prod-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+  gap: clamp(10px, 2vw, 18px);
+}
+
+@media (min-width: 768px) {
+  .page-produits-index .prod-catalog-grid.dash-prod-grid {
+    grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-produits-index .prod-catalog-grid.dash-prod-grid {
+    grid-template-columns: repeat(auto-fill, minmax(13.125rem, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .page-produits-index .prod-catalog-grid.dash-prod-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-produits-index .dash-prod-card__name {
+    font-size: 0.875rem;
+    min-height: auto;
+  }
+
+  .page-produits-index .dash-prod-card__price-now {
+    font-size: 0.875rem;
+  }
+
+  .page-produits-index .dash-prod-card__actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-produits-index .prod-catalog-grid.dash-prod-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .page-produits-index .dash-prod-card__status {
+    top: 6px;
+    right: 6px;
+    padding: 3px 7px;
+    font-size: 0.5625rem;
+  }
+
+  .page-produits-index .dash-prod-card__body {
+    padding: 10px;
+  }
+
+  .page-produits-index .dash-prod-card__btn {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+  }
+}
+
+.dash-prod-card__status {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-blanc, #fff);
+}
+
+.dash-prod-card__status--inactif {
+  background: var(--color-gris, #8C8C8C);
+}
+
+.dash-prod-card__status--rupture {
+  background: #c0392b;
+}
+
+.dash-prod-card__btn--delete {
+  background: rgba(192, 57, 43, 0.1);
+  color: #c0392b;
+}
+
+.dash-prod-card__btn--delete:hover {
+  background: #c0392b;
+  color: var(--color-blanc, #fff);
+}

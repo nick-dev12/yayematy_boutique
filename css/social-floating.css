@@ -1,0 +1,97 @@
+/**
+ * Boutons réseaux sociaux flottants — taille fluide selon l’écran
+ */
+
+.social-floating {
+  --social-btn-size: clamp(2.2rem, 4.5vw, 3.2rem);
+  --social-icon-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  --social-gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  --social-offset: clamp(0.75rem, 2.5vw, 1.5rem);
+
+  position: fixed;
+  bottom: var(--social-offset);
+  right: var(--social-offset);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: var(--social-gap);
+}
+
+.social-floating-btn {
+  width: var(--social-btn-size);
+  height: var(--social-btn-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  font-size: var(--social-icon-size);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-floating-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.social-floating-btn:active {
+  transform: scale(0.98);
+}
+
+/* WhatsApp - vert */
+.social-whatsapp {
+  background: #25d366;
+}
+
+.social-whatsapp:hover {
+  background: #20bd5a;
+}
+
+/* TikTok */
+.social-tiktok {
+  background: #010101;
+}
+
+.social-tiktok:hover {
+  background: #1a1a1a;
+}
+
+/* Facebook - bleu */
+.social-facebook {
+  background: #1877f2;
+}
+
+.social-facebook:hover {
+  background: #166fe5;
+}
+
+/* Tablette */
+@media (max-width: 992px) {
+  .social-floating {
+    --social-btn-size: clamp(2.75rem, 5vw, 3.1rem);
+    --social-icon-size: clamp(1.35rem, 2.5vw, 1.55rem);
+    --social-gap: 0.65rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .social-floating {
+    --social-btn-size: 2.85rem;
+    --social-icon-size: 1.4rem;
+    --social-gap: 0.6rem;
+    --social-offset: 0.85rem;
+  }
+}
+
+/* Très petit mobile */
+@media (max-width: 480px) {
+  .social-floating {
+    --social-btn-size: 2.7rem;
+    --social-icon-size: 1.3rem;
+    --social-gap: 0.55rem;
+    --social-offset: 0.75rem;
+  }
+}

@@ -1,0 +1,56 @@
+# Fichiers sensibles - NE JAMAIS committer
+# Clés privées Firebase (service account)
+sugar-paper-*.json
+*-firebase-adminsdk-*.json
+*firebase*credentials*.json
+
+# Clé privée Apple Sign In
+AuthKey_*.p8
+
+# Vérification domaine Apple (téléchargé depuis Apple Developer)
+.well-known/apple-developer-domain-association.txt
+
+# Configuration base de données (identifiants)
+conn/conn.php
+
+# Configuration API (clés secrètes)
+config/emailjs.php
+config/email.php
+config/site.php
+config/firebase_config.php
+config/firebase_server.php
+config/tracking.php
+
+# Serveur suivi GPS (Node.js)
+tracking-server/.env
+tracking-server/node_modules/
+.env
+.env.*
+!.env.example
+
+# Uploads utilisateurs
+upload/
+uploads/
+
+# Logs et cache
+*.log
+logs/
+cache/
+tmp/
+temp/
+
+# IDE et éditeurs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Système d'exploitation
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dossier lourd (exclu du dépôt)
+poid_lourd/
+

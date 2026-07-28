@@ -1,0 +1,363 @@
+<?php
+require_once __DIR__ . '/../../includes/session_user.php';
+/**
+ * Comptes d'accès internes (administration) — réservé au rôle administrateur
+ */
+session_start_persistent();
+
+if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
+    header('Location: ../login.php');
+    exit;
+}
+
+require_once __DIR__ . '/../includes/require_access.php';
+require_once __DIR__ . '/../../includes/admin_ui_flags.php';
+require_once __DIR__ . '/../../models/model_admin.php';
+
+$role = normalize_admin_role($_SESSION['admin_role'] ?? 'admin');
+if ($role !== 'admin') {
+    $_SESSION['error_message'] = 'Accès réservé aux administrateurs.';
+    header('Location: ../dashboard.php');
+    exit;
+}
+
+$comptes_can_manage = true;
+
+if (empty($_SESSION['admin_csrf'])) {
+    $_SESSION['admin_csrf'] = bin2hex(random_bytes(32));
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['admin_id'])) {
+    if (!$comptes_can_manage) {
+        $_SESSION['error_message'] = 'Vous n\'avez pas les droits pour modifier les comptes.';
+        header('Location: index.php');
+        exit;
+    }
+    $admin_id = isset($_POST['admin_id']) ? (int) $_POST['admin_id'] : 0;
+    $tok = isset($_POST['csrf_token']) ? (string) $_POST['csrf_token'] : '';
+    if ($tok === '' || !hash_equals((string) ($_SESSION['admin_csrf'] ?? ''), $tok)) {
+        $_SESSION['error_message'] = 'Session expirée ou jeton de sécurité invalide. Réessayez.';
+        header('Location: index.php');
+        exit;
+    }
+
+    if ($admin_id > 0) {
+        if (isset($_POST['upload_photo_profil'])) {
+            $file = $_FILES['photo_profil'] ?? null;
+            $result = admin_photo_profil_process_upload($admin_id, $file);
+            if ($result['ok']) {
+                $_SESSION['success_message'] = $result['msg'] ?: 'Photo de profil mise à jour.';
+            } else {
+                $_SESSION['error_message'] = $result['msg'] ?? 'Erreur lors de l\'upload de la photo.';
+            }
+        } elseif ($admin_id === (int) $_SESSION['admin_id']) {
+            $_SESSION['error_message'] = 'Vous ne pouvez pas modifier ou supprimer votre propre compte depuis cette page.';
+        } else {
+            if (isset($_POST['toggle_statut'])) {
+                $nouveau_statut = $_POST['nouveau_statut'] ?? '';
+                if (in_array($nouveau_statut, ['actif', 'inactif'], true) && update_admin_statut($admin_id, $nouveau_statut)) {
+                    $_SESSION['success_message'] = $nouveau_statut === 'actif' ? 'Compte activé avec succès.' : 'Compte désactivé avec succès.';
+                } else {
+                    $_SESSION['error_message'] = 'Erreur lors de la modification du statut.';
+                }
+            } elseif (isset($_POST['definir_role'])) {
+                $nouveau_role = $_POST['nouveau_role'] ?? '';
+                if (in_array($nouveau_role, admin_roles_valides(), true) && update_admin_role($admin_id, $nouveau_role)) {
+                    $_SESSION['success_message'] = 'Rôle mis à jour avec succès.';
+                } else {
+                    $_SESSION['error_message'] = 'Erreur lors de la modification du rôle.';
+                }
+            } elseif (isset($_POST['supprimer_compte'])) {
+                $del = delete_admin_account($admin_id);
+                if ($del['ok']) {
+                    $_SESSION['success_message'] = 'Compte supprimé définitivement.';
+                } else {
+                    $_SESSION['error_message'] = $del['error'] ?? 'Suppression impossible.';
+                }
+            }
+        }
+    }
+    header('Location: index.php');
+    exit;
+}
+
+$admins = get_all_admins();
+$total = count($admins);
+$admins_actifs = count(array_filter($admins, function ($a) { return $a['statut'] === 'actif'; }));
+$comptes_csrf = (string) $_SESSION['admin_csrf'];
+$photo_profil_ready = admin_has_column('photo_profil');
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <?php include __DIR__ . '/../../includes/favicon.php'; ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comptes d’accès — Administration</title>
+    <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="/css/admin-users-cards.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="/css/admin-comptes-page.css<?php echo asset_version_query(); ?>">
+</head>
+<body class="page-comptes page-comptes-index">
+    <?php include '../includes/nav.php'; ?>
+
+    <div class="page-comptes-wrap">
+    <header class="comptes-header-bar page-comptes-hero">
+        <div class="page-comptes-hero__text">
+            <p class="page-comptes-eyebrow">Gestion des accès</p>
+            <h1 id="page-comptes-title"><i class="fas fa-user-shield" aria-hidden="true"></i> Comptes d’accès administration</h1>
+            <p class="comptes-lead">Comptes internes pour l’espace admin (rôles, activité, activation). Les <strong>clients du site e-commerce</strong> sont gérés séparément.</p>
+        </div>
+        <div class="comptes-header-actions page-comptes-hero__actions">
+            <?php if ($comptes_can_manage): ?>
+            <?php if (admin_ui_show_comptes_absences()): ?>
+            <a href="absences.php" class="btn-open-emp-modal page-comptes-cta page-comptes-cta--secondary">
+                <i class="fas fa-calendar-xmark" aria-hidden="true"></i> Gestion des absences
+            </a>
+            <?php endif; ?>
+            <?php if (admin_ui_show_comptes_employes()): ?>
+            <a href="employes/index.php" class="btn-open-emp-modal page-comptes-cta page-comptes-cta--employes">
+                <i class="fas fa-id-card-clip" aria-hidden="true"></i> Employés
+            </a>
+            <?php endif; ?>
+            <a href="../inscription-admin.php" class="btn-open-emp-modal btn-inscription-admin-link page-comptes-cta">
+                <i class="fas fa-user-plus" aria-hidden="true"></i> Ajouter un compte
+            </a>
+            <?php endif; ?>
+        </div>
+    </header>
+
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="message success page-comptes-flash" role="status">
+            <i class="fas fa-check-circle" aria-hidden="true"></i> <?php echo htmlspecialchars($_SESSION['success_message']); unset($_SESSION['success_message']); ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="message error page-comptes-flash" role="alert">
+            <i class="fas fa-exclamation-circle" aria-hidden="true"></i> <?php echo htmlspecialchars($_SESSION['error_message']); unset($_SESSION['error_message']); ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="users-stats page-comptes-kpis" aria-label="Synthèse des comptes">
+        <div class="stat-box page-comptes-kpi page-comptes-kpi--total">
+            <span class="page-comptes-kpi__ic" aria-hidden="true"><i class="fas fa-users"></i></span>
+            <div class="page-comptes-kpi__body">
+                <h3>Comptes (interne)</h3>
+                <div class="stat-value"><?php echo (int) $total; ?></div>
+            </div>
+        </div>
+        <div class="stat-box page-comptes-kpi page-comptes-kpi--actifs">
+            <span class="page-comptes-kpi__ic" aria-hidden="true"><i class="fas fa-user-check"></i></span>
+            <div class="page-comptes-kpi__body">
+                <h3>Comptes actifs</h3>
+                <div class="stat-value"><?php echo (int) $admins_actifs; ?></div>
+            </div>
+        </div>
+    </div>
+
+    <section class="page-comptes-main" aria-labelledby="comptes-list-heading">
+    <h2 id="comptes-list-heading" class="hub-section-title page-comptes-section-title"><i class="fas fa-users-gear" aria-hidden="true"></i> Utilisateurs de l’espace admin</h2>
+    <p class="section-subtitle section-subtitle-comptes">
+        Connexions à l’administration (rôles : <strong>administrateur</strong>, <strong>utilisateur</strong>, <strong>livreur</strong>). Distinct des
+        <strong>clients du site</strong> — voir <a href="../users/index.php">la liste des clients</a>.
+    </p>
+
+    <?php if (empty($admins)): ?>
+        <div class="empty-state page-comptes-empty">
+            <div class="page-comptes-empty__icon" aria-hidden="true"><i class="fas fa-user-shield"></i></div>
+            <h3>Aucun compte</h3>
+            <p>Aucun compte d’accès n’est enregistré pour l’instant.</p>
+            <a href="../inscription-admin.php" class="btn-primary page-comptes-empty__btn"><i class="fas fa-plus" aria-hidden="true"></i> Créer le premier compte</a>
+        </div>
+    <?php else: ?>
+        <div class="users-grid page-comptes-grid comptes-acces-grid">
+            <?php foreach ($admins as $admin): ?>
+                <?php
+                $is_self = ((int) $admin['id'] === (int) $_SESSION['admin_id']);
+                $admin_role_norm = normalize_admin_role($admin['role'] ?? 'utilisateur');
+                $esc_role = htmlspecialchars($admin_role_norm, ENT_QUOTES, 'UTF-8');
+                $photo_url = $photo_profil_ready ? admin_photo_profil_url($admin['photo_profil'] ?? '') : '';
+                $initial = strtoupper(substr($admin['prenom'], 0, 1));
+                ?>
+                <article class="comptes-acces-card<?php echo $admin['statut'] === 'inactif' ? ' comptes-acces-card--inactive' : ''; ?>"
+                    data-statut="<?php echo htmlspecialchars($admin['statut'], ENT_QUOTES, 'UTF-8'); ?>">
+                    <header class="comptes-acces-card__head">
+                        <div class="comptes-acces-card__head-badges" aria-label="Statut et rôle">
+                            <span class="comptes-acces-card__status comptes-acces-card__status--<?php echo $admin['statut'] === 'actif' ? 'actif' : 'inactif'; ?>">
+                                <?php echo $admin['statut'] === 'actif' ? 'Actif' : 'Inactif'; ?>
+                            </span>
+                            <span class="comptes-acces-card__role-pill role-badge role-<?php echo $esc_role; ?>">
+                                <?php echo htmlspecialchars(admin_role_label($admin_role_norm)); ?>
+                            </span>
+                        </div>
+                        <div class="comptes-acces-card__identity">
+                            <div class="comptes-acces-card__avatar<?php echo $photo_url !== '' ? ' comptes-acces-card__avatar--photo' : ''; ?>" aria-hidden="true">
+                                <?php if ($photo_url !== ''): ?>
+                                <img src="<?php echo htmlspecialchars($photo_url, ENT_QUOTES, 'UTF-8'); ?>"
+                                    alt=""
+                                    class="comptes-acces-card__avatar-img"
+                                    width="44" height="44">
+                                <?php else: ?>
+                                <?php echo htmlspecialchars($initial, ENT_QUOTES, 'UTF-8'); ?>
+                                <?php endif; ?>
+                            </div>
+                            <div class="comptes-acces-card__id-text">
+                                <h3 class="comptes-acces-card__name"><?php echo htmlspecialchars($admin['prenom'] . ' ' . $admin['nom']); ?></h3>
+                                <p class="comptes-acces-card__email">
+                                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                                    <?php echo htmlspecialchars($admin['email']); ?>
+                                </p>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div class="comptes-acces-card__body">
+                        <?php if ($comptes_can_manage && $photo_profil_ready): ?>
+                        <form method="post" action="" enctype="multipart/form-data" class="comptes-acces-card__photo-form">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($comptes_csrf, ENT_QUOTES, 'UTF-8'); ?>">
+                            <input type="hidden" name="admin_id" value="<?php echo (int) $admin['id']; ?>">
+                            <label class="comptes-acces-card__photo-label" for="photo-<?php echo (int) $admin['id']; ?>">
+                                <i class="fas fa-camera" aria-hidden="true"></i>
+                                <?php echo $photo_url !== '' ? 'Modifier la photo' : 'Ajouter une photo'; ?>
+                            </label>
+                            <input type="file"
+                                id="photo-<?php echo (int) $admin['id']; ?>"
+                                name="photo_profil"
+                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                class="comptes-acces-card__photo-input"
+                                required>
+                            <button type="submit" name="upload_photo_profil" class="comptes-acces-card__btn comptes-acces-card__btn--photo">
+                                <i class="fas fa-upload" aria-hidden="true"></i> Enregistrer
+                            </button>
+                        </form>
+                        <?php endif; ?>
+
+                        <div class="comptes-acces-card__meta" role="group" aria-label="Dates du compte">
+                            <div class="comptes-acces-card__meta-tile">
+                                <span class="comptes-acces-card__meta-ic" aria-hidden="true"><i class="fas fa-calendar-plus"></i></span>
+                                <div class="comptes-acces-card__meta-txt">
+                                    <span class="comptes-acces-card__meta-label">Compte créé</span>
+                                    <span class="comptes-acces-card__meta-value"><?php echo date('d/m/Y', strtotime($admin['date_creation'])); ?></span>
+                                    <span class="comptes-acces-card__meta-hint"><?php echo date('H\hi', strtotime($admin['date_creation'])); ?></span>
+                                </div>
+                            </div>
+                            <div class="comptes-acces-card__meta-tile">
+                                <span class="comptes-acces-card__meta-ic" aria-hidden="true"><i class="fas fa-clock-rotate-left"></i></span>
+                                <div class="comptes-acces-card__meta-txt">
+                                    <span class="comptes-acces-card__meta-label">Dernière connexion</span>
+                                    <?php if (!empty($admin['derniere_connexion'])): ?>
+                                        <span class="comptes-acces-card__meta-value"><?php echo date('d/m/Y', strtotime($admin['derniere_connexion'])); ?></span>
+                                        <span class="comptes-acces-card__meta-hint"><?php echo date('H\hi', strtotime($admin['derniere_connexion'])); ?></span>
+                                    <?php else: ?>
+                                        <span class="comptes-acces-card__meta-value comptes-acces-card__meta-value--empty">Jamais</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <?php if ($comptes_can_manage): ?>
+                        <div class="comptes-acces-card__toolbar">
+                            <a class="comptes-acces-card__btn comptes-acces-card__btn--activity" href="employe-activite.php?admin_id=<?php echo (int) $admin['id']; ?>">
+                                <i class="fas fa-chart-line" aria-hidden="true"></i> Activité
+                            </a>
+                            <?php if ($is_self): ?>
+                                <span class="comptes-acces-card__self-chip" title="Vous ne pouvez pas modifier votre propre rôle ici">
+                                    <i class="fas fa-user-check" aria-hidden="true"></i> Votre compte
+                                </span>
+                            <?php elseif ($admin['statut'] === 'actif'): ?>
+                                <form method="post" action="" class="comptes-acces-card__statut-form">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($comptes_csrf, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" name="admin_id" value="<?php echo (int) $admin['id']; ?>">
+                                    <input type="hidden" name="nouveau_statut" value="inactif">
+                                    <button type="submit" name="toggle_statut" class="comptes-acces-card__btn comptes-acces-card__btn--deactivate"
+                                            onclick="return confirm('Désactiver ce compte ?');">
+                                        <i class="fas fa-user-slash" aria-hidden="true"></i> Désactiver
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <form method="post" action="" class="comptes-acces-card__statut-form">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($comptes_csrf, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" name="admin_id" value="<?php echo (int) $admin['id']; ?>">
+                                    <input type="hidden" name="nouveau_statut" value="actif">
+                                    <button type="submit" name="toggle_statut" class="comptes-acces-card__btn comptes-acces-card__btn--activate"
+                                            onclick="return confirm('Activer ce compte ?');">
+                                        <i class="fas fa-user-check" aria-hidden="true"></i> Activer
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
+
+                        <?php if (!$is_self): ?>
+                        <div class="comptes-acces-card__role-block">
+                            <p class="comptes-acces-card__role-title" id="role-heading-<?php echo (int) $admin['id']; ?>">
+                                <i class="fas fa-id-badge" aria-hidden="true"></i> Rôle d’accès
+                            </p>
+                            <form method="post" action="" class="comptes-acces-card__role-form" aria-labelledby="role-heading-<?php echo (int) $admin['id']; ?>">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($comptes_csrf, ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" name="admin_id" value="<?php echo (int) $admin['id']; ?>">
+                                <div class="comptes-acces-card__role-row">
+                                    <label for="role-<?php echo (int) $admin['id']; ?>" class="visually-hidden">Choisir le rôle pour <?php echo htmlspecialchars($admin['prenom'] . ' ' . $admin['nom']); ?></label>
+                                    <select name="nouveau_role" id="role-<?php echo (int) $admin['id']; ?>" class="comptes-acces-card__select comptes-role-select">
+                                        <?php foreach (admin_roles_valides() as $r): ?>
+                                        <option value="<?php echo htmlspecialchars($r); ?>" <?php echo ($admin_role_norm === $r) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars(admin_role_label($r)); ?>
+                                        </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <button type="submit" name="definir_role" class="comptes-acces-card__btn comptes-acces-card__btn--save">
+                                        <i class="fas fa-floppy-disk" aria-hidden="true"></i> Enregistrer
+                                    </button>
+                                </div>
+                            </form>
+                            <?php
+                            $delete_confirm_msg = 'Êtes-vous vraiment sûr de vouloir supprimer définitivement le compte de '
+                                . trim(($admin['prenom'] ?? '') . ' ' . ($admin['nom'] ?? ''))
+                                . ' ? Cette action est irréversible : le compte sera effacé de la base et ne pourra pas être récupéré.';
+                            $compte_actif_pour_suppr = ($admin['statut'] ?? '') === 'actif';
+                            ?>
+                            <?php if ($compte_actif_pour_suppr): ?>
+                            <div class="comptes-acces-card__delete-form">
+                                <button type="button"
+                                    class="comptes-acces-card__btn comptes-acces-card__btn--delete"
+                                    disabled
+                                    aria-disabled="true"
+                                    title="Désactivez le compte avant de pouvoir le supprimer">
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i> Supprimer le compte
+                                </button>
+                            </div>
+                            <?php else: ?>
+                            <form method="post" action="" class="comptes-acces-card__delete-form"
+                                onsubmit='return confirm(<?php echo json_encode(
+                                    $delete_confirm_msg,
+                                    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT
+                                ); ?>);'>
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($comptes_csrf, ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" name="admin_id" value="<?php echo (int) $admin['id']; ?>">
+                                <button type="submit" name="supprimer_compte" class="comptes-acces-card__btn comptes-acces-card__btn--delete">
+                                    <i class="fas fa-trash-alt" aria-hidden="true"></i> Supprimer le compte
+                                </button>
+                            </form>
+                            <?php endif; ?>
+                        </div>
+                        <?php elseif ($is_self): ?>
+                        <p class="comptes-acces-card__self-hint">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                            Rôle actuel : <strong><?php echo htmlspecialchars(admin_role_label($admin['role'] ?? 'utilisateur')); ?></strong> — la modification de votre propre rôle s’effectue par un autre administrateur.
+                        </p>
+                        <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+    </section>
+
+    </div><!-- .page-comptes-wrap -->
+
+    <?php include '../includes/footer.php'; ?>
+</body>
+</html>

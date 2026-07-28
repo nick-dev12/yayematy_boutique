@@ -1,0 +1,54 @@
+/**
+ * Page user/produits-livres.php — styles spécifiques
+ */
+
+body.user-page-produits-livres .user-content {
+  padding: clamp(14px, 2.5vw, 28px);
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+.account-hero__avatar--success {
+  background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
+  box-shadow: 0 10px 24px rgba(39, 174, 96, 0.28);
+}
+
+.account-hero__meta--success {
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.1) 0%, rgba(var(--color-bleu-rgb, 46, 125, 181), 0.06) 100%);
+  border-color: rgba(39, 174, 96, 0.16);
+}
+
+.account-hero__meta--success .account-hero__count {
+  color: #1e8449;
+}
+
+.orders-stat--delivered .account-stat__icon {
+  background: rgba(39, 174, 96, 0.12);
+  color: #1e8449;
+}
+
+.order-card--delivered {
+  background: linear-gradient(180deg, var(--color-blanc, #fff) 0%, rgba(39, 174, 96, 0.04) 100%);
+  border-color: rgba(39, 174, 96, 0.12);
+}
+
+.order-card--delivered:hover {
+  border-color: rgba(39, 174, 96, 0.22);
+}
+
+.order-card__badge--livree,
+.order-card__badge--terminee {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #27ae60;
+}
+
+.order-card__badge--terminee {
+  background: var(--color-bleu, #2e7db5);
+}
+
+@media (max-width: 640px) {
+  body.user-page-produits-livres .user-content {
+    padding: 12px 10px 20px;
+  }
+}

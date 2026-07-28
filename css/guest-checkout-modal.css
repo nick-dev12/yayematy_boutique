@@ -1,0 +1,403 @@
+/* Modal commande invité — YAYEMATY */
+.guest-checkout-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+.guest-checkout-modal[hidden] {
+  display: none !important;
+}
+
+.guest-checkout-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 26, 0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: guestCheckoutFadeIn 0.22s ease;
+}
+
+.guest-checkout-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  max-height: min(92vh, 640px);
+  overflow: auto;
+  background: var(--color-blanc, #fff);
+  border-radius: 1.25rem 1.25rem 0 0;
+  box-shadow: 0 -0.5rem 2rem rgba(26, 26, 26, 0.18);
+  animation: guestCheckoutSlideUp 0.28s ease;
+}
+
+.guest-checkout-modal__hero {
+  position: relative;
+  padding: 1.35rem 1.25rem 1rem;
+  text-align: center;
+  background: linear-gradient(
+    145deg,
+    rgba(242, 92, 25, 0.14) 0%,
+    rgba(240, 180, 41, 0.1) 55%,
+    rgba(46, 125, 181, 0.08) 100%
+  );
+  border-bottom: 1px solid rgba(140, 140, 140, 0.15);
+}
+
+.guest-checkout-modal__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-noir, #1a1a1a);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(26, 26, 26, 0.1);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.guest-checkout-modal__close:hover {
+  background: var(--color-orange, #f25c19);
+  color: var(--color-blanc, #fff);
+}
+
+.guest-checkout-modal__hero-logo {
+  display: block;
+  width: min(9rem, 55%);
+  margin: 0 auto 0.65rem;
+}
+
+.guest-checkout-modal__hero-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 3.5rem;
+  object-fit: contain;
+  margin-inline: auto;
+}
+
+.guest-checkout-modal__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-noir, #1a1a1a);
+  line-height: 1.3;
+}
+
+.guest-checkout-modal__body {
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+
+.guest-checkout-field {
+  margin-bottom: 1rem;
+}
+
+.guest-checkout-field__label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.guest-checkout-field__control {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 3.25rem;
+  padding: 0 0.875rem;
+  border: 1px solid rgba(140, 140, 140, 0.28);
+  border-radius: 0.75rem;
+  background: var(--color-blanc, #fff);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.guest-checkout-field__control:focus-within {
+  border-color: var(--color-bleu, #2e7db5);
+  box-shadow: 0 0 0 3px rgba(46, 125, 181, 0.14);
+}
+
+.guest-checkout-field__control--tel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.guest-checkout-field__icon {
+  flex-shrink: 0;
+  width: 1.125rem;
+  text-align: center;
+  color: var(--color-bleu, #2e7db5);
+  font-size: 0.9375rem;
+}
+
+.guest-checkout-field__control input[type="text"] {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0.875rem 0;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--color-noir, #1a1a1a);
+  outline: none;
+}
+
+.guest-checkout-field__control input[type="text"]::placeholder {
+  color: rgba(140, 140, 140, 0.85);
+}
+
+.guest-checkout-field__hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--color-gris, #8c8c8c);
+}
+
+/* intl-tel-input dans le modal */
+.guest-checkout-intl.input-wrapper--intl-tel {
+  width: 100%;
+  display: block;
+}
+
+.guest-checkout-intl.input-wrapper--intl-tel > .iti {
+  width: 100%;
+  display: block;
+  position: relative;
+}
+
+.guest-checkout-intl .iti__country-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  max-width: 5.5rem;
+}
+
+.guest-checkout-intl .iti__selected-country {
+  height: 100%;
+  padding: 0 0.35rem 0 0.5rem !important;
+  background: transparent !important;
+  font-size: 0.8125rem;
+  line-height: 1;
+}
+
+.guest-checkout-intl .iti__selected-country-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  max-width: 100%;
+  padding-right: 0.15rem;
+}
+
+.guest-checkout-intl .iti__selected-country-primary .iti__flag {
+  transform: scale(0.9);
+  transform-origin: left center;
+}
+
+.guest-checkout-intl .iti__selected-dial-code {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-left: 0.15rem;
+  white-space: nowrap;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.guest-checkout-intl .iti__arrow {
+  margin-left: 0.15rem;
+  border-top-width: 4px;
+  border-left-width: 3px;
+  border-right-width: 3px;
+}
+
+/* Masque le texte a11y "Senegal +221" visible dans le bouton */
+.guest-checkout-intl .iti__a11y-text {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.guest-checkout-intl .iti__tel-input {
+  width: 100% !important;
+  min-height: 3.25rem !important;
+  height: 3.25rem !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  font-size: 1rem !important;
+  font-family: inherit;
+  color: var(--color-noir, #1a1a1a);
+  /* Espace réservé au bouton pays (flag + +221) pour éviter le chevauchement */
+  padding: 0.75rem 0.875rem 0.75rem calc(var(--iti-selected-country-arrow-offset, 72px) + 0.75rem) !important;
+  box-sizing: border-box;
+}
+
+.guest-checkout-intl .iti__tel-input::placeholder {
+  color: rgba(140, 140, 140, 0.85);
+}
+
+.guest-checkout-intl .iti__country-list {
+  z-index: 12001;
+  max-width: min(100vw - 2rem, 22rem);
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px rgba(26, 26, 26, 0.16);
+}
+
+.guest-checkout-modal__error {
+  margin: 0 0 0.875rem;
+  padding: 0.7rem 0.875rem;
+  border-radius: 0.625rem;
+  background: rgba(242, 92, 25, 0.1);
+  border-left: 3px solid var(--color-orange, #f25c19);
+  color: var(--color-noir, #1a1a1a);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.guest-checkout-modal__error[hidden] {
+  display: none !important;
+}
+
+.guest-checkout-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-top: 0.25rem;
+}
+
+.guest-checkout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.guest-checkout-btn--primary {
+  background: var(--color-orange, #f25c19);
+  color: var(--color-blanc, #fff);
+  box-shadow: 0 4px 14px rgba(242, 92, 25, 0.32);
+}
+
+.guest-checkout-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(242, 92, 25, 0.38);
+}
+
+.guest-checkout-btn--ghost {
+  background: transparent;
+  color: var(--color-gris, #8c8c8c);
+  min-height: 2.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.guest-checkout-btn--ghost:hover {
+  color: var(--color-noir, #1a1a1a);
+}
+
+body.guest-checkout-open {
+  overflow: hidden;
+}
+
+@keyframes guestCheckoutFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes guestCheckoutSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tablette */
+@media (min-width: 768px) {
+  .guest-checkout-modal {
+    align-items: center;
+    padding: 1.25rem;
+  }
+
+  .guest-checkout-modal__panel {
+    width: min(100%, 26rem);
+    max-height: calc(100vh - 2.5rem);
+    border-radius: 1.25rem;
+    box-shadow: 0 1.25rem 3rem rgba(26, 26, 26, 0.2);
+    animation: guestCheckoutPopIn 0.26s ease;
+  }
+
+  .guest-checkout-modal__hero {
+    padding: 1.5rem 1.5rem 1.1rem;
+    border-radius: 1.25rem 1.25rem 0 0;
+  }
+
+  .guest-checkout-modal__hero-logo {
+    width: min(10rem, 50%);
+  }
+
+  .guest-checkout-modal__hero-logo img {
+    max-height: 4rem;
+  }
+
+  .guest-checkout-modal__title {
+    font-size: 1.375rem;
+  }
+
+  .guest-checkout-modal__body {
+    padding: 1.35rem 1.5rem 1.75rem;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .guest-checkout-modal__panel {
+    width: min(100%, 28rem);
+  }
+
+  .guest-checkout-modal__title {
+    font-size: 1.5rem;
+  }
+}
+
+@keyframes guestCheckoutPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

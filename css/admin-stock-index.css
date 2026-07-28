@@ -1,0 +1,165 @@
+/**
+ * Page admin/stock/index.php — catégories
+ */
+
+@import url("admin-hub-layout.css");
+
+.dash-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: clamp(14px, 2vw, 20px);
+}
+
+.dash-cat-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-blanc, #fff);
+  border: 1px solid var(--color-border-light, #ececec);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(var(--color-noir-rgb, 26, 26, 26), 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.dash-cat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(var(--color-noir-rgb, 26, 26, 26), 0.1);
+  border-color: rgba(var(--color-orange-rgb, 242, 92, 25), 0.22);
+}
+
+.dash-cat-card__visual {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--color-bg-subtle, #fafafa);
+  text-decoration: none;
+}
+
+.dash-cat-card__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.dash-cat-card:hover .dash-cat-card__visual img {
+  transform: scale(1.05);
+}
+
+.dash-cat-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: rgba(var(--color-orange-rgb, 242, 92, 25), 0.35);
+  background: linear-gradient(135deg, rgba(var(--color-orange-rgb, 242, 92, 25), 0.06) 0%, rgba(var(--color-bleu-rgb, 46, 125, 181), 0.06) 100%);
+}
+
+.dash-cat-card__count {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--color-blanc, #fff);
+  background: rgba(var(--color-noir-rgb, 26, 26, 26), 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.dash-cat-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 14px 12px;
+  flex: 1;
+}
+
+.dash-cat-card__name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--color-noir, #1A1A1A);
+}
+
+.dash-cat-card__desc {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-gris, #8C8C8C);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.dash-cat-card__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border-light, #ececec);
+}
+
+.dash-cat-card__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dash-cat-card__btn--view {
+  grid-column: 1 / -1;
+  background: rgba(var(--color-orange-rgb, 242, 92, 25), 0.1);
+  color: var(--color-orange, #F25C19);
+}
+
+.dash-cat-card__btn--view:hover {
+  background: var(--color-orange, #F25C19);
+  color: var(--color-blanc, #fff);
+}
+
+.dash-cat-card__btn--edit {
+  background: rgba(var(--color-bleu-rgb, 46, 125, 181), 0.1);
+  color: var(--color-bleu, #2E7DB5);
+}
+
+.dash-cat-card__btn--edit:hover {
+  background: var(--color-bleu, #2E7DB5);
+  color: var(--color-blanc, #fff);
+}
+
+.dash-cat-card__btn--delete {
+  background: rgba(192, 57, 43, 0.1);
+  color: #c0392b;
+}
+
+.dash-cat-card__btn--delete:hover {
+  background: #c0392b;
+  color: var(--color-blanc, #fff);
+}
+
+@media (max-width: 768px) {
+  .dash-cat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .dash-cat-grid {
+    grid-template-columns: 1fr;
+  }
+}

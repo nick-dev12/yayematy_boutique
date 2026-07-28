@@ -1,0 +1,38 @@
+/**
+ * Page user/commandes-annulees.php — styles spécifiques
+ */
+
+body.user-page-commandes-annulees .user-content {
+  padding: clamp(14px, 2.5vw, 28px);
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+.account-hero__avatar--danger {
+  background: linear-gradient(135deg, #c0392b 0%, #922b21 100%);
+  box-shadow: 0 10px 24px rgba(192, 57, 43, 0.28);
+}
+
+.account-hero__meta--danger {
+  background: linear-gradient(135deg, rgba(192, 57, 43, 0.08) 0%, rgba(192, 57, 43, 0.04) 100%);
+  border-color: rgba(192, 57, 43, 0.14);
+}
+
+.account-hero__meta--danger .account-hero__count {
+  color: #c0392b;
+}
+
+.orders-stat--cancelled .account-stat__icon {
+  background: rgba(192, 57, 43, 0.1);
+  color: #c0392b;
+}
+
+.order-card--cancelled {
+  background: linear-gradient(180deg, var(--color-blanc, #fff) 0%, rgba(192, 57, 43, 0.03) 100%);
+  border-color: rgba(192, 57, 43, 0.1);
+}
+
+@media (max-width: 640px) {
+  body.user-page-commandes-annulees .user-content {
+    padding: 12px 10px 20px;
+  }
+}

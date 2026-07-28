@@ -1,0 +1,228 @@
+/**
+ * YAYEMATY — Responsive global (boutique publique)
+ * Base html 10px : 1.6rem = 16px (équivalent règle typographie 1rem @ 16px)
+ */
+
+/* ── Typographie responsive ──────────────────────────────────── */
+body {
+  font-size: 1.6rem;
+  line-height: 1.6;
+}
+
+p {
+  font-size: 1.6rem;
+  line-height: 1.65;
+}
+
+h1 {
+  font-size: clamp(2.8rem, 5vw, 3.2rem);
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 2.4rem;
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: 2rem;
+  line-height: 1.3;
+}
+
+.caption,
+small,
+.text-caption {
+  font-size: clamp(1.2rem, 2.5vw, 1.4rem);
+}
+
+@media (min-width: 768px) {
+  body,
+  p {
+    font-size: 1.7rem;
+  }
+
+  h1 {
+    font-size: clamp(3.6rem, 4vw, 4rem);
+  }
+
+  h2 {
+    font-size: clamp(2.8rem, 3vw, 3.2rem);
+  }
+
+  h3 {
+    font-size: 2.4rem;
+  }
+
+  .caption,
+  small,
+  .text-caption {
+    font-size: 1.4rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  body,
+  p {
+    font-size: 1.8rem;
+  }
+}
+
+/* ── Grilles produits unifiées (CRITICAL) ──────────────────────
+   Mobile  : 2 cartes / ligne — centrées
+   Tablette: 3 cartes / ligne (max) — centrées
+   Desktop : 5 cartes / ligne (max) — centrées
+   ───────────────────────────────────────────────────────────── */
+.home-products-grid,
+.catalogue-products-grid,
+.produits-container,
+.produit_vedete .articles,
+.produit_vedetes .articles,
+.carousel11,
+.carousel11#produits-container,
+.carousel-produits-outer .carousel1.carousel1-flex-mode,
+.produits-similaires .articles.carousel11,
+.section00 .produit_vedetes .articles.carousel11 {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 0.8rem;
+  width: 100%;
+  max-width: min(1200px, 100%);
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+.home-products-grid > .home-product-card,
+.home-products-grid > p,
+.catalogue-products-grid > .home-product-card,
+.catalogue-products-grid > p,
+.produits-container > .carousel,
+.produit_vedete .articles > .carousel,
+.produit_vedetes .articles > .carousel,
+.carousel11 > .carousel,
+.carousel-produits-outer .carousel1.carousel1-flex-mode > .carousel,
+.produits-similaires .articles > .carousel {
+  flex: 0 1 calc((100% - 0.8rem) / 2);
+  max-width: calc((100% - 0.8rem) / 2);
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+.home-products-grid > p,
+.catalogue-products-grid > p {
+  flex: 1 1 100%;
+  max-width: 100%;
+  text-align: center;
+}
+
+/* Tablette : max 3 cartes par ligne */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .home-products-grid,
+  .catalogue-products-grid,
+  .produits-container,
+  .produit_vedete .articles,
+  .produit_vedetes .articles,
+  .carousel11,
+  .carousel11#produits-container,
+  .carousel-produits-outer .carousel1.carousel1-flex-mode,
+  .produits-similaires .articles.carousel11,
+  .section00 .produit_vedetes .articles.carousel11 {
+    gap: 1.2rem;
+  }
+
+  .home-products-grid > .home-product-card,
+  .catalogue-products-grid > .home-product-card,
+  .produits-container > .carousel,
+  .produit_vedete .articles > .carousel,
+  .produit_vedetes .articles > .carousel,
+  .carousel11 > .carousel,
+  .carousel-produits-outer .carousel1.carousel1-flex-mode > .carousel,
+  .produits-similaires .articles > .carousel {
+    flex: 0 1 calc((100% - 2.4rem) / 3);
+    max-width: calc((100% - 2.4rem) / 3);
+  }
+}
+
+/* Desktop : max 5 cartes par ligne */
+@media (min-width: 1024px) {
+  .home-products-grid,
+  .catalogue-products-grid,
+  .produits-container,
+  .produit_vedete .articles,
+  .produit_vedetes .articles,
+  .carousel11,
+  .carousel11#produits-container,
+  .carousel-produits-outer .carousel1.carousel1-flex-mode,
+  .produits-similaires .articles.carousel11,
+  .section00 .produit_vedetes .articles.carousel11 {
+    gap: 1.6rem;
+  }
+
+  .home-products-grid > .home-product-card,
+  .catalogue-products-grid > .home-product-card,
+  .produits-container > .carousel,
+  .produit_vedete .articles > .carousel,
+  .produit_vedetes .articles > .carousel,
+  .carousel11 > .carousel,
+  .carousel-produits-outer .carousel1.carousel1-flex-mode > .carousel,
+  .produits-similaires .articles > .carousel {
+    flex: 0 1 calc((100% - 6.4rem) / 5);
+    max-width: calc((100% - 6.4rem) / 5);
+  }
+}
+
+/* ── Typographie cartes produit (mobile) ─────────────────────── */
+@media (max-width: 767px) {
+  .home-product-name,
+  .produit_vedete .articles .carousel #nom,
+  .produit_vedetes .articles .carousel #nom,
+  .carousel11 .carousel #nom,
+  .produits-similaires .articles .carousel #nom {
+    font-size: 1.4rem !important;
+    line-height: 1.35;
+  }
+
+  .home-product-price,
+  .produit_vedete .articles .carousel .prix,
+  .produit_vedetes .articles .carousel .prix,
+  .carousel11 .carousel .prix,
+  .produits-similaires .articles .carousel .prix {
+    font-size: 1.6rem !important;
+    font-weight: 700 !important;
+  }
+
+  .home-product-body {
+    padding: 1.2rem 1rem 0.8rem;
+  }
+
+  .home-product-image {
+    padding: 1rem;
+  }
+
+  .home-btn-primary {
+    font-size: 1.3rem;
+    padding: 1rem 1.2rem;
+  }
+}
+
+/* Carte produit : zone image + infos cliquable vers la fiche détail */
+.home-product-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.home-product-card-link:hover .home-product-name {
+  color: var(--color-bleu);
+}
+
+.home-product-card form {
+  position: relative;
+  z-index: 2;
+}

@@ -1,0 +1,321 @@
+/**
+ * Page admin/commandes/details.php
+ */
+
+@import url("admin-hub-layout.css");
+
+.cmd-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(14px, 2vw, 20px);
+  margin-bottom: clamp(14px, 2vw, 22px);
+}
+
+.cmd-detail-panel {
+  background: var(--color-blanc, #fff);
+  border: 1px solid var(--color-border-light, #ececec);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.04));
+}
+
+.cmd-detail-panel h3 {
+  margin: 0 0 14px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--color-noir, #1A1A1A);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-light, #ececec);
+}
+
+.cmd-detail-panel h3 i {
+  color: var(--color-orange, #F25C19);
+}
+
+.cmd-detail-row {
+  margin-bottom: 12px;
+}
+
+.cmd-detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.cmd-detail-row label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-gris, #8C8C8C);
+  margin-bottom: 4px;
+}
+
+.cmd-detail-row .value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-noir, #1A1A1A);
+  line-height: 1.45;
+}
+
+.cmd-detail-inline-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.cmd-detail-inline-meta .commande-statut {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.cmd-detail-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.cmd-detail-mode--livraison {
+  background: rgba(var(--color-orange-rgb, 242, 92, 25), 0.12);
+  color: var(--color-orange, #f25c19);
+}
+
+.cmd-detail-mode--retrait {
+  background: rgba(46, 125, 181, 0.12);
+  color: #2e7db5;
+}
+
+/* Lignes produits commande */
+.cmd-prod-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cmd-prod-item {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  gap: 14px;
+  align-items: start;
+  padding: 14px;
+  background: var(--color-bg-subtle, #fafafa);
+  border: 1px solid var(--color-border-light, #ececec);
+  border-radius: 14px;
+}
+
+.cmd-prod-item img {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid var(--color-border-light, #ececec);
+}
+
+.cmd-prod-item__name {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--color-noir, #1A1A1A);
+  line-height: 1.35;
+}
+
+.cmd-prod-item__meta {
+  font-size: 0.78rem;
+  color: var(--color-gris, #8C8C8C);
+  line-height: 1.5;
+}
+
+.cmd-prod-item__total {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-orange, #F25C19);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.cmd-prod-total-box {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(var(--color-orange-rgb, 242, 92, 25), 0.08) 0%, rgba(var(--color-bleu-rgb, 46, 125, 181), 0.05) 100%);
+  border: 1px solid rgba(var(--color-orange-rgb, 242, 92, 25), 0.15);
+  text-align: right;
+}
+
+.cmd-prod-total-box p {
+  margin: 0 0 6px;
+  font-size: 0.84rem;
+  color: var(--color-gris, #8C8C8C);
+}
+
+.cmd-prod-total-box h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-noir, #1A1A1A);
+}
+
+.cmd-prod-total-box .total-value {
+  color: var(--color-orange, #F25C19);
+}
+
+/* Statut & actions */
+.cmd-status-box {
+  padding: 16px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+}
+
+.cmd-status-box--warn {
+  background: rgba(var(--color-jaune-rgb, 255, 193, 7), 0.12);
+  border: 1px solid rgba(var(--color-jaune-rgb, 255, 193, 7), 0.3);
+}
+
+.cmd-status-box--ok {
+  background: rgba(45, 138, 78, 0.1);
+  border: 1px solid rgba(45, 138, 78, 0.25);
+}
+
+.cmd-status-box--danger {
+  background: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.2);
+}
+
+.cmd-status-box h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.cmd-status-box p {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--color-gris, #8C8C8C);
+}
+
+.cmd-status-form .form-group {
+  margin-bottom: 14px;
+}
+
+.cmd-status-form label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-gris, #8C8C8C);
+  margin-bottom: 6px;
+}
+
+.cmd-status-form select,
+.cmd-status-form .notes-box {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-light, #d9d9d9);
+  border-radius: 10px;
+  font-size: 0.88rem;
+  background: var(--color-blanc, #fff);
+}
+
+.cmd-status-form .btn-primary {
+  margin-top: 8px;
+}
+
+.cmd-actions-divider {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-border-light, #ececec);
+}
+
+.cmd-actions-divider h3 {
+  margin: 0 0 14px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--color-noir, #1A1A1A);
+}
+
+.statut-current-wrap {
+  margin-top: 4px;
+}
+
+.cmd-detail-row--geo .value {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.cmd-detail-geo-coords {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-bleu, #2E7DB5);
+  font-variant-numeric: tabular-nums;
+}
+
+.geo-nav-apps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.geo-nav-apps--panel {
+  margin-top: 0.15rem;
+}
+
+.geo-nav-app {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  border: none;
+  text-decoration: none;
+  color: var(--color-blanc, #fff);
+  font-weight: 700;
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.geo-nav-app:hover {
+  filter: brightness(1.06);
+}
+
+.geo-nav-app--gmaps {
+  background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc05 75%, #ea4335 100%);
+}
+
+.geo-nav-app--whatsapp {
+  background: #25d366;
+}
+
+@media (max-width: 900px) {
+  .cmd-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .cmd-prod-item {
+    grid-template-columns: 60px 1fr;
+  }
+
+  .cmd-prod-item__total {
+    grid-column: 2;
+    text-align: left;
+    margin-top: 4px;
+  }
+}

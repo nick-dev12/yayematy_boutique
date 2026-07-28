@@ -1,0 +1,65 @@
+---
+description: Typographie responsive en rem (mobile, tablette, desktop)
+alwaysApply: true
+---
+
+# Typographie responsive (obligatoire)
+
+Expert Frontend : appliquer strictement ces règles. Utiliser **uniquement** `rem` (base 16px : `1rem = 16px`).
+
+## 1. Mobile (base, < 768px)
+
+| Élément | Taille |
+|---------|--------|
+| **Body / `p`** | `1rem` (16px) — **jamais en dessous** pour le texte principal |
+| **Petit texte / légendes** | `0.75rem` à `0.875rem` (12–14px) — secondaire, footers, labels uniquement |
+| **H1** | `1.75rem` à `2rem` (28–32px) |
+| **H2** | `1.5rem` (24px) |
+| **H3** | `1.25rem` (20px) |
+
+## 2. Tablette (`min-width: 768px`)
+
+| Élément | Taille |
+|---------|--------|
+| **Body / `p`** | `1rem` ou légèrement `1.05rem` (17px) |
+| **Petit texte / légendes** | `0.875rem` (14px) |
+| **H1** | `2.25rem` à `2.5rem` (36–40px) |
+| **H2** | `1.75rem` à `2rem` (28–32px) |
+| **H3** | `1.5rem` (24px) |
+
+## 3. Desktop (`min-width: 1024px`)
+
+- Titres : augmenter proportionnellement si l’écran le justifie.
+- Body : rester à `1rem` ou `1.125rem` (16–18px) pour la lisibilité.
+
+## Exemple CSS
+
+```css
+/* Mobile first */
+body, p { font-size: 1rem; }
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+.caption { font-size: 0.875rem; }
+
+@media (min-width: 768px) {
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.5rem; }
+}
+
+@media (min-width: 1024px) {
+  body, p { font-size: 1.125rem; }
+  h1 { font-size: 2.5rem; }
+}
+```
+
+**Interdit :** `px` pour les tailles de police (sauf commentaires), texte principal < `1rem`, petites tailles sur le contenu de lecture principal.
+
+
+## 1. Product Cards & Grids (CRITICAL)
+- **Mobile (< 768px):** Product lists/grids MUST ALWAYS display **2 items per row**.
+  - Use CSS Grid: `display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;`
+  - Inside mobile product cards: Use `0.875rem` (14px) for product titles. Keep prices highly visible (e.g., `1rem` and bold).
+- **Tablet (`768px` – `1023px`):** Display **max 3** product cards per row.
+- **Desktop (`>= 1024px`):** Display **max 5** product cards per row.

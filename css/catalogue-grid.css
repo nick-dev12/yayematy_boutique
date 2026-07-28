@@ -1,0 +1,157 @@
+/**
+ * Grille produits unifiée — même design que page d'accueil
+ */
+
+.catalogue-products-section {
+  padding: clamp(32px, 5vw, 56px) 20px 48px;
+  background: var(--color-blanc);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.catalogue-products-grid {
+  width: min(1200px, 100%);
+  margin-inline: auto;
+  gap: 24px;
+}
+
+.catalogue-products-grid .home-product-card {
+  height: 100%;
+}
+
+.home-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-orange);
+  color: var(--color-blanc);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.home-btn-primary:hover {
+  background: var(--color-orange-dark);
+  color: var(--color-blanc);
+}
+
+.home-product-card {
+  background: var(--color-blanc);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.home-product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(var(--color-orange-rgb), 0.25);
+}
+
+.home-product-image {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--color-bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.home-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.home-product-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-blanc);
+  z-index: 1;
+}
+
+.home-product-badge--new {
+  background: var(--color-bleu);
+}
+
+.home-product-badge--sale {
+  background: var(--color-orange);
+}
+
+.home-product-body {
+  padding: 18px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  text-align: center;
+}
+
+.home-product-name {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-noir);
+  line-height: 1.35;
+}
+
+.home-product-name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-product-name a:hover {
+  color: var(--color-bleu);
+}
+
+.home-product-price {
+  margin: 0 0 8px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-noir);
+}
+
+.home-product-price .price-old {
+  text-decoration: line-through;
+  color: var(--color-gris);
+  font-weight: 500;
+  font-size: 14px;
+  margin-right: 6px;
+}
+
+.home-product-price .price-sale {
+  color: var(--color-orange);
+}
+
+.home-product-card form {
+  margin: 0;
+  padding: 0 16px 16px;
+}
+
+.home-product-card form .home-btn-primary {
+  width: 100%;
+}
+
+/* Grilles responsive : voir responsive-site.css (2 cols mobile, 3–6 cols tablette/desktop) */

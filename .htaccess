@@ -1,0 +1,80 @@
+# Configuration PHP pour l'upload de fichiers volumineux
+# Ces valeurs surchargent les valeurs du php.ini si nécessaire
+
+# Deep Links : .well-known (App Links Android, Universal Links iOS, domaine Apple)
+<IfModule mod_headers.c>
+    <FilesMatch "^apple-app-site-association$|^assetlinks\.json$">
+        Header set Content-Type "application/json"
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
+    <FilesMatch "^apple-developer-domain-association(\.txt)?$">
+        Header set Content-Type "text/plain"
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
+</IfModule>
+
+# Réécriture pour SEO : robots.txt et sitemap.xml
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Ne pas réécrire les fichiers .well-known (deep links / vérification Apple)
+RewriteRule ^\.well-known/ - [L]
+
+# Callback Apple Sign-In (Android)
+RewriteRule ^auth/apple-callback$ auth/apple-callback.php [L]
+
+RewriteRule ^robots\.txt$ robots.php [L]
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+</IfModule>
+
+# Réglages PHP uniquement quand PHP tourne en mod_php (Apache / WAMP).
+# En PHP-FPM / CGI (cas de Webuzo), ces directives provoquent une erreur 500 :
+# elles sont donc déplacées dans .user.ini (voir ce fichier à la racine).
+<IfModule mod_php.c>
+    php_value session.gc_maxlifetime 2592000
+    php_value session.cookie_lifetime 2592000
+    php_value upload_max_filesize 1000M
+    php_value post_max_size 1000M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 512M
+</IfModule>
+<IfModule mod_php7.c>
+    php_value session.gc_maxlifetime 2592000
+    php_value session.cookie_lifetime 2592000
+    php_value upload_max_filesize 1000M
+    php_value post_max_size 1000M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 512M
+</IfModule>
+<IfModule mod_php8.c>
+    php_value session.gc_maxlifetime 2592000
+    php_value session.cookie_lifetime 2592000
+    php_value upload_max_filesize 1000M
+    php_value post_max_size 1000M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+    php_value memory_limit 512M
+</IfModule>
+
+# Cache navigateur — images WebP et assets statiques
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+</IfModule>
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|webp|gif|svg|ico|css|js|woff2|woff|ttf)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    <FilesMatch "\.php$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+    </FilesMatch>
+</IfModule>

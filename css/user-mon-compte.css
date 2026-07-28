@@ -1,0 +1,647 @@
+/**
+ * Page user/mon-compte.php — hub client YAYEMATY MARKET
+ */
+
+body.user-page-mon-compte .user-content {
+  padding: clamp(14px, 2.5vw, 28px);
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+.account-hub {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2.5vw, 22px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Hero */
+.account-hero {
+  padding: clamp(18px, 3vw, 26px);
+  border-radius: var(--radius-xl, 22px);
+  background: var(--color-blanc, #fff);
+  border: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+  box-shadow: var(--shadow-md, 0 4px 18px rgba(26, 26, 26, 0.06));
+}
+
+.account-hero__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.account-hero__profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1 1 260px;
+}
+
+.account-hero__avatar {
+  width: clamp(52px, 12vw, 64px);
+  height: clamp(52px, 12vw, 64px);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--color-blanc, #fff);
+  background: linear-gradient(135deg, var(--color-orange, #f25c19) 0%, var(--color-bleu, #2e7db5) 100%);
+  box-shadow: 0 10px 24px rgba(var(--color-orange-rgb, 242, 92, 25), 0.28);
+}
+
+.account-hero__eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.account-hero__eyebrow i {
+  color: var(--color-orange, #f25c19);
+  margin-right: 6px;
+}
+
+.account-hero__title {
+  margin: 0 0 4px;
+  font-family: var(--font-titres, inherit);
+  font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.account-hero__title span {
+  color: var(--color-orange, #f25c19);
+}
+
+.account-hero__subtitle {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.account-hero__meta {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(var(--color-orange-rgb, 242, 92, 25), 0.08) 0%, rgba(var(--color-bleu-rgb, 46, 125, 181), 0.08) 100%);
+  border: 1px solid rgba(var(--color-orange-rgb, 242, 92, 25), 0.12);
+}
+
+.account-hero__count {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-orange, #f25c19);
+}
+
+.account-hero__count-label {
+  margin-top: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.account-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.account-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  font-family: inherit;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.account-btn--primary {
+  background: var(--color-orange, #f25c19);
+  color: var(--color-blanc, #fff);
+  box-shadow: 0 8px 20px rgba(var(--color-orange-rgb, 242, 92, 25), 0.28);
+}
+
+.account-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(var(--color-orange-rgb, 242, 92, 25), 0.34);
+}
+
+.account-btn--outline {
+  background: var(--color-blanc, #fff);
+  color: var(--color-noir, #1a1a1a);
+  border: 1px solid rgba(var(--color-orange-rgb, 242, 92, 25), 0.2);
+  box-shadow: var(--shadow-sm, 0 1px 4px rgba(26, 26, 26, 0.04));
+}
+
+.account-btn--outline:hover {
+  border-color: rgba(var(--color-orange-rgb, 242, 92, 25), 0.45);
+  color: var(--color-orange, #f25c19);
+}
+
+.account-btn--ghost {
+  background: rgba(var(--color-bleu-rgb, 46, 125, 181), 0.08);
+  color: var(--color-bleu, #2e7db5);
+  border: 1px solid rgba(var(--color-bleu-rgb, 46, 125, 181), 0.14);
+}
+
+.account-btn--ghost:hover {
+  background: var(--color-bleu, #2e7db5);
+  color: var(--color-blanc, #fff);
+}
+
+#btn-enable-notifications.notifications-denied {
+  opacity: 0.75;
+}
+
+html.hide-web-push-notify-btn #btn-enable-notifications,
+html.hide-web-push-notify-btn #notify-help-panel {
+  display: none !important;
+}
+
+/* Panneau notifications */
+.account-notify-panel {
+  display: flex;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(var(--color-bleu-rgb, 46, 125, 181), 0.06);
+  border: 1px solid rgba(var(--color-bleu-rgb, 46, 125, 181), 0.14);
+}
+
+.account-notify-panel[hidden] {
+  display: none !important;
+}
+
+.account-notify-panel__icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--color-bleu, #2e7db5);
+  color: var(--color-blanc, #fff);
+}
+
+.account-notify-panel h4 {
+  margin: 0 0 8px;
+  font-size: 0.92rem;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.account-notify-panel ol {
+  margin: 0 0 12px;
+  padding-left: 1.2rem;
+  font-size: 0.82rem;
+  color: var(--color-gris, #8c8c8c);
+  line-height: 1.45;
+}
+
+.account-notify-panel__btn {
+  margin-top: 4px;
+}
+
+/* Stats */
+.account-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 2vw, 14px);
+}
+
+.account-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: clamp(14px, 2.5vw, 18px) 12px;
+  border-radius: 16px;
+  background: var(--color-blanc, #fff);
+  border: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+  box-shadow: var(--shadow-sm, 0 1px 4px rgba(26, 26, 26, 0.04));
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.account-stat:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md, 0 4px 18px rgba(26, 26, 26, 0.06));
+  border-color: rgba(var(--color-orange-rgb, 242, 92, 25), 0.2);
+}
+
+.account-stat__icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+
+.account-stat--commandes .account-stat__icon {
+  background: rgba(var(--color-orange-rgb, 242, 92, 25), 0.12);
+  color: var(--color-orange, #f25c19);
+}
+
+.account-stat--panier .account-stat__icon {
+  background: rgba(var(--color-bleu-rgb, 46, 125, 181), 0.12);
+  color: var(--color-bleu, #2e7db5);
+}
+
+.account-stat--favoris .account-stat__icon {
+  background: rgba(var(--color-jaune-rgb, 240, 180, 41), 0.16);
+  color: var(--color-jaune-dark, #d99e1f);
+}
+
+.account-stat--visites .account-stat__icon {
+  background: rgba(var(--color-gris-rgb, 140, 140, 140), 0.12);
+  color: var(--color-gris, #8c8c8c);
+}
+
+.account-stat__value {
+  font-size: clamp(1.2rem, 3.5vw, 1.55rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.account-stat__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-gris, #8c8c8c);
+}
+
+/* Bloc produits */
+.account-block {
+  padding: clamp(18px, 3vw, 24px);
+  border-radius: var(--radius-xl, 22px);
+  background: var(--color-blanc, #fff);
+  border: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+  box-shadow: var(--shadow-md, 0 4px 18px rgba(26, 26, 26, 0.06));
+}
+
+.account-block__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: clamp(16px, 2.5vw, 22px);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+}
+
+.account-block__head h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1rem, 2.8vw, 1.25rem);
+  font-weight: 800;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.account-block__head h2 i {
+  color: var(--color-orange, #f25c19);
+  margin-right: 8px;
+}
+
+.account-block__head p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--color-gris, #8c8c8c);
+  max-width: 520px;
+}
+
+.account-block__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-bleu, #2e7db5);
+  text-decoration: none;
+  background: rgba(var(--color-bleu-rgb, 46, 125, 181), 0.08);
+  border: 1px solid rgba(var(--color-bleu-rgb, 46, 125, 181), 0.14);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.account-block__link:hover {
+  background: var(--color-bleu, #2e7db5);
+  color: var(--color-blanc, #fff);
+}
+
+/* Empty state */
+.account-empty {
+  text-align: center;
+  padding: clamp(32px, 6vw, 56px) 20px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, var(--color-bg-subtle, #fafafa) 0%, rgba(var(--color-orange-rgb, 242, 92, 25), 0.04) 100%);
+  border: 1px dashed rgba(var(--color-orange-rgb, 242, 92, 25), 0.22);
+}
+
+.account-empty__icon {
+  display: inline-flex;
+  width: 64px;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  border-radius: 18px;
+  font-size: 1.6rem;
+  color: var(--color-orange, #f25c19);
+  background: rgba(var(--color-orange-rgb, 242, 92, 25), 0.1);
+}
+
+.account-empty h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.account-empty p {
+  margin: 0 0 18px;
+  color: var(--color-gris, #8c8c8c);
+  font-size: 0.88rem;
+}
+
+/* Grille produits */
+.account-prod-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: clamp(14px, 2vw, 18px);
+}
+
+.account-prod-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--color-bg-subtle, #fafafa);
+  border: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+  box-shadow: var(--shadow-sm, 0 1px 4px rgba(26, 26, 26, 0.04));
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.account-prod-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg, 0 8px 32px rgba(26, 26, 26, 0.1));
+  border-color: rgba(var(--color-orange-rgb, 242, 92, 25), 0.18);
+}
+
+.account-prod-card__visual {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--color-blanc, #fff);
+  text-decoration: none;
+}
+
+.account-prod-card__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.account-prod-card:hover .account-prod-card__visual img {
+  transform: scale(1.05);
+}
+
+.account-prod-card__badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-blanc, #fff);
+  background: rgba(var(--color-noir-rgb, 26, 26, 26), 0.72);
+}
+
+.account-prod-card__badge--actif {
+  background: rgba(39, 174, 96, 0.92);
+}
+
+.account-prod-card__badge--inactif {
+  background: rgba(var(--color-gris-rgb, 140, 140, 140), 0.9);
+}
+
+.account-prod-card__badge--rupture {
+  background: rgba(var(--color-orange-rgb, 242, 92, 25), 0.92);
+}
+
+.account-prod-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  flex: 1;
+}
+
+.account-prod-card__cat {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.account-prod-card__name {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.account-prod-card__name a {
+  color: var(--color-noir, #1a1a1a);
+  text-decoration: none;
+}
+
+.account-prod-card__name a:hover {
+  color: var(--color-orange, #f25c19);
+}
+
+.account-prod-card__price {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-orange, #f25c19);
+}
+
+.account-prod-card__price span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.account-prod-card__promo {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-bleu, #2e7db5);
+  font-weight: 600;
+}
+
+.account-prod-card__meta {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 10px 0 0;
+  border-top: 1px dashed var(--color-border-light, rgba(140, 140, 140, 0.12));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.account-prod-card__meta li {
+  font-size: 0.75rem;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.account-prod-card__meta i {
+  width: 14px;
+  color: var(--color-orange, #f25c19);
+  margin-right: 4px;
+}
+
+.account-prod-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.account-prod-card__btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.account-prod-card__btn--primary {
+  background: var(--color-orange, #f25c19);
+  color: var(--color-blanc, #fff);
+}
+
+.account-prod-card__btn--primary:hover {
+  background: var(--color-orange-dark, #d94f12);
+}
+
+.account-prod-card__btn--ghost {
+  background: rgba(var(--color-bleu-rgb, 46, 125, 181), 0.1);
+  color: var(--color-bleu, #2e7db5);
+  border: 1px solid rgba(var(--color-bleu-rgb, 46, 125, 181), 0.14);
+}
+
+.account-prod-card__btn--ghost:hover {
+  background: var(--color-bleu, #2e7db5);
+  color: var(--color-blanc, #fff);
+}
+
+@media (max-width: 992px) {
+  .account-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  body.user-page-mon-compte .user-content {
+    padding: 12px 10px 20px;
+  }
+
+  .account-hero__inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .account-hero__meta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .account-hero__count-label {
+    margin-top: 0;
+  }
+
+  .account-hero__actions .account-btn {
+    flex: 1 1 calc(50% - 5px);
+    min-width: 0;
+  }
+
+  .account-hero__actions .account-btn--primary {
+    flex: 1 1 100%;
+  }
+
+  .account-prod-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .account-prod-card__body {
+    padding: 10px;
+  }
+
+  .account-prod-card__actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 400px) {
+  .account-stats {
+    gap: 8px;
+  }
+
+  .account-stat {
+    padding: 12px 8px;
+  }
+
+  .account-stat__icon {
+    width: 34px;
+    height: 34px;
+    font-size: 0.88rem;
+  }
+}

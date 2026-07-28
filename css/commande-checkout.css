@@ -1,0 +1,439 @@
+/**
+ * Page commande.php — checkout livraison / retrait
+ */
+
+body.commande-page {
+  background: var(--color-bg-subtle, #fafafa);
+}
+
+.commande-hub {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(16px, 3vw, 32px) clamp(14px, 3vw, 24px) calc(100px + env(safe-area-inset-bottom, 0px));
+}
+
+.commande-hero {
+  margin-bottom: 20px;
+  padding: clamp(18px, 3vw, 24px);
+  border-radius: var(--radius-xl, 22px);
+  background: var(--color-blanc, #fff);
+  border: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+  box-shadow: var(--shadow-md, 0 4px 18px rgba(26, 26, 26, 0.06));
+}
+
+.commande-hero h1 {
+  margin: 0 0 6px;
+  font-size: clamp(1.35rem, 4vw, 1.85rem);
+  font-weight: 800;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.commande-hero h1 span {
+  color: var(--color-orange, #f25c19);
+}
+
+.commande-hero p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.commande-guest-badge {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(46, 125, 181, 0.1);
+  color: var(--color-bleu, #2e7db5);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.commande-flash {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  border-radius: 14px;
+  font-size: 0.88rem;
+}
+
+.commande-flash--error {
+  background: rgba(var(--color-orange-rgb, 242, 92, 25), 0.08);
+  border: 1px solid rgba(var(--color-orange-rgb, 242, 92, 25), 0.2);
+}
+
+.commande-layout {
+  display: grid;
+  grid-template-columns: 1fr min(380px, 100%);
+  gap: clamp(16px, 3vw, 24px);
+  align-items: start;
+}
+
+.commande-panel {
+  padding: clamp(18px, 3vw, 24px);
+  border-radius: var(--radius-xl, 22px);
+  background: var(--color-blanc, #fff);
+  border: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+  box-shadow: var(--shadow-md, 0 4px 18px rgba(26, 26, 26, 0.06));
+}
+
+.commande-panel h2 {
+  margin: 0 0 18px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.commande-panel h2 i {
+  color: var(--color-orange, #f25c19);
+  margin-right: 8px;
+}
+
+.commande-mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.commande-mode-tab {
+  appearance: none;
+  border: 2px solid rgba(var(--color-orange-rgb, 242, 92, 25), 0.16);
+  background: var(--color-blanc, #fff);
+  border-radius: 14px;
+  padding: 14px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.commande-mode-tab i {
+  display: block;
+  font-size: 1.25rem;
+  margin-bottom: 6px;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.commande-mode-tab span {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.commande-mode-tab.is-active {
+  border-color: var(--color-orange, #f25c19);
+  background: rgba(var(--color-orange-rgb, 242, 92, 25), 0.06);
+  box-shadow: 0 6px 18px rgba(var(--color-orange-rgb, 242, 92, 25), 0.12);
+}
+
+.commande-mode-tab.is-active i {
+  color: var(--color-orange, #f25c19);
+}
+
+.commande-field {
+  margin-bottom: 18px;
+}
+
+.commande-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.commande-field label i {
+  color: var(--color-orange, #f25c19);
+  margin-right: 6px;
+}
+
+.commande-field select,
+.commande-field input[type="tel"],
+.commande-field input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid rgba(var(--color-orange-rgb, 242, 92, 25), 0.16);
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  background: var(--color-blanc, #fff);
+}
+
+.commande-field select:focus,
+.commande-field input:focus {
+  outline: none;
+  border-color: var(--color-orange, #f25c19);
+  box-shadow: 0 0 0 3px rgba(var(--color-orange-rgb, 242, 92, 25), 0.12);
+}
+
+.commande-field small {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.commande-livraison-panel[hidden],
+.commande-retrait-info[hidden] {
+  display: none !important;
+}
+
+.commande-retrait-info {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  border-radius: 14px;
+  background: rgba(var(--color-bleu-rgb, 46, 125, 181), 0.06);
+  border: 1px solid rgba(var(--color-bleu-rgb, 46, 125, 181), 0.14);
+  font-size: 0.86rem;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.commande-retrait-info i {
+  color: var(--color-bleu, #2e7db5);
+  margin-top: 2px;
+}
+
+.commande-map-block {
+  margin-bottom: 14px;
+}
+
+.commande-map-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.commande-map-label {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.commande-map-label span {
+  display: block;
+  font-weight: 500;
+  color: var(--color-gris, #8c8c8c);
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+.commande-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.commande-btn--outline {
+  background: rgba(var(--color-bleu-rgb, 46, 125, 181), 0.08);
+  color: var(--color-bleu, #2e7db5);
+  border: 1px solid rgba(var(--color-bleu-rgb, 46, 125, 181), 0.16);
+}
+
+.commande-btn--primary {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 18px;
+  background: var(--color-orange, #f25c19);
+  color: var(--color-blanc, #fff);
+  font-size: 0.92rem;
+  box-shadow: 0 8px 20px rgba(var(--color-orange-rgb, 242, 92, 25), 0.28);
+}
+
+.commande-btn--primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+#commande-map {
+  height: 260px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+  z-index: 1;
+}
+
+.commande-location-status {
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.commande-location-status.is-ok {
+  color: #0f5132;
+}
+
+.commande-summary {
+  position: sticky;
+  top: 90px;
+}
+
+.commande-summary-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+}
+
+.commande-summary-item img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.commande-summary-item h4 {
+  margin: 0 0 4px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.commande-summary-item p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.commande-summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 0.88rem;
+  border-bottom: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+}
+
+.commande-summary-row--total {
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 2px solid rgba(var(--color-orange-rgb, 242, 92, 25), 0.2);
+  border-bottom: none;
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.commande-summary-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(var(--color-orange-rgb, 242, 92, 25), 0.1);
+  color: var(--color-orange, #f25c19);
+}
+
+.commande-link-back {
+  display: block;
+  text-align: center;
+  margin-top: 14px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--color-bleu, #2e7db5);
+  text-decoration: none;
+}
+
+body.commande-page .input-wrapper--intl-tel > .iti {
+  position: relative;
+  border-radius: 12px;
+  border-color: rgba(var(--color-orange-rgb, 242, 92, 25), 0.16);
+  width: 100%;
+  overflow: hidden;
+}
+
+body.commande-page .input-wrapper--intl-tel .iti__country-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  max-width: 38%;
+}
+
+body.commande-page .input-wrapper--intl-tel .iti__selected-country {
+  height: 100%;
+  padding: 0 8px 0 10px;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+body.commande-page .input-wrapper--intl-tel .iti__selected-country-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+body.commande-page .input-wrapper--intl-tel .iti__selected-dial-code {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+body.commande-page .input-wrapper--intl-tel .iti__a11y-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+body.commande-page .input-wrapper--intl-tel .iti__tel-input {
+  width: 100% !important;
+  min-height: 46px;
+  padding: 12px 14px !important;
+  padding-left: calc(var(--iti-selected-country-arrow-offset, 96px) + 12px) !important;
+  font-size: 0.92rem !important;
+  box-sizing: border-box;
+  border: none !important;
+  background: transparent !important;
+}
+
+body.commande-page .input-wrapper--intl-tel .iti:focus-within {
+  border-color: var(--color-orange, #f25c19);
+  box-shadow: 0 0 0 3px rgba(var(--color-orange-rgb, 242, 92, 25), 0.12);
+}
+
+@media (max-width: 900px) {
+  .commande-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .commande-summary {
+    position: static;
+  }
+}
+
+@media (max-width: 480px) {
+  .commande-mode-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  #commande-map {
+    height: 220px;
+  }
+}

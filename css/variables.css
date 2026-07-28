@@ -1,0 +1,94 @@
+/**
+ * YAYEMATY MARKET — Charte graphique e-commerce
+ * Alignée sur le système d'analyse (static/css/style.css)
+ */
+
+:root {
+  /* Couleurs principales */
+  --color-orange: #F25C19;
+  --color-bleu: #2E7DB5;
+  --color-jaune: #F0B429;
+  --color-gris: #8C8C8C;
+  --color-noir: #1A1A1A;
+  --color-blanc: #FFFFFF;
+
+  /* Variantes */
+  --color-orange-dark: #D94F12;
+  --color-orange-soft: #FF8A50;
+  --color-bleu-dark: #256A9E;
+  --color-bleu-soft: #5A9FD4;
+  --color-jaune-dark: #D99E1F;
+  --color-jaune-soft: #FFD56A;
+
+  /* RGB pour rgba() */
+  --color-orange-rgb: 242, 92, 25;
+  --color-bleu-rgb: 46, 125, 181;
+  --color-jaune-rgb: 240, 180, 41;
+  --color-noir-rgb: 26, 26, 26;
+  --color-noir-soft: #222222;
+  --color-gris-rgb: 140, 140, 140;
+
+  /* Fonds & surfaces */
+  --color-bg-page: #F4F4F4;
+  --color-bg-subtle: #FAFAFA;
+  --color-bg-muted: #F0F0F0;
+  --color-border: rgba(var(--color-gris-rgb), 0.22);
+  --color-border-light: rgba(var(--color-gris-rgb), 0.12);
+
+  /* Sémantique */
+  --color-error: var(--color-orange-dark);
+  --color-error-bg: rgba(var(--color-orange-rgb), 0.1);
+  --color-error-border: rgba(var(--color-orange-rgb), 0.28);
+  --color-success: var(--color-jaune-dark);
+  --color-success-bg: rgba(var(--color-jaune-rgb), 0.15);
+  --color-success-border: rgba(var(--color-jaune-rgb), 0.35);
+  --color-info: var(--color-bleu-dark);
+  --color-info-bg: rgba(var(--color-bleu-rgb), 0.12);
+  --color-info-border: rgba(var(--color-bleu-rgb), 0.28);
+
+  /* Ombres & rayons */
+  --shadow-sm: 0 1px 4px rgba(var(--color-noir-rgb), 0.04);
+  --shadow-md: 0 4px 18px rgba(var(--color-noir-rgb), 0.06);
+  --shadow-lg: 0 8px 32px rgba(var(--color-noir-rgb), 0.1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+
+  /* ─── Alias legacy (compatibilité anciens fichiers) ─── */
+  --rose: var(--color-orange);
+  --orange: var(--color-orange);
+  --couleur-dominante: var(--color-orange);
+  --accent-promo: var(--color-jaune);
+  --turquoise: var(--color-bleu);
+  --boutons-secondaires: var(--color-bleu);
+  --jaune-wilton: var(--color-jaune);
+  --texte-fonce: var(--color-noir);
+  --texte-clair: var(--color-blanc);
+  --fond-principal: var(--color-blanc);
+  --titres: var(--color-noir);
+  --beige-creme: var(--color-blanc);
+
+  /* Glassmorphisme */
+  --glass-bg: var(--color-blanc);
+  --glass-border: rgba(var(--color-noir-rgb), 0.08);
+  --glass-shadow: var(--shadow-lg);
+
+  /* Ombres (orange principale) */
+  --ombre-douce: 0 4px 20px rgba(var(--color-orange-rgb), 0.08);
+  --ombre-promo: 0 4px 15px rgba(var(--color-orange-rgb), 0.25);
+  --ombre-gourmande: 0 8px 30px rgba(var(--color-orange-rgb), 0.15);
+
+  /* Typographie */
+  --font-titres: 'Poppins', sans-serif;
+  --font-corps: 'Poppins', sans-serif;
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-corps);
+}

@@ -1,0 +1,152 @@
+/* Carte multi-livreurs — layout de base (styles visuels dans admin-livreur-tracking-ui.css) */
+.page-livreurs-carte .admin-content {
+  max-width: none;
+  padding: 0 !important;
+}
+
+.livreurs-carte-hub {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 0px);
+}
+
+.livreurs-carte-layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 340px);
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.livreurs-carte-map-wrap {
+  position: relative;
+  min-height: 420px;
+}
+
+.livreurs-carte-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.livreurs-carte-map-controls {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 500;
+}
+
+.livreurs-carte-panel {
+  overflow: auto;
+  max-height: calc(100dvh - 120px);
+}
+
+.livreurs-carte-list {
+  list-style: none;
+  margin: 0;
+}
+
+.livreurs-carte-list__num,
+.livreurs-carte-list__addr {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: #444;
+  line-height: 1.35;
+}
+
+.livreurs-carte-list__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.livreurs-carte-marker__pin {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 2px solid #fff;
+  background: #f25c19;
+}
+
+.livreurs-carte-marker__pin i {
+  font-size: 0.85rem;
+}
+
+.livreurs-carte-marker__pin--avatar {
+  overflow: hidden;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  max-width: 40px;
+  max-height: 40px;
+  aspect-ratio: 1 / 1;
+  box-sizing: border-box;
+  transition: width 0.2s ease, height 0.2s ease, box-shadow 0.2s ease;
+}
+
+.livreurs-carte-marker__photo {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.livreurs-carte-marker__initial {
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.leaflet-marker-icon.livreurs-carte-marker {
+  cursor: pointer;
+  overflow: visible !important;
+}
+
+.leaflet-marker-icon.livreurs-carte-marker--expanded .livreurs-carte-marker__pin {
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  min-height: 52px;
+  max-width: 52px;
+  max-height: 52px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.livreurs-carte-empty {
+  padding: 24px;
+}
+
+@media (max-width: 900px) {
+  .livreurs-carte-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(48vh, 1fr) auto;
+  }
+
+  .livreurs-carte-panel {
+    border-left: 0;
+    border-top: 1px solid rgba(26, 26, 26, 0.06);
+    max-height: 38vh;
+  }
+
+  .livreurs-carte-map-wrap {
+    min-height: 48vh;
+  }
+}

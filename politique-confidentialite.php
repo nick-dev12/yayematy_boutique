@@ -10,10 +10,12 @@ $seo_title = 'Politique de confidentialité — Yaye Maty';
 $seo_description = 'Politique de confidentialité Yaye Maty : protection des données, application mobile, suivi de livraison, localisation GPS, import contacts, droits des utilisateurs et conformité App Store / Google Play.';
 $seo_canonical = $base . '/politique-confidentialite.php';
 
-$privacy_email = 'sugarpaper26@gmail.com';
+$privacy_email = 'service@yayematy.com';
 $privacy_email_subject = rawurlencode('Données personnelles — Yaye Maty');
+$contact_phone = '+221 77 364 35 29';
+$contact_phone_tel = '+221773643529';
 $company_address = 'Hann Mariste 2 LOT R/01, Dakar, Sénégal';
-$last_update = '11/07/2026';
+$last_update = '28/07/2026';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -88,7 +90,7 @@ $last_update = '11/07/2026';
             <li><strong>Marque commerciale</strong> : Yaye Maty ;</li>
             <li><strong>Adresse</strong> : <?php echo htmlspecialchars($company_address, ENT_QUOTES, 'UTF-8'); ?> ;</li>
             <li><strong>Courriel vie privée / support</strong> : <a href="mailto:<?php echo htmlspecialchars($privacy_email, ENT_QUOTES, 'UTF-8'); ?>?subject=<?php echo $privacy_email_subject; ?>"><?php echo htmlspecialchars($privacy_email, ENT_QUOTES, 'UTF-8'); ?></a> (objet recommandé&nbsp;: «&nbsp;Données personnelles&nbsp;») ;</li>
-            <li><strong>Téléphone</strong> : <a href="tel:+221774161212">+221 77 416 12 12</a>, <a href="tel:+221773292123">+221 77 32 92 123</a>, <a href="tel:+221338233514">+221 33 823 35 14</a>.</li>
+            <li><strong>Téléphone</strong> : <a href="tel:<?php echo htmlspecialchars($contact_phone_tel, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($contact_phone, ENT_QUOTES, 'UTF-8'); ?></a>.</li>
         </ul>
         <p>
             Pour toute question relative à vos données ou à l'exercice de vos droits, contactez-nous aux coordonnées ci-dessus.

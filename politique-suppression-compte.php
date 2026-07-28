@@ -10,8 +10,10 @@ $seo_title = 'Politique de suppression de compte — Yaye Maty';
 $seo_description = 'Procédure de suppression de compte Yaye Maty : droit à l\'effacement, données supprimées ou conservées, formulaire sécurisé pour clients connectés.';
 $seo_canonical = $base . '/politique-suppression-compte.php';
 
-$privacy_email = 'sugarpaper26@gmail.com';
-$last_update = '14/07/2026';
+$privacy_email = 'service@yayematy.com';
+$contact_phone = '+221 77 364 35 29';
+$contact_phone_tel = '+221773643529';
+$last_update = '28/07/2026';
 
 $is_logged_in = !empty($_SESSION['user_id']) && (int) $_SESSION['user_id'] > 0;
 $login_redirect = '/user/connexion.php?redirect=' . rawurlencode('/user/supprimer-compte.php');
@@ -137,6 +139,12 @@ $login_redirect = '/user/connexion.php?redirect=' . rawurlencode('/user/supprime
         </p>
 
         <h2 id="suppr-7">7. Demande par e-mail et délais</h2>
+        <p>
+            Vous pouvez également nous contacter par téléphone au
+            <a href="tel:<?php echo htmlspecialchars($contact_phone_tel, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($contact_phone, ENT_QUOTES, 'UTF-8'); ?></a>
+            ou par e-mail à
+            <a href="mailto:<?php echo htmlspecialchars($privacy_email, ENT_QUOTES, 'UTF-8'); ?>?subject=<?php echo rawurlencode('Suppression de compte — Yaye Maty'); ?>"><?php echo htmlspecialchars($privacy_email, ENT_QUOTES, 'UTF-8'); ?></a>.
+        </p>
         <p>
             Nous accuserons réception de votre demande dans un délai raisonnable et nous efforçons de traiter les suppressions sous <strong>30 jours</strong>,
             sauf complexité ou vérification d'identité supplémentaire. Pour exercer vos autres droits (accès, rectification, opposition),

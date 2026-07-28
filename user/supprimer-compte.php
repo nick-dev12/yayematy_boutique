@@ -113,7 +113,7 @@ $user_label = trim(($user['prenom'] ?? '') . ' ' . ($user['nom'] ?? ''));
                 <p>
                     Vous avez des commandes en cours de traitement ou de livraison.
                     Finalisez-les ou contactez-nous à
-                    <a href="mailto:sugarpaper26@gmail.com">sugarpaper26@gmail.com</a>
+                    <a href="mailto:service@yayematy.com">service@yayematy.com</a>
                     avant de supprimer votre compte.
                 </p>
                 <p><a href="/user/mes-commandes.php">Voir mes commandes</a></p>

@@ -182,8 +182,8 @@ $seo_canonical = $base . '/';
         <?php else: ?>
         <div class="home-hero-inner">
             <div class="home-hero-content">
-                <h1>Le top du cake design pour vos créations</h1>
-                <p>Explorez nos produits comestibles, matériels et accessoires pour sublimer vos gâteaux d'anniversaire, mariage et cérémonies.</p>
+                <h1>Bienvenue sur votre marché local</h1>
+                <p>Découvrez tous vos produits préférés à petit prix</p>
                 <a href="/produits.php" class="home-btn-primary">Découvrir la boutique</a>
             </div>
             <div class="home-hero-visual">
@@ -316,7 +316,7 @@ $seo_canonical = $base . '/';
                 <p>Recevez nos offres, nouveautés et conseils directement dans votre boîte mail.</p>
             </div>
             <form class="home-newsletter-form" action="mailto:sugarpaper26@gmail.com?subject=Inscription%20newsletter" method="post" enctype="text/plain">
-                <input type="email" name="email" placeholder="Votre adresse e-mail" required aria-label="Adresse e-mail">
+                <input type="email" name="email" placeholder="Votre e-mail" required aria-label="Adresse e-mail">
                 <button type="submit" class="home-btn-primary">S'abonner</button>
             </form>
         </div>

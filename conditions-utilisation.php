@@ -10,9 +10,11 @@ $seo_title = "Conditions générales d'utilisation — Yaye Maty";
 $seo_description = "CGU Yaye Maty : boutique en ligne, produits naturels et décoration pâtissière, commandes, livraison, suivi GPS, import contacts, application mobile iOS/Android.";
 $seo_canonical = $base . '/conditions-utilisation.php';
 
-$contact_email = 'sugarpaper26@gmail.com';
+$contact_email = 'service@yayematy.com';
+$contact_phone = '+221 77 364 35 29';
+$contact_phone_tel = '+221773643529';
 $company_address = 'Hann Mariste 2 LOT R/01, Dakar, Sénégal';
-$last_update = '11/07/2026';
+$last_update = '28/07/2026';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -102,7 +104,7 @@ $last_update = '11/07/2026';
         <ul>
             <li><strong>Adresse</strong> : <?php echo htmlspecialchars($company_address, ENT_QUOTES, 'UTF-8'); ?> ;</li>
             <li><strong>E-mail</strong> : <a href="mailto:<?php echo htmlspecialchars($contact_email, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($contact_email, ENT_QUOTES, 'UTF-8'); ?></a> ;</li>
-            <li><strong>Téléphone</strong> : <a href="tel:+221774161212">+221 77 416 12 12</a>, <a href="tel:+221773292123">+221 77 32 92 123</a>, <a href="tel:+221338233514">+221 33 823 35 14</a>.</li>
+            <li><strong>Téléphone</strong> : <a href="tel:<?php echo htmlspecialchars($contact_phone_tel, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($contact_phone, ENT_QUOTES, 'UTF-8'); ?></a>.</li>
         </ul>
         <p>Les coordonnées affichées sur le site au moment de votre demande prévalent en cas de mise à jour ultérieure.</p>
 

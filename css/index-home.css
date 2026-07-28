@@ -618,25 +618,32 @@
 .home-newsletter-text p {
   margin: 0;
   color: var(--home-text-muted);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .home-newsletter-form {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
   gap: 0;
-  flex: 1;
-  min-width: 280px;
-  max-width: 480px;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  max-width: 22rem;
 }
 
 .home-newsletter-form input[type="email"] {
-  flex: 1;
-  padding: 14px 18px;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+  padding: 0.5rem 0.75rem;
   border: 1px solid var(--color-border);
   border-right: none;
   border-radius: var(--radius-sm) 0 0 var(--radius-sm);
   background: var(--color-blanc);
-  font-size: 14px;
+  font-size: 0.875rem;
+  line-height: 1.25;
   outline: none;
   color: var(--color-noir);
 }
@@ -645,10 +652,17 @@
   border-color: var(--color-orange);
 }
 
-.home-newsletter-form button {
+.home-newsletter-form button,
+.home-newsletter-form .home-btn-primary {
+  flex: 0 0 auto;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  padding: 14px 24px;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.25;
   white-space: nowrap;
+  min-height: unset;
+  transform: none;
+  box-shadow: none;
 }
 
 /* ── Footer sombre (page accueil) ────────────────────────────── */
@@ -737,13 +751,48 @@
 }
 
 @media (max-width: 768px) {
+  .home-newsletter {
+    padding: 2rem 1rem;
+  }
+
   .home-newsletter-inner {
     flex-direction: column;
     align-items: stretch;
+    gap: 1.25rem;
+  }
+
+  .home-newsletter-text h2 {
+    font-size: 1.25rem;
   }
 
   .home-newsletter-form {
     max-width: none;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .home-newsletter-form input[type="email"] {
+    border-right: none;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    padding: 0.4375rem 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  .home-newsletter-form input[type="email"]:focus {
+    border-right-color: transparent;
+  }
+
+  .home-newsletter-form button,
+  .home-newsletter-form .home-btn-primary {
+    width: auto;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 0.4375rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .home-newsletter-form button:hover,
+  .home-newsletter-form .home-btn-primary:hover {
+    transform: none;
   }
 
   .home-hero-slider,

@@ -1,18 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page de modification d'un slide
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-// Vérifier si l'admin est connecté
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 // Récupérer l'ID du slide
 $slide_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -178,7 +169,7 @@ if (isset($result['success']) && $result['success']) {
             <img src="<?php echo htmlspecialchars(upload_image_url('slider/' . ($slide['image'] ?? ''), 'original')); ?>"
                  alt="Image actuelle"
                  style="max-width: 100%; max-height: 300px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);"
-                 onerror="this.src='/image/produit1.jpg'">
+                 onerror="this.src='<?php echo htmlspecialchars(public_url('/image/produit1.jpg'), ENT_QUOTES, 'UTF-8'); ?>'">
             <p style="margin-top: 10px; color: #666; font-size: 14px;">Image actuelle</p>
         </div>
 

@@ -1,17 +1,9 @@
 <?php
-require_once __DIR__ . '/../includes/session_user.php';
+require_once __DIR__ . '/includes/admin_auth.php';
 /**
  * Page de test d'envoi d'emails (Admin)
  * Permet de vérifier que la configuration SMTP fonctionne
  */
-
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: login.php');
-    exit;
-}
-
 $autoload = __DIR__ . '/../vendor/autoload.php';
 if (file_exists($autoload)) {
     require_once $autoload;
@@ -56,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Test email - Admin</title>
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
     <style>
         .test-email-form { max-width: 500px; margin: 20px 0; }
         .test-email-form label { display: block; margin-bottom: 8px; font-weight: 600; }

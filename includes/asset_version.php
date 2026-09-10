@@ -5,6 +5,10 @@
  *
  * @return string Timestamp du fichier CSS le plus récent, ou version config
  */
+if (!function_exists('public_url')) {
+    require_once __DIR__ . '/site_url.php';
+}
+
 function get_asset_version() {
     static $version = null;
     if ($version !== null) {
@@ -45,4 +49,25 @@ function get_asset_version() {
 function asset_version_query() {
     $v = get_asset_version();
     return $v ? '?v=' . $v : '';
+}
+
+/**
+ * URL publique d'un asset (CSS, JS, image) avec cache busting par fichier.
+ *
+ * @param string $path Chemin web depuis la racine du projet (ex. /css/style.css)
+ */
+function asset_url($path) {
+    static $cache = [];
+
+    $path = '/' . ltrim((string) $path, '/');
+    if (isset($cache[$path])) {
+        return $cache[$path];
+    }
+
+    $full = dirname(__DIR__) . $path;
+    $version = is_file($full) ? (string) filemtime($full) : get_asset_version();
+    $query = $version !== '' ? '?v=' . $version : '';
+
+    $cache[$path] = public_url($path) . $query;
+    return $cache[$path];
 }

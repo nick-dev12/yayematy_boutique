@@ -9,13 +9,14 @@ require_once __DIR__ . '/controllers/controller_commandes.php';
 require_once __DIR__ . '/includes/panier_invite.php';
 require_once __DIR__ . '/includes/guest_checkout.php';
 require_once __DIR__ . '/includes/site_brand.php';
+require_once __DIR__ . '/includes/site_url.php';
+require_once __DIR__ . '/includes/image_optimizer.php';
 
 $commande_invite = !isset($_SESSION['user_id']);
 $zones_livraison = get_all_zones_livraison('actif');
 
 if ($commande_invite && !guest_checkout_has_info()) {
-    header('Location: /panier.php?error=' . urlencode('Veuillez renseigner vos coordonnées avant de commander.'));
-    exit;
+    redirect_to('/panier.php?error=' . urlencode('Veuillez renseigner vos coordonnées avant de commander.'));
 }
 
 $message = '';
@@ -26,12 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     if ($result['success']) {
         if (!empty($result['is_guest'])) {
-            header('Location: /commande-succes.php?numero=' . urlencode($result['numero_commande']));
-            exit;
+            redirect_to('/commande-succes.php?numero=' . urlencode($result['numero_commande']));
         }
 
         ignore_user_abort(true);
-        header('Location: /user/mes-commandes.php?success=1&numero=' . urlencode($result['numero_commande']));
+        header('Location: ' . public_url('/user/mes-commandes.php?success=1&numero=' . urlencode($result['numero_commande'])));
         echo ' ';
         if (function_exists('fastcgi_finish_request')) {
             fastcgi_finish_request();
@@ -76,8 +76,7 @@ $user = $commande_invite ? null : get_user_by_id($_SESSION['user_id']);
 $panier_items = panier_get_items_courant();
 
 if (empty($panier_items)) {
-    header('Location: /panier.php');
-    exit;
+    redirect_to('/panier.php');
 }
 
 $panier_total = panier_get_total_courant();
@@ -103,6 +102,7 @@ $user_location_label = $commande_invite ? '' : trim((string) ($user['location_la
 
 $post_mode = isset($_POST['mode_livraison']) && $_POST['mode_livraison'] === 'retrait' ? 'retrait' : 'livraison';
 $default_mode = $message_type === 'error' ? $post_mode : 'livraison';
+$commande_image_fallback = public_url('/image/produit1.jpg');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -110,17 +110,35 @@ $default_mode = $message_type === 'error' ? $post_mode : 'livraison';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <?php require_once __DIR__ . '/includes/asset_version.php'; ?>
     <?php include __DIR__ . '/includes/pwa_meta.php'; ?>
     <title>Passer la commande — <?php echo htmlspecialchars(site_brand_name()); ?></title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/a_style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/auth-pages.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/commande-checkout.css<?php echo asset_version_query(); ?>">
-    <?php include __DIR__ . '/includes/auth_intl_tel_head.php'; ?>
+    <?php
+    require_once __DIR__ . '/includes/asset_version.php';
+    require_once __DIR__ . '/includes/head_public_assets.php';
+    render_public_head_assets([
+        '/css/style.css',
+        '/css/a_style.css',
+        '/css/responsive-site.css',
+        '/css/auth-pages.css',
+        '/css/commande-checkout.css',
+        '/css/footer.css',
+        '/css/bottom-nav.css',
+        '/css/social-floating.css',
+    ]);
+    if (!defined('FOOTER_CSS_LOADED')) {
+        define('FOOTER_CSS_LOADED', true);
+    }
+    if (!defined('BOTTOM_NAV_CSS_LOADED')) {
+        define('BOTTOM_NAV_CSS_LOADED', true);
+    }
+    if (!defined('SOCIAL_FLOATING_CSS_LOADED')) {
+        define('SOCIAL_FLOATING_CSS_LOADED', true);
+    }
+    include __DIR__ . '/includes/auth_intl_tel_head.php';
+    ?>
 </head>
 
 <body class="commande-page">
@@ -198,23 +216,19 @@ $default_mode = $message_type === 'error' ? $post_mode : 'livraison';
                         </div>
                         <?php endif; ?>
 
-                        <div class="commande-map-block">
+                        <div class="commande-map-block is-interactive" id="commande-map-block">
                             <div class="commande-map-toolbar">
                                 <p class="commande-map-label">
                                     Votre position
-                                    <span id="location-label"><?php echo $user_location_label !== '' ? htmlspecialchars($user_location_label) : 'Confirmez votre adresse de livraison sur la carte'; ?></span>
+                                    <span id="location-label"><?php echo $user_location_label !== '' ? htmlspecialchars($user_location_label) : 'Détection automatique via GPS'; ?></span>
                                 </p>
-                                <button type="button" class="commande-btn commande-btn--outline" id="btn-update-location">
-                                    <i class="fas fa-location-crosshairs" aria-hidden="true"></i>
-                                    Mettre à jour la localisation
-                                </button>
                             </div>
                             <div id="commande-map" aria-label="Carte de livraison"></div>
                             <p class="commande-location-status<?php echo $user_has_location ? ' is-ok' : ''; ?>" id="location-status">
                                 <?php if ($user_has_location): ?>
                                     Position enregistrée<?php echo $user_location_label !== '' ? ' : ' . htmlspecialchars($user_location_label) : ''; ?>
                                 <?php else: ?>
-                                    Appuyez sur « Mettre à jour la localisation » ou déplacez le marqueur.
+                                    Autorisez la localisation pour afficher votre position exacte sur la carte.
                                 <?php endif; ?>
                             </p>
                         </div>
@@ -252,11 +266,16 @@ $default_mode = $message_type === 'error' ? $post_mode : 'livraison';
                         ? (float) $item['panier_prix_unitaire']
                         : (!empty($item['prix_promotion']) && $item['prix_promotion'] < $item['prix'] ? $item['prix_promotion'] : $item['prix']);
                     $item_img = !empty($item['panier_variante_image']) ? $item['panier_variante_image'] : $item['image_principale'];
+                    $item_img_url = upload_image_url_from_src($item_img, 'sm');
                     $item_nom = !empty($item['panier_variante_nom']) ? $item['nom'] . ' - ' . $item['panier_variante_nom'] : $item['nom'];
                 ?>
                 <div class="commande-summary-item">
-                    <img src="/upload/<?php echo htmlspecialchars($item_img); ?>" alt=""
-                        onerror="this.src='/image/produit1.jpg'">
+                    <div class="commande-summary-item__media">
+                        <img src="<?php echo htmlspecialchars($item_img_url, ENT_QUOTES, 'UTF-8'); ?>"
+                            alt="<?php echo htmlspecialchars($item_nom, ENT_QUOTES, 'UTF-8'); ?>"
+                            width="56" height="56" loading="lazy" decoding="async"
+                            onerror="this.onerror=null;this.src='<?php echo htmlspecialchars($commande_image_fallback, ENT_QUOTES, 'UTF-8'); ?>';">
+                    </div>
                     <div>
                         <h4><?php echo htmlspecialchars($item_nom); ?></h4>
                         <p><?php echo (int) $item['quantite']; ?> × <?php echo number_format($prix_unitaire, 0, ',', ' '); ?> FCFA</p>
@@ -281,7 +300,7 @@ $default_mode = $message_type === 'error' ? $post_mode : 'livraison';
                     <strong id="summary-total"><?php echo number_format($panier_total, 0, ',', ' '); ?> FCFA</strong>
                 </div>
 
-                <a href="/panier.php" class="commande-link-back">
+                <a href="<?php echo public_url('/panier.php'); ?>" class="commande-link-back">
                     <i class="fas fa-arrow-left" aria-hidden="true"></i> Retour au panier
                 </a>
             </aside>
@@ -295,7 +314,11 @@ $default_mode = $message_type === 'error' ? $post_mode : 'livraison';
             panierTotal: <?php echo json_encode((float) $panier_total); ?>,
             userLat: <?php echo $user_lat !== null ? json_encode($user_lat) : 'null'; ?>,
             userLng: <?php echo $user_lng !== null ? json_encode($user_lng) : 'null'; ?>,
-            userLabel: <?php echo json_encode($user_location_label); ?>
+            userLabel: <?php echo json_encode($user_location_label); ?>,
+            hasSavedLocation: <?php echo $user_has_location ? 'true' : 'false'; ?>,
+            defaultMode: <?php echo json_encode($default_mode); ?>,
+            canSaveLocation: <?php echo $commande_invite ? 'false' : 'true'; ?>,
+            saveLocationUrl: <?php echo json_encode(public_url('/api/user/save-location.php')); ?>
         };
     </script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
@@ -307,7 +330,7 @@ $default_mode = $message_type === 'error' ? $post_mode : 'livraison';
             }
         });
     </script>
-    <script src="/js/commande-checkout.js<?php echo asset_version_query(); ?>" defer></script>
+    <script src="<?php echo asset_url('/js/commande-checkout.js'); ?>" defer></script>
 </body>
 
 </html>

@@ -132,6 +132,22 @@
   border-radius: 14px;
 }
 
+.prod-catalog-flash.message.error {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background: rgba(242, 92, 25, 0.1);
+  border: 1px solid rgba(242, 92, 25, 0.25);
+  color: var(--color-noir, #1a1a1a);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.prod-catalog-flash.message.error i {
+  color: var(--color-orange, #f25c19);
+}
+
 /* ── Stats — toujours 2 cartes par ligne ─────────────────────── */
 .prod-catalog-stats {
   display: grid;

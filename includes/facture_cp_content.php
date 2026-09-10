@@ -38,7 +38,7 @@ $facture_og_image = get_site_base_url() . site_brand_logo();
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Yaye Maty">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; color: #444; background: #f5f5f5; padding: 20px; }

@@ -20,6 +20,9 @@ if (!defined('IMAGE_OPTIMIZER_SM_WIDTH')) {
 if (!defined('IMAGE_OPTIMIZER_WEBP_QUALITY')) {
     define('IMAGE_OPTIMIZER_WEBP_QUALITY', 82);
 }
+if (!defined('IMAGE_OPTIMIZER_JPEG_QUALITY')) {
+    define('IMAGE_OPTIMIZER_JPEG_QUALITY', 82);
+}
 
 /**
  * @return list<string>
@@ -113,9 +116,6 @@ function image_optimizer_resize($src, $max_width) {
     return $dst;
 }
 
-/**
- * @param \GdImage $img
- */
 function image_optimizer_save_webp($img, $dest_path, $quality = IMAGE_OPTIMIZER_WEBP_QUALITY) {
     if (!image_optimizer_webp_available()) {
         return false;
@@ -125,6 +125,122 @@ function image_optimizer_save_webp($img, $dest_path, $quality = IMAGE_OPTIMIZER_
         return false;
     }
     return imagewebp($img, $dest_path, max(1, min(100, (int) $quality)));
+}
+
+/**
+ * @param \GdImage $img
+ */
+function image_optimizer_save_jpeg($img, $dest_path, $quality = IMAGE_OPTIMIZER_JPEG_QUALITY) {
+    if (!image_optimizer_gd_available()) {
+        return false;
+    }
+    $dir = dirname($dest_path);
+    if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+        return false;
+    }
+    $flat = imagecreatetruecolor(imagesx($img), imagesy($img));
+    if ($flat === false) {
+        return false;
+    }
+    $white = imagecolorallocate($flat, 255, 255, 255);
+    if ($white !== false) {
+        imagefill($flat, 0, 0, $white);
+    }
+    imagecopy($flat, $img, 0, 0, 0, 0, imagesx($img), imagesy($img));
+    $ok = imagejpeg($flat, $dest_path, max(1, min(100, (int) $quality)));
+    imagedestroy($flat);
+    return $ok;
+}
+
+/**
+ * @param \GdImage $src
+ */
+function image_optimizer_save_by_format($img, $dest_path, $format) {
+    $format = strtolower(trim((string) $format));
+    if ($format === 'webp' && image_optimizer_webp_available()) {
+        return image_optimizer_save_webp($img, $dest_path);
+    }
+    if ($format === 'jpg' || $format === 'jpeg') {
+        return image_optimizer_save_jpeg($img, $dest_path);
+    }
+    if ($format === 'png') {
+        $dir = dirname($dest_path);
+        if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+            return false;
+        }
+        imagealphablending($img, false);
+        imagesavealpha($img, true);
+        return imagepng($img, $dest_path, 6);
+    }
+    return false;
+}
+
+/**
+ * Format de sortie privilégié selon les extensions PHP disponibles.
+ */
+function image_optimizer_preferred_output_format() {
+    return image_optimizer_webp_available() ? 'webp' : 'jpg';
+}
+
+/**
+ * @return array{success:bool, relative_path?:string, filename?:string, message?:string, bytes_before?:int, bytes_after?:int}
+ */
+function image_optimizer_process_tmp_compressed($tmp_path, $dest_dir, $relative_subdir, $name_prefix, $bytes_before, $fixed_stem = null) {
+    $format = image_optimizer_preferred_output_format();
+    $src = image_optimizer_load($tmp_path);
+    if ($src === false) {
+        return ['success' => false, 'message' => 'Impossible de lire l\'image.'];
+    }
+
+    if (is_string($fixed_stem) && $fixed_stem !== '') {
+        $safe_stem = preg_replace('/[^a-zA-Z0-9._-]/', '_', $fixed_stem);
+        $base_name = ($safe_stem !== '') ? $safe_stem : ($name_prefix . bin2hex(random_bytes(8)));
+    } else {
+        $base_name = $name_prefix . bin2hex(random_bytes(8));
+    }
+
+    $variants = [
+        ['suffix' => '', 'width' => IMAGE_OPTIMIZER_MAX_WIDTH],
+        ['suffix' => '_md', 'width' => IMAGE_OPTIMIZER_MD_WIDTH],
+        ['suffix' => '_sm', 'width' => IMAGE_OPTIMIZER_SM_WIDTH],
+    ];
+
+    $saved = [];
+    foreach ($variants as $variant) {
+        $resized = image_optimizer_resize($src, (int) $variant['width']);
+        if ($resized === false) {
+            continue;
+        }
+        $variant_file = $base_name . $variant['suffix'] . '.' . $format;
+        $variant_path = rtrim($dest_dir, '/\\') . DIRECTORY_SEPARATOR . $variant_file;
+        if (image_optimizer_save_by_format($resized, $variant_path, $format)) {
+            $saved[] = $variant_file;
+        }
+        imagedestroy($resized);
+    }
+    imagedestroy($src);
+
+    if (empty($saved)) {
+        return ['success' => false, 'message' => 'Échec de la compression image.'];
+    }
+
+    $filename = $base_name . '.' . $format;
+    $bytes_after = 0;
+    foreach ($saved as $saved_file) {
+        $bytes_after += (int) (@filesize(rtrim($dest_dir, '/\\') . DIRECTORY_SEPARATOR . $saved_file) ?: 0);
+    }
+
+    $relative_subdir = trim(str_replace('\\', '/', $relative_subdir), '/');
+    $relative_path = ($relative_subdir !== '' ? $relative_subdir . '/' : '') . $filename;
+
+    return [
+        'success' => true,
+        'relative_path' => $relative_path,
+        'filename' => $filename,
+        'message' => '',
+        'bytes_before' => $bytes_before,
+        'bytes_after' => $bytes_after,
+    ];
 }
 
 /**
@@ -153,6 +269,10 @@ function image_optimizer_resolve_relative_path($relative_path) {
     if (is_file($upload_root . $webp_rel)) {
         return $webp_rel;
     }
+    $jpg_rel = ($dir === '.' || $dir === '') ? $stem . '.jpg' : $dir . '/' . $stem . '.jpg';
+    if (is_file($upload_root . $jpg_rel)) {
+        return $jpg_rel;
+    }
     return $relative_path;
 }
 
@@ -174,6 +294,10 @@ function image_optimizer_normalize_db_path($relative_path) {
     $webp_rel = ($dir === '.' || $dir === '') ? $stem . '.webp' : $dir . '/' . $stem . '.webp';
     if (is_file($upload_root . $webp_rel)) {
         return $webp_rel;
+    }
+    $jpg_rel = ($dir === '.' || $dir === '') ? $stem . '.jpg' : $dir . '/' . $stem . '.jpg';
+    if (is_file($upload_root . $jpg_rel)) {
+        return $jpg_rel;
     }
     return $resolved;
 }
@@ -209,8 +333,12 @@ function image_optimizer_process_tmp($tmp_path, $dest_dir, $relative_subdir, $na
     $filename = $base_name . '.webp';
     $dest_path = rtrim($dest_dir, '/\\') . DIRECTORY_SEPARATOR . $filename;
 
-    if (!image_optimizer_webp_available()) {
+    if (!image_optimizer_gd_available()) {
         return image_optimizer_fallback_move($tmp_path, $dest_dir, $relative_subdir, $mime, $name_prefix, $bytes_before);
+    }
+
+    if (!image_optimizer_webp_available()) {
+        return image_optimizer_process_tmp_compressed($tmp_path, $dest_dir, $relative_subdir, $name_prefix, $bytes_before, $fixed_stem);
     }
 
     $src = image_optimizer_load($tmp_path);
@@ -337,9 +465,20 @@ function upload_image_url_from_src($src, $variant = 'md') {
 }
 
 function upload_image_url($relative_path, $variant = 'md') {
+    if (!function_exists('public_url')) {
+        require_once __DIR__ . '/site_url.php';
+    }
+
     $relative_path = trim(str_replace('\\', '/', (string) $relative_path), '/');
     if ($relative_path === '') {
-        return '/image/produit1.jpg';
+        return public_url('/image/produit1.jpg');
+    }
+
+    if (PHP_SAPI === 'cli') {
+        if (!function_exists('image_optimizer_maybe_compress_relative')) {
+            require_once __DIR__ . '/image_optimizer_auto.php';
+        }
+        image_optimizer_maybe_compress_relative($relative_path);
     }
 
     $relative_path = image_optimizer_resolve_relative_path($relative_path);
@@ -348,9 +487,9 @@ function upload_image_url($relative_path, $variant = 'md') {
     $variant = strtolower(trim((string) $variant));
     if ($variant === '' || $variant === 'original') {
         if (is_file($upload_root . $relative_path)) {
-            return '/upload/' . $relative_path;
+            return public_url('/upload/' . $relative_path);
         }
-        return '/upload/' . $relative_path;
+        return public_url('/upload/' . $relative_path);
     }
     if (!in_array($variant, ['md', 'sm'], true)) {
         $variant = 'md';
@@ -358,12 +497,12 @@ function upload_image_url($relative_path, $variant = 'md') {
 
     $variant_rel = image_optimizer_variant_relative_path($relative_path, $variant);
     if ($variant_rel !== '' && is_file($upload_root . $variant_rel)) {
-        return '/upload/' . $variant_rel;
+        return public_url('/upload/' . $variant_rel);
     }
     if (is_file($upload_root . $relative_path)) {
-        return '/upload/' . $relative_path;
+        return public_url('/upload/' . $relative_path);
     }
-    return '/upload/' . $relative_path;
+    return public_url('/upload/' . $relative_path);
 }
 
 /**
@@ -376,11 +515,81 @@ function image_optimizer_variant_relative_path($relative_path, $variant) {
     }
     $dir = dirname($relative_path);
     $base = pathinfo($relative_path, PATHINFO_FILENAME);
-    $variant_name = $base . '_' . $variant . '.webp';
+    $ext = strtolower(pathinfo($relative_path, PATHINFO_EXTENSION) ?: 'webp');
+    $variant_name = $base . '_' . $variant . '.' . $ext;
     if ($dir === '.' || $dir === '') {
         return $variant_name;
     }
     return $dir . '/' . $variant_name;
+}
+
+/**
+ * Compresse un fichier déjà enregistré sur disque (batch / rattrapage).
+ *
+ * @return array{success:bool, relative_path?:string, message?:string}
+ */
+function image_optimizer_compress_existing_file($absolute_path, $relative_subdir, $name_prefix) {
+    $absolute_path = (string) $absolute_path;
+    if (!is_file($absolute_path)) {
+        return ['success' => false, 'message' => 'Fichier introuvable'];
+    }
+    $bytes_before = (int) (@filesize($absolute_path) ?: 0);
+    $dest_dir = dirname($absolute_path);
+    $stem = pathinfo($absolute_path, PATHINFO_FILENAME);
+    $result = image_optimizer_process_tmp($absolute_path, $dest_dir, $relative_subdir, $name_prefix, $stem);
+    if (empty($result['success'])) {
+        return ['success' => false, 'message' => $result['message'] ?? 'Échec compression'];
+    }
+    if ($absolute_path !== $dest_dir . DIRECTORY_SEPARATOR . basename((string) ($result['filename'] ?? ''))) {
+        @unlink($absolute_path);
+    }
+    return [
+        'success' => true,
+        'relative_path' => (string) ($result['relative_path'] ?? ''),
+        'bytes_before' => $bytes_before,
+        'bytes_after' => (int) ($result['bytes_after'] ?? 0),
+        'message' => '',
+    ];
+}
+
+/**
+ * Enregistre et compresse une image uploadée ($_FILES).
+ *
+ * @param array<string,mixed> $file_info
+ * @return array{success:bool, relative_path?:string, filename?:string, message?:string}
+ */
+function upload_store_optimized_image(array $file_info, $dest_dir, $relative_subdir, $name_prefix) {
+    $result = upload_optimize_image_file($file_info, $dest_dir, $relative_subdir, $name_prefix);
+    if (empty($result['success'])) {
+        return [
+            'success' => false,
+            'message' => (string) ($result['message'] ?? 'Échec de l\'upload'),
+        ];
+    }
+    $relative = (string) ($result['relative_path'] ?? '');
+    return [
+        'success' => true,
+        'relative_path' => $relative,
+        'filename' => basename($relative),
+        'message' => '',
+    ];
+}
+
+/**
+ * Alias : compresse un fichier déjà présent dans upload/.
+ */
+function optimize_uploaded_image($absolute_path) {
+    $upload_root = realpath(dirname(__DIR__) . '/upload');
+    $abs = realpath($absolute_path);
+    if ($upload_root === false || $abs === false || !str_starts_with($abs, $upload_root)) {
+        return false;
+    }
+    $rel = ltrim(str_replace('\\', '/', substr($abs, strlen($upload_root))), '/');
+    $rel_subdir = dirname($rel);
+    $rel_subdir = ($rel_subdir === '.' ? '' : $rel_subdir);
+    $stem = pathinfo($abs, PATHINFO_FILENAME);
+    $result = image_optimizer_compress_existing_file($abs, $rel_subdir, 'img_');
+    return !empty($result['success']);
 }
 
 /**

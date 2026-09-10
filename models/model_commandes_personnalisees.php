@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/../conn/conn.php';
+require_once __DIR__ . '/../includes/db_helpers.php';
 
 /**
  * Vérifie si la colonne zone_livraison_id existe dans commandes_personnalisees
@@ -305,6 +306,10 @@ function update_commande_personnalisee_notes($id, $notes_admin) {
  * @return int
  */
 function count_commandes_personnalisees_by_statut($statut = null) {
+    if (!db_is_available()) {
+        return 0;
+    }
+
     global $db;
 
     try {

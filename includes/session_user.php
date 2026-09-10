@@ -106,11 +106,47 @@ if (!function_exists('session_regenerate_persistent')) {
     }
 }
 
+if (!function_exists('admin_enforce_auth_if_needed')) {
+    function admin_enforce_auth_if_needed(): void
+    {
+        if (defined('ADMIN_AUTH_LOADED')) {
+            return;
+        }
+
+        $script = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+        if ($script === '' || !preg_match('#/admin(?:/|$)#', $script)) {
+            return;
+        }
+
+        if (strpos($script, '/admin/includes/') !== false) {
+            return;
+        }
+
+        $public_pages = [
+            'login.php',
+            'logout.php',
+            'index.php',
+            'inscription-admin.php',
+            'mot-de-passe-oublie.php',
+            'reinitialiser-mot-de-passe.php',
+        ];
+        if (in_array(basename($script), $public_pages, true)) {
+            return;
+        }
+
+        $auth_file = dirname(__DIR__) . '/admin/includes/admin_auth.php';
+        if (is_file($auth_file)) {
+            require_once $auth_file;
+        }
+    }
+}
+
 if (!function_exists('session_start_persistent')) {
     function session_start_persistent(): bool
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_touch_persistent_if_authenticated();
+            admin_enforce_auth_if_needed();
             return true;
         }
 
@@ -118,6 +154,7 @@ if (!function_exists('session_start_persistent')) {
         $started = session_start();
         if ($started) {
             session_touch_persistent_if_authenticated();
+            admin_enforce_auth_if_needed();
         }
 
         return $started;

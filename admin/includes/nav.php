@@ -46,7 +46,9 @@ if (!function_exists('asset_version_query')) {
     require_once __DIR__ . '/../../includes/asset_version.php';
 }
 ?>
-<link rel="stylesheet" href="/css/admin-sidebar-nav.css<?php echo asset_version_query(); ?>">
+<link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+<link rel="stylesheet" href="<?php echo asset_url('/css/admin-sidebar-nav.css'); ?>">
+<link rel="stylesheet" href="<?php echo asset_url('/css/admin-gtranslate.css'); ?>">
 <!-- Bouton menu mobile -->
 <button class="mobile-menu-toggle" id="menuToggle" type="button" aria-label="Ouvrir le menu">
     <i class="fas fa-bars"></i>
@@ -88,7 +90,6 @@ if (!function_exists('asset_version_query')) {
             <img src="<?php echo htmlspecialchars(site_brand_logo()); ?>"
                 alt="<?php echo htmlspecialchars(site_brand_logo_alt()); ?>"
                 class="sidebar-header__brand-logo">
-            <h2><?php echo htmlspecialchars(site_brand_name()); ?></h2>
             <?php if ($is_livreur_nav): ?>
             <a href="<?php echo htmlspecialchars($nav_href('logout.php')); ?>"
                 class="sidebar-header__logout"
@@ -97,6 +98,12 @@ if (!function_exists('asset_version_query')) {
                 <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
             </a>
             <?php endif; ?>
+            <div class="nav-lang-switcher notranslate" title="Langue">
+                <?php
+                require_once __DIR__ . '/../../includes/gtranslate.php';
+                gtranslate_render_widget();
+                ?>
+            </div>
         </div>
         <nav class="sidebar-menu">
             <?php if ($is_contable_nav): ?>

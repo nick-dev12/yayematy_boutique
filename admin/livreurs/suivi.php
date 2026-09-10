@@ -1,18 +1,8 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Suivi GPS en temps réel — carte plein écran (style app livreur)
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
-require_once __DIR__ . '/../../includes/admin_route_access.php';
-admin_route_enforce();
-
 require_once __DIR__ . '/../../includes/admin_permissions.php';
 require_once __DIR__ . '/../../models/model_livreur_tracking.php';
 
@@ -170,11 +160,11 @@ if ($initial_watch_payload !== null) {
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-livreur-suivi.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-livreur-tracking-ui.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-livreur-suivi.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-livreur-tracking-ui.css'); ?>">
     <?php if ($show_share_delivery): ?>
-    <link rel="stylesheet" href="/css/platform-share-modal.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/platform-share-modal.css'); ?>">
     <?php endif; ?>
 </head>
 <body class="page-livreur-suivi<?php echo $regarder_mode ? ' page-livreur-suivi--regarder' : ''; ?>">
@@ -189,7 +179,7 @@ if ($initial_watch_payload !== null) {
 <div class="livreur-suivi-fallback">
     <div class="message error">
         <i class="fas fa-database"></i>
-        <span>Module non installé. Exécutez la migration SQL.</span>
+        <span>Module GPS indisponible. Vérifiez que MySQL est démarré, puis rechargez la page.</span>
     </div>
 </div>
 <?php elseif (!$livraison): ?>
@@ -453,17 +443,17 @@ window.LIVREUR_TRACKING_CONFIG = {
 </script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate.js" crossorigin="anonymous"></script>
-<script src="/js/livreur-route-api.js<?php echo asset_version_query(); ?>"></script>
+<script src="<?php echo asset_url('/js/livreur-route-api.js'); ?>"></script>
 <?php if ($realtime_configured): ?>
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script>
 <?php endif; ?>
 <?php if ($show_share_delivery): ?>
 <?php include __DIR__ . '/../../includes/partials/platform_share_modal.php'; ?>
-<script src="/js/platform-share-modal.js<?php echo asset_version_query(); ?>"></script>
+<script src="<?php echo asset_url('/js/platform-share-modal.js'); ?>"></script>
 <?php endif; ?>
-<script src="/js/livreur-native-tracking-bridge.js<?php echo asset_version_query(); ?>"></script>
-<script src="/js/livreur-bg-tracker.js<?php echo asset_version_query(); ?>"></script>
-<script src="/js/admin-livreur-suivi.js?v=<?php echo (int) @filemtime(__DIR__ . '/../../js/admin-livreur-suivi.js'); ?>"></script>
+<script src="<?php echo asset_url('/js/livreur-native-tracking-bridge.js'); ?>"></script>
+<script src="<?php echo asset_url('/js/livreur-bg-tracker.js'); ?>"></script>
+<script src="<?php echo asset_url('/js/admin-livreur-suivi.js'); ?>"></script>
 
 <?php endif; ?>
 

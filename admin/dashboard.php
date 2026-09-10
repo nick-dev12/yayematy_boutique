@@ -1,32 +1,19 @@
 <?php
-require_once __DIR__ . '/../includes/session_user.php';
 /**
  * Page d'accueil du tableau de bord administrateur
  * Programmation procédurale uniquement
  */
 
-session_start_persistent();
-
-require_once __DIR__ . '/../includes/admin_route_access.php';
-admin_route_enforce();
+require_once __DIR__ . '/includes/admin_auth.php';
 
 require_once __DIR__ . '/../includes/admin_permissions.php';
 
-// Vérifier si l'admin est connecté, sinon rediriger vers la page de connexion
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: login.php');
-    exit;
-}
-
-require_once __DIR__ . '/../models/model_commandes_admin.php';
-require_once __DIR__ . '/../models/model_commandes_personnalisees.php';
-require_once __DIR__ . '/../models/model_produits.php';
-require_once __DIR__ . '/../models/model_categories.php';
-
-$enable_firebase_notifications = true;
-$firebase_notify_type = 'admin';
-
 require_once __DIR__ . '/../includes/site_brand.php';
+require_once __DIR__ . '/../includes/firebase_config_loader.php';
+require_once __DIR__ . '/includes/dashboard_data.php';
+
+$enable_firebase_notifications = firebase_config_is_available();
+$firebase_notify_type = 'admin';
 
 function dash_format_fcfa($montant)
 {
@@ -42,10 +29,22 @@ function dash_date_fr()
 
 require_once __DIR__ . '/includes/render_dash_product_card.php';
 
-$categories = get_all_categories();
-$produits_all = get_all_produits();
-$produits_all = is_array($produits_all) ? $produits_all : [];
-$nb_produits_total = count($produits_all);
+$dash = admin_dashboard_load_data();
+$categories = $dash['categories'];
+$produits_all = $dash['produits_all'];
+$nb_produits_total = $dash['nb_produits_total'];
+$total_commandes = $dash['total_commandes'];
+$commandes_perso_en_attente = $dash['commandes_perso_en_attente'];
+$en_attente = $dash['en_attente'];
+$prise_en_charge = $dash['prise_en_charge'];
+$stats_mois = $dash['stats_mois'];
+$stats_jour = $dash['stats_jour'];
+$nb_rupture = $dash['nb_rupture'];
+$nb_promo = $dash['nb_promo'];
+$nb_categories = $dash['nb_categories'];
+$produits_plus_vendus = $dash['produits_plus_vendus'];
+$produits_aleatoires = $dash['produits_aleatoires'];
+$dash_data_error = !empty($dash['data_error']);
 
 $admin_display = trim((string) ($_SESSION['admin_prenom'] ?? ''));
 if ($admin_display === '') {
@@ -54,32 +53,6 @@ if ($admin_display === '') {
 if ($admin_display === '') {
     $admin_display = 'Admin';
 }
-
-$total_commandes = count_commandes_by_statut();
-$commandes_perso_en_attente = count_commandes_personnalisees_by_statut('en_attente');
-$en_attente = count_commandes_by_statut('en_attente');
-$prise_en_charge = count_commandes_by_statut('prise_en_charge');
-
-$commandes_mois = get_commandes_by_periode('plage', null, null, date('Y-m-01'), date('Y-m-t'));
-$stats_mois = get_stats_comptabilite_periode($commandes_mois);
-$commandes_jour = get_commandes_by_periode('jour');
-$stats_jour = get_stats_comptabilite_periode($commandes_jour);
-
-$nb_rupture = count(array_filter($produits_all, function ($produit) {
-    return ($produit['statut'] ?? '') === 'rupture_stock' || (int) ($produit['stock'] ?? 0) <= 0;
-}));
-$nb_promo = function_exists('count_produits_en_promo') ? count_produits_en_promo() : 0;
-$nb_categories = count($categories);
-
-$produits_plus_vendus = get_produits_plus_vendus(8);
-if (empty($produits_plus_vendus)) {
-    $produits_plus_vendus = array_slice(get_all_produits('actif'), 0, 8);
-}
-
-$ids_top = array_map(function ($p) {
-    return (int) ($p['id'] ?? 0);
-}, $produits_plus_vendus);
-$produits_aleatoires = get_produits_aleatoires(10, $ids_top);
 
 ?>
 <!DOCTYPE html>
@@ -92,8 +65,8 @@ $produits_aleatoires = get_produits_aleatoires(10, $ids_top);
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <?php include __DIR__ . '/../includes/pwa_meta.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-dashboard-home.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard-home.css'); ?>">
 </head>
 
 <body class="page-dashboard-admin">
@@ -132,6 +105,14 @@ $produits_aleatoires = get_produits_aleatoires(10, $ids_top);
                 </div>
             </div>
         </header>
+
+        <?php if ($dash_data_error): ?>
+        <div class="dash-alerts">
+            <div class="dash-alert dash-alert--warn">
+                <p><i class="fas fa-exclamation-triangle"></i> Certaines statistiques n'ont pas pu être chargées. Vérifiez la connexion à la base de données.</p>
+            </div>
+        </div>
+        <?php endif; ?>
 
         <?php if (isset($_SESSION['notification_test_message'])) {
             $test_msg = $_SESSION['notification_test_message'];

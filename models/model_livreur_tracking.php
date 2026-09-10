@@ -7,18 +7,73 @@
 require_once __DIR__ . '/../conn/conn.php';
 require_once __DIR__ . '/../includes/tracking_config.php';
 
-function livreur_tracking_tables_ready() {
-    global $db;
-    static $ready = null;
-    if ($ready !== null) {
-        return $ready;
+function _livreur_tracking_probe_tables(): bool
+{
+    if (!function_exists('db_is_available')) {
+        require_once __DIR__ . '/../includes/db_helpers.php';
     }
+    if (!db_is_available()) {
+        return false;
+    }
+
+    global $db;
     try {
         $stmt = $db->query("SHOW TABLES LIKE 'livreurs'");
-        $ready = $stmt && $stmt->rowCount() > 0;
+        return $stmt && $stmt->rowCount() > 0;
     } catch (PDOException $e) {
-        $ready = false;
+        return false;
     }
+}
+
+/**
+ * Installe automatiquement le schéma GPS si absent (idempotent).
+ */
+function livreur_tracking_ensure_installed(): bool
+{
+    if (_livreur_tracking_probe_tables()) {
+        return true;
+    }
+
+    if (!function_exists('db_is_available')) {
+        require_once __DIR__ . '/../includes/db_helpers.php';
+    }
+    if (!db_is_available()) {
+        return false;
+    }
+
+    static $installing = false;
+    if ($installing) {
+        return false;
+    }
+    $installing = true;
+
+    global $db;
+    $install_file = dirname(__DIR__) . '/migrations/lib/install_livreur_tracking.php';
+    if (!is_file($install_file)) {
+        $installing = false;
+        return false;
+    }
+
+    require_once $install_file;
+    $ok = function_exists('livreur_tracking_install_schema')
+        ? livreur_tracking_install_schema($db, false)
+        : false;
+
+    $installing = false;
+    return $ok && _livreur_tracking_probe_tables();
+}
+
+function livreur_tracking_tables_ready() {
+    static $ready = null;
+    if ($ready === true) {
+        return true;
+    }
+
+    if (!_livreur_tracking_probe_tables()) {
+        livreur_tracking_ensure_installed();
+    }
+
+    $ready = _livreur_tracking_probe_tables();
     return $ready;
 }
 

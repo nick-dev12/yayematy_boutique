@@ -72,9 +72,9 @@ if ($whatsapp_clean !== '') {
     <?php include __DIR__ . '/includes/pwa_meta.php'; ?>
     <title>Commande confirmée — <?php echo htmlspecialchars(site_brand_name()); ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/panier.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/panier.css'); ?>">
 </head>
 
 <body class="panier-page">
@@ -101,7 +101,7 @@ if ($whatsapp_clean !== '') {
                     Nous contacter sur WhatsApp
                 </a>
                 <?php endif; ?>
-                <a href="/index.php" class="panier-btn panier-btn--primary">Retour à la boutique</a>
+                <a href="<?php echo public_url('/index.php'); ?>" class="panier-btn panier-btn--primary">Retour à la boutique</a>
             </div>
         </div>
     </div>

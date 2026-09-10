@@ -8,18 +8,15 @@ require_once __DIR__ . '/../includes/session_user.php';
 session_start_persistent();
 require_once __DIR__ . '/../includes/google_auth_coop.php';
 require_once __DIR__ . '/../includes/site_brand.php';
+require_once __DIR__ . '/../includes/site_url.php';
 
 // Redirection après connexion (page demandée ou index)
 $redirect_after = isset($_POST['redirect']) ? trim($_POST['redirect']) : (isset($_GET['redirect']) ? trim($_GET['redirect']) : '');
-if ($redirect_after && $redirect_after[0] !== '/') {
-    $redirect_after = '/' . $redirect_after;
-}
-$redirect_url = (!empty($redirect_after) && strpos($redirect_after, '//') === false) ? $redirect_after : '/index.php';
+$redirect_url = normalize_redirect_target($redirect_after);
 
 // Si l'admin est déjà connecté, rediriger vers l'espace admin
 if (isset($_SESSION['admin_id']) && isset($_SESSION['admin_email'])) {
-    header('Location: /admin/dashboard.php');
-    exit;
+    redirect_to('/admin/dashboard.php');
 }
 
 // Si l'utilisateur est déjà connecté, rediriger
@@ -42,8 +39,7 @@ if (isset($result['success']) && $result['success'] && $result['type'] === 'admi
     $_SESSION['admin_statut'] = $result['admin']['statut'];
     $_SESSION['admin_role'] = $result['admin']['role'] ?? 'admin';
 
-    header('Location: /admin/dashboard.php');
-    exit;
+    redirect_to('/admin/dashboard.php');
 }
 
 // Connexion utilisateur : session + redirection
@@ -86,10 +82,10 @@ $post_email = isset($_POST['email']) ? (string) $_POST['email'] : '';
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <?php include __DIR__ . '/../includes/pwa_meta.php'; ?>
     <title>Connexion — <?php echo htmlspecialchars(site_brand_name()); ?></title>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/auth-social.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/auth-pages.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/auth-connexion.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/auth-social.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/auth-pages.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/auth-connexion.css'); ?>">
     <?php include __DIR__ . '/../includes/auth_intl_tel_head.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -97,7 +93,7 @@ $post_email = isset($_POST['email']) ? (string) $_POST['email'] : '';
 <body class="auth-page auth-connexion auth-page--<?php echo $active_login_mode === 'phone' ? 'phone' : 'email'; ?>">
     <div class="auth-connexion-shell">
         <div class="auth-connexion-brand">
-            <a href="/index.php" aria-label="<?php echo htmlspecialchars(site_brand_name()); ?>">
+            <a href="<?php echo public_url('/index.php'); ?>" aria-label="<?php echo htmlspecialchars(site_brand_name()); ?>">
                 <span class="auth-connexion-brand__mark">
                     <?php
                     $brand_logo_class = 'auth-connexion-logo';
@@ -187,7 +183,7 @@ $post_email = isset($_POST['email']) ? (string) $_POST['email'] : '';
                     <input type="checkbox" id="accepte_conditions_phone" name="accepte_conditions_phone" value="1" required
                         <?php echo (isset($_POST['accepte_conditions_phone']) && $_POST['accepte_conditions_phone'] === '1') ? 'checked' : ''; ?>>
                     <label for="accepte_conditions_phone">
-                        J'accepte les <a href="/conditions-utilisation.php" target="_blank" rel="noopener">conditions d'utilisation</a>
+                        J'accepte les <a href="<?php echo public_url('/conditions-utilisation.php'); ?>" target="_blank" rel="noopener">conditions d'utilisation</a>
                     </label>
                 </div>
 
@@ -240,7 +236,7 @@ $post_email = isset($_POST['email']) ? (string) $_POST['email'] : '';
                 <div class="checkbox-group">
                     <input type="checkbox" id="accepte_conditions" name="accepte_conditions" value="1" required>
                     <label for="accepte_conditions">
-                        J'accepte les <a href="/conditions-utilisation.php" target="_blank" rel="noopener">conditions d'utilisation</a>
+                        J'accepte les <a href="<?php echo public_url('/conditions-utilisation.php'); ?>" target="_blank" rel="noopener">conditions d'utilisation</a>
                     </label>
                 </div>
 
@@ -266,9 +262,9 @@ $post_email = isset($_POST['email']) ? (string) $_POST['email'] : '';
 
         <p class="auth-connexion-legal">
             En cliquant sur « Continuer », j'ai lu et j'accepte les
-            <a href="/conditions-utilisation.php" target="_blank" rel="noopener">conditions d'utilisation</a>
+            <a href="<?php echo public_url('/conditions-utilisation.php'); ?>" target="_blank" rel="noopener">conditions d'utilisation</a>
             et la
-            <a href="/politique-confidentialite.php" target="_blank" rel="noopener">politique de confidentialité</a>.
+            <a href="<?php echo public_url('/politique-confidentialite.php'); ?>" target="_blank" rel="noopener">politique de confidentialité</a>.
         </p>
     </div>
 
@@ -323,7 +319,7 @@ $post_email = isset($_POST['email']) ? (string) $_POST['email'] : '';
         });
     </script>
     <?php include __DIR__ . '/../includes/auth_intl_tel_scripts.php'; ?>
-    <script src="/js/auth-geo-capture.js<?php echo asset_version_query(); ?>"></script>
+    <script src="<?php echo asset_url('/js/auth-geo-capture.js'); ?>"></script>
     <?php include __DIR__ . '/../includes/google_auth_scripts.php'; ?>
     <?php include __DIR__ . '/../includes/social_floating.php'; ?>
 </body>

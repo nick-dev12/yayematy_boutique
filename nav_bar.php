@@ -19,11 +19,15 @@ if (file_exists($panier_path)) {
     }
 }
 
-// Catégories pour le menu et le filtre recherche
+// Catégories pour le menu et le filtre recherche (cache 10 min)
 $categories_menu = [];
 if (file_exists(__DIR__ . '/models/model_categories.php')) {
     require_once __DIR__ . '/models/model_categories.php';
-    $categories_menu = get_all_categories();
+    require_once __DIR__ . '/includes/simple_cache.php';
+    $categories_menu = cache_remember('nav_categories_menu', 600, function () {
+        $cats = get_all_categories();
+        return is_array($cats) ? $cats : [];
+    });
 }
 
 $nav_categorie_selected = isset($_GET['categorie']) ? (string) $_GET['categorie'] : '';
@@ -40,72 +44,74 @@ function nav_sidebar_link_class($script_names, $current_script)
     return in_array($current_script, $scripts, true) ? ' nav-sidebar-link--active' : '';
 }
 ?>
-<link rel="stylesheet" href="/css/variables.css<?php echo $asset_version ? '?v=' . $asset_version : ''; ?>">
-<link rel="stylesheet" href="/css/nabare.css<?php echo $asset_version ? '?v=' . $asset_version : ''; ?>">
-<link rel="stylesheet" href="/css/store-header.css<?php echo $asset_version ? '?v=' . $asset_version : ''; ?>">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<?php include __DIR__ . '/includes/google_fonts.php'; ?>
+<?php
+if (!defined('PUBLIC_HEAD_ASSETS_LOADED')) {
+    require_once __DIR__ . '/includes/head_public_assets.php';
+    render_public_head_assets();
+}
+?>
 
 <!-- Barre principale : logo · recherche · compte / panier -->
 <nav class="nav-planete-gateau">
     <div class="nav-brand-row">
-        <a class="nav-brand-block" href="/index.php">
+        <a class="nav-brand-block" href="<?php echo public_url('/index.php'); ?>">
             <span class="logo">
                 <img src="<?php echo site_brand_logo(); ?>" alt="<?php echo htmlspecialchars(site_brand_logo_alt()); ?>">
             </span>
-            <span class="nav-brand-text">
-                <span class="nav-brand-name"><?php echo htmlspecialchars(site_brand_name()); ?></span>
-                <span class="nav-brand-tagline"><?php echo htmlspecialchars(site_brand_tagline()); ?></span>
-            </span>
         </a>
-        <a href="/nouveautes.php" class="nav-nouveautes-btn<?php echo $nav_current_script === 'nouveautes.php' ? ' is-active' : ''; ?>">
+        <a href="<?php echo public_url('/nouveautes.php'); ?>" class="nav-nouveautes-btn<?php echo $nav_current_script === 'nouveautes.php' ? ' is-active' : ''; ?>">
             Nouveautés
             <span class="nav-badge nav-badge--new">NEW</span>
         </a>
     </div>
 
-    <div class="nav-search-wrapper">
-        <form class="nav-search-form" action="/produits.php" method="get" id="nav-search-form">
-            <select name="categorie" id="nav-categorie" class="nav-search-category" aria-label="Catégorie">
-                <option value="">Toutes catégories</option>
-                <?php foreach ($categories_menu as $categorie): ?>
-                <option value="<?php echo (int) $categorie['id']; ?>"
-                    <?php echo $nav_categorie_selected === (string) $categorie['id'] ? 'selected' : ''; ?>>
-                    <?php echo htmlspecialchars($categorie['nom']); ?>
-                </option>
-                <?php endforeach; ?>
-            </select>
-            <input type="text" name="recherche" id="nav-search" class="nav-search-input"
-                placeholder="Rechercher"
-                value="<?php echo !empty($_GET['recherche']) ? htmlspecialchars($_GET['recherche']) : ''; ?>">
-            <input type="hidden" name="prix_min" id="nav-prix-min"
-                value="<?php echo isset($_GET['prix_min']) ? htmlspecialchars($_GET['prix_min']) : ''; ?>">
-            <input type="hidden" name="prix_max" id="nav-prix-max"
-                value="<?php echo isset($_GET['prix_max']) ? htmlspecialchars($_GET['prix_max']) : ''; ?>">
-            <input type="hidden" name="tri" id="nav-tri"
-                value="<?php echo isset($_GET['tri']) ? htmlspecialchars($_GET['tri']) : ''; ?>">
-            <button type="submit" class="nav-search-btn" aria-label="Rechercher">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-        </form>
+    <div class="nav-search-cluster">
+        <div class="nav-search-wrapper">
+            <form class="nav-search-form" action="<?php echo public_url('/produits.php'); ?>" method="get" id="nav-search-form">
+                <select name="categorie" id="nav-categorie" class="nav-search-category" aria-label="Catégorie">
+                    <option value="">Toutes catégories</option>
+                    <?php foreach ($categories_menu as $categorie): ?>
+                    <option value="<?php echo (int) $categorie['id']; ?>"
+                        <?php echo $nav_categorie_selected === (string) $categorie['id'] ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($categorie['nom']); ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+                <input type="text" name="recherche" id="nav-search" class="nav-search-input"
+                    placeholder="Rechercher"
+                    value="<?php echo !empty($_GET['recherche']) ? htmlspecialchars($_GET['recherche']) : ''; ?>">
+                <input type="hidden" name="prix_min" id="nav-prix-min"
+                    value="<?php echo isset($_GET['prix_min']) ? htmlspecialchars($_GET['prix_min']) : ''; ?>">
+                <input type="hidden" name="prix_max" id="nav-prix-max"
+                    value="<?php echo isset($_GET['prix_max']) ? htmlspecialchars($_GET['prix_max']) : ''; ?>">
+                <input type="hidden" name="tri" id="nav-tri"
+                    value="<?php echo isset($_GET['tri']) ? htmlspecialchars($_GET['tri']) : ''; ?>">
+                <button type="submit" class="nav-search-btn" aria-label="Rechercher">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+        </div>
+        <div class="nav-lang-switcher" title="Langue">
+            <?php
+            require_once __DIR__ . '/includes/gtranslate.php';
+            gtranslate_render_widget();
+            ?>
+        </div>
     </div>
 
     <div class="nav-header-actions">
-        <a href="<?php echo $nav_user_connected ? '/user/mon-compte.php' : '/user/connexion.php'; ?>"
-            class="revo-util-icon"
-            title="<?php echo $nav_user_connected ? 'Mon compte' : 'Connexion'; ?>">
-            <i class="fa-regular fa-user"></i>
-        </a>
-        <a href="/panier.php"
+        <a href="<?php echo public_url('/panier.php'); ?>"
             class="revo-util-icon"
             title="Panier<?php echo $panier_count > 0 ? ' (' . $panier_count . ')' : ''; ?>">
             <i class="fa-solid fa-cart-shopping"></i>
             <?php if ($panier_count > 0): ?>
             <span class="revo-util-badge"><?php echo $panier_count > 99 ? '99+' : $panier_count; ?></span>
             <?php endif; ?>
+        </a>
+        <a href="<?php echo $nav_user_connected ? public_url('/user/mon-compte.php') : public_url('/user/connexion.php'); ?>"
+            class="revo-util-icon"
+            title="<?php echo $nav_user_connected ? 'Mon compte' : 'Connexion'; ?>">
+            <i class="fa-regular fa-user"></i>
         </a>
     </div>
 </nav>
@@ -114,7 +120,7 @@ function nav_sidebar_link_class($script_names, $current_script)
 <div class="nav-sidebar-overlay" id="navSidebarOverlay"></div>
 <aside class="nav-sidebar" id="navSidebar" aria-label="Menu de navigation">
     <div class="nav-sidebar-header">
-        <a href="/index.php" class="nav-sidebar-brand">
+        <a href="<?php echo public_url('/index.php'); ?>" class="nav-sidebar-brand">
             <span class="nav-sidebar-brand-mark">
                 <img src="<?php echo site_brand_logo(); ?>" alt="" class="nav-sidebar-brand-logo">
             </span>
@@ -133,29 +139,29 @@ function nav_sidebar_link_class($script_names, $current_script)
         <div class="nav-sidebar-panel">
             <p class="nav-sidebar-section-label">Menu principal</p>
             <div class="nav-sidebar-group">
-                <a href="/index.php"
+                <a href="<?php echo public_url('/index.php'); ?>"
                     class="nav-sidebar-link<?php echo nav_sidebar_link_class(['index.php'], $nav_current_script); ?>">
                     <span class="nav-sidebar-icon"><i class="fa-solid fa-house"></i></span>
                     <span class="nav-sidebar-label">Accueil</span>
                 </a>
-                <a href="/nouveautes.php"
+                <a href="<?php echo public_url('/nouveautes.php'); ?>"
                     class="nav-sidebar-link<?php echo nav_sidebar_link_class(['nouveautes.php'], $nav_current_script); ?>">
                     <span class="nav-sidebar-icon"><i class="fa-solid fa-sparkles"></i></span>
                     <span class="nav-sidebar-label">Nouveautés</span>
                     <span class="nav-sidebar-pill nav-sidebar-pill--new">New</span>
                 </a>
-                <a href="/promo.php"
+                <a href="<?php echo public_url('/promo.php'); ?>"
                     class="nav-sidebar-link<?php echo nav_sidebar_link_class(['promo.php'], $nav_current_script); ?>">
                     <span class="nav-sidebar-icon"><i class="fa-solid fa-tag"></i></span>
                     <span class="nav-sidebar-label">Promo</span>
                     <span class="nav-sidebar-pill nav-sidebar-pill--hot">Hot</span>
                 </a>
-                <a href="/produits.php"
+                <a href="<?php echo public_url('/produits.php'); ?>"
                     class="nav-sidebar-link<?php echo nav_sidebar_link_class(['produits.php'], $nav_current_script); ?>">
                     <span class="nav-sidebar-icon"><i class="fa-solid fa-table-cells-large"></i></span>
                     <span class="nav-sidebar-label">Tous les produits</span>
                 </a>
-                <a href="/contact.php"
+                <a href="<?php echo public_url('/contact.php'); ?>"
                     class="nav-sidebar-link<?php echo nav_sidebar_link_class(['contact.php'], $nav_current_script); ?>">
                     <span class="nav-sidebar-icon"><i class="fa-solid fa-envelope"></i></span>
                     <span class="nav-sidebar-label">Contact</span>
@@ -173,7 +179,7 @@ function nav_sidebar_link_class($script_names, $current_script)
                         ? ' nav-sidebar-link--active'
                         : '';
                 ?>
-                <a href="/categorie.php?id=<?php echo (int) $categorie['id']; ?>"
+                <a href="<?php echo public_url('/categorie.php?id=' . (int) $categorie['id']); ?>"
                     class="nav-sidebar-link nav-sidebar-link--category<?php echo $cat_active; ?>">
                     <i class="fa-solid fa-chevron-right nav-sidebar-arrow" aria-hidden="true"></i>
                     <span class="nav-sidebar-label"><?php echo htmlspecialchars($categorie['nom']); ?></span>
@@ -188,12 +194,12 @@ function nav_sidebar_link_class($script_names, $current_script)
         <div class="nav-sidebar-panel nav-sidebar-panel--account">
             <p class="nav-sidebar-section-label">Mon espace</p>
             <div class="nav-sidebar-group">
-                <a href="<?php echo $nav_user_connected ? '/user/mon-compte.php' : '/user/connexion.php'; ?>"
+                <a href="<?php echo $nav_user_connected ? public_url('/user/mon-compte.php') : public_url('/user/connexion.php'); ?>"
                     class="nav-sidebar-link<?php echo nav_sidebar_link_class(['mon-compte.php', 'connexion.php', 'inscription.php'], $nav_current_script); ?>">
                     <span class="nav-sidebar-icon"><i class="fa-solid fa-user"></i></span>
                     <span class="nav-sidebar-label"><?php echo $nav_user_connected ? 'Mon compte' : 'Connexion'; ?></span>
                 </a>
-                <a href="/panier.php"
+                <a href="<?php echo public_url('/panier.php'); ?>"
                     class="nav-sidebar-link<?php echo nav_sidebar_link_class(['panier.php'], $nav_current_script); ?>">
                     <span class="nav-sidebar-icon"><i class="fa-solid fa-bag-shopping"></i></span>
                     <span class="nav-sidebar-label">Panier</span>
@@ -201,7 +207,7 @@ function nav_sidebar_link_class($script_names, $current_script)
                     <span class="nav-sidebar-count"><?php echo $panier_count > 99 ? '99+' : $panier_count; ?></span>
                     <?php endif; ?>
                 </a>
-                <a href="/contact.php#livraison" class="nav-sidebar-link">
+                <a href="<?php echo public_url('/contact.php'); ?>#livraison" class="nav-sidebar-link">
                     <span class="nav-sidebar-icon"><i class="fa-solid fa-truck-fast"></i></span>
                     <span class="nav-sidebar-label">Livraison</span>
                 </a>
@@ -222,18 +228,18 @@ function nav_sidebar_link_class($script_names, $current_script)
     </div>
 
     <nav class="section1-center" aria-label="Navigation principale">
-        <a href="/nouveautes.php" class="revo-nav-link revo-nav-link--desktop<?php echo $nav_current_script === 'nouveautes.php' ? ' is-active' : ''; ?>">
+        <a href="<?php echo public_url('/nouveautes.php'); ?>" class="revo-nav-link revo-nav-link--desktop<?php echo $nav_current_script === 'nouveautes.php' ? ' is-active' : ''; ?>">
             Nouveautés
             <span class="nav-badge nav-badge--new">NEW</span>
         </a>
-        <a href="/promo.php" class="revo-nav-link revo-nav-link--desktop<?php echo $nav_current_script === 'promo.php' ? ' is-active' : ''; ?>">
+        <a href="<?php echo public_url('/promo.php'); ?>" class="revo-nav-link revo-nav-link--desktop<?php echo $nav_current_script === 'promo.php' ? ' is-active' : ''; ?>">
             Promo
             <span class="nav-badge nav-badge--hot">HOT</span>
         </a>
-        <a href="/produits.php" class="revo-nav-link revo-nav-link--desktop<?php echo in_array($nav_current_script, ['produits.php', 'categorie.php', 'produit.php'], true) ? ' is-active' : ''; ?>">
+        <a href="<?php echo public_url('/produits.php'); ?>" class="revo-nav-link revo-nav-link--desktop<?php echo in_array($nav_current_script, ['produits.php', 'categorie.php', 'produit.php'], true) ? ' is-active' : ''; ?>">
             Produits
         </a>
-        <a href="/contact.php" class="revo-nav-link<?php echo $nav_current_script === 'contact.php' ? ' is-active' : ''; ?>">Contact</a>
+        <a href="<?php echo public_url('/contact.php'); ?>" class="revo-nav-link<?php echo $nav_current_script === 'contact.php' ? ' is-active' : ''; ?>">Contact</a>
     </nav>
 </section>
 

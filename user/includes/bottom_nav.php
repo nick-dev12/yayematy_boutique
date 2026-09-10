@@ -10,11 +10,11 @@ if (!function_exists('get_asset_version')) {
 
 if (!isset($panier_count)) {
     $panier_count = 0;
-    if (isset($_SESSION['user_id'])) {
-        $model_path = __DIR__ . '/../../models/model_panier.php';
-        if (file_exists($model_path)) {
-            require_once $model_path;
-            $panier_count = count_panier_items($_SESSION['user_id']);
+    $panier_invite_path = __DIR__ . '/../../includes/panier_invite.php';
+    if (file_exists($panier_invite_path)) {
+        require_once $panier_invite_path;
+        if (function_exists('panier_count_items_courant')) {
+            $panier_count = panier_count_items_courant();
         }
     }
 }
@@ -40,9 +40,13 @@ if (!isset($user_bottom_active)) {
     }
 }
 
-$panier_url = '/panier.php';
+if (!function_exists('public_url')) {
+    require_once __DIR__ . '/../../includes/site_url.php';
+}
+
+$panier_url = public_url('/panier.php');
 ?>
-<link rel="stylesheet" href="/css/bottom-nav.css<?php echo asset_version_query(); ?>">
+<link rel="stylesheet" href="<?php echo asset_url('/css/bottom-nav.css'); ?>">
 <nav class="bottom-nav bottom-nav--floating bottom-nav--has-center bottom-nav--user" id="userBottomNav" aria-label="Navigation espace client">
     <a href="mon-compte.php"
         class="bottom-nav-item bottom-nav-item--dashboard<?php echo $user_bottom_active === 'dashboard' ? ' is-active' : ''; ?>">
@@ -58,9 +62,7 @@ $panier_url = '/panier.php';
         class="bottom-nav-item bottom-nav-item--panier bottom-nav-item--center">
         <span class="bottom-nav-icon">
             <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
-            <?php if ($panier_count > 0): ?>
-                <span class="bottom-nav-badge"><?php echo $panier_count > 9 ? '9+' : (int) $panier_count; ?></span>
-            <?php endif; ?>
+            <span class="bottom-nav-badge"<?php echo $panier_count <= 0 ? ' hidden' : ''; ?>><?php echo $panier_count > 9 ? '9+' : (int) $panier_count; ?></span>
         </span>
         <span class="bottom-nav-label">Panier</span>
     </a>

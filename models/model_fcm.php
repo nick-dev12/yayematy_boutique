@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/../conn/conn.php';
+require_once __DIR__ . '/../includes/db_helpers.php';
 
 /**
  * Enregistre ou met à jour un token FCM
@@ -15,6 +16,10 @@ require_once __DIR__ . '/../conn/conn.php';
  * @return bool True en cas de succès
  */
 function save_fcm_token($token, $type, $user_id = null, $admin_id = null) {
+    if (!db_is_available()) {
+        return false;
+    }
+
     global $db;
     
     if (empty($token) || !in_array($type, ['user', 'admin'])) {
@@ -84,6 +89,10 @@ function save_fcm_token($token, $type, $user_id = null, $admin_id = null) {
  * @return array Liste des tokens
  */
 function get_fcm_tokens_by_user($user_id) {
+    if (!db_is_available()) {
+        return [];
+    }
+
     global $db;
     
     try {
@@ -101,6 +110,10 @@ function get_fcm_tokens_by_user($user_id) {
  * @return array Liste des tokens
  */
 function get_fcm_tokens_by_admin($admin_id) {
+    if (!db_is_available()) {
+        return [];
+    }
+
     global $db;
     
     try {
@@ -118,6 +131,10 @@ function get_fcm_tokens_by_admin($admin_id) {
  * @return bool True en cas de succès
  */
 function delete_fcm_tokens_by_admin($admin_id) {
+    if (!db_is_available()) {
+        return false;
+    }
+
     global $db;
     
     try {

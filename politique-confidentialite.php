@@ -25,10 +25,10 @@ $last_update = '28/07/2026';
     <?php include __DIR__ . '/includes/pwa_meta.php'; ?>
     <?php include __DIR__ . '/includes/seo_meta.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/a_style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/legal-page.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/a_style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/legal-page.css'); ?>">
 </head>
 <body>
     <?php include __DIR__ . '/nav_bar.php'; ?>
@@ -54,7 +54,7 @@ $last_update = '28/07/2026';
         </p>
         <p>
             L'utilisation de nos services implique la prise de connaissance de cette politique et de nos
-            <a href="/conditions-utilisation.php">Conditions générales d'utilisation</a>.
+            <a href="<?php echo public_url('/conditions-utilisation.php'); ?>">Conditions générales d'utilisation</a>.
         </p>
 
         <nav class="legal-toc" aria-label="Sommaire">
@@ -128,7 +128,7 @@ $last_update = '28/07/2026';
         <h3>2 bis.3 Vos choix et contrôle</h3>
         <p>
             Vous pouvez modifier vos données, refuser certaines autorisations (caméra, localisation, contacts, notifications) dans les réglages de votre appareil,
-            vous opposer au marketing direct et demander la suppression de votre compte (sections <a href="#priv-13">13</a>, <a href="#priv-suppression">14</a> et <a href="/politique-suppression-compte.php">Politique de suppression de compte</a>).
+            vous opposer au marketing direct et demander la suppression de votre compte (sections <a href="#priv-13">13</a>, <a href="#priv-suppression">14</a> et <a href="<?php echo public_url('/politique-suppression-compte.php'); ?>">Politique de suppression de compte</a>).
             L'accès au catalogue ne dépend pas de l'acceptation de traitements non essentiels.
         </p>
 
@@ -558,7 +558,7 @@ $last_update = '28/07/2026';
         <h3>14.1 Suppression en ligne (compte connecté)</h3>
         <p>
             Vous pouvez supprimer votre compte directement depuis notre
-            <a href="/politique-suppression-compte.php"><strong>Politique de suppression de compte</strong></a>,
+            <a href="<?php echo public_url('/politique-suppression-compte.php'); ?>"><strong>Politique de suppression de compte</strong></a>,
             via le formulaire sécurisé accessible après <strong>connexion</strong> à votre espace client.
             Pour des raisons de sécurité, <strong>aucune suppression automatique n'est possible sans authentification préalable</strong>&nbsp;:
             si vous n'êtes pas connecté, vous serez invité à vous identifier avant toute action de suppression.
@@ -571,7 +571,7 @@ $last_update = '28/07/2026';
         </p>
         <p>
             Le détail des données supprimées, conservées et des délais de traitement figure dans la
-            <a href="/politique-suppression-compte.php">Politique de suppression de compte</a>.
+            <a href="<?php echo public_url('/politique-suppression-compte.php'); ?>">Politique de suppression de compte</a>.
         </p>
         <p>
             La suppression du compte n'annule pas les commandes en cours ni les obligations contractuelles déjà nées.
@@ -603,9 +603,9 @@ $last_update = '28/07/2026';
 
         <div class="legal-cross">
             <strong>Documents associés :</strong>
-            <a href="/conditions-utilisation.php">Conditions générales d'utilisation</a>
+            <a href="<?php echo public_url('/conditions-utilisation.php'); ?>">Conditions générales d'utilisation</a>
             ·
-            <a href="/politique-suppression-compte.php">Politique de suppression de compte</a>
+            <a href="<?php echo public_url('/politique-suppression-compte.php'); ?>">Politique de suppression de compte</a>
             ·
             <a href="#priv-9-gps">Suivi GPS livraison</a>
             ·

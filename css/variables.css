@@ -82,6 +82,21 @@
   /* Typographie */
   --font-titres: 'Poppins', sans-serif;
   --font-corps: 'Poppins', sans-serif;
+
+  /* Réseaux sociaux — zone tactile min. 44px (html 10px → 4.4rem) */
+  --social-btn-size: 4.4rem;
+  --social-icon-size: 1.8rem;
+  --social-gap: 0.8rem;
+  --social-shadow: 0 4px 14px rgba(var(--color-noir-rgb), 0.18);
+  --social-shadow-hover: 0 6px 18px rgba(var(--color-noir-rgb), 0.24);
+
+  /* Couleurs officielles des plateformes */
+  --social-facebook: #1877f2;
+  --social-facebook-hover: #166fe5;
+  --social-whatsapp: #25d366;
+  --social-whatsapp-hover: #20bd5a;
+  --social-tiktok: #010101;
+  --social-tiktok-hover: #1a1a1a;
 }
 
 html,

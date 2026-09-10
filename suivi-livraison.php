@@ -123,8 +123,8 @@ $page_title = 'Suivi livraison' . ($client_nom !== '' ? ' — ' . $client_nom : 
     <title><?php echo htmlspecialchars($page_title); ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-    <link rel="stylesheet" href="/css/admin-livreur-suivi.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-livreur-tracking-ui.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-livreur-suivi.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-livreur-tracking-ui.css'); ?>">
 </head>
 <body class="page-livreur-suivi page-livreur-suivi--public">
 
@@ -138,7 +138,7 @@ $page_title = 'Suivi livraison' . ($client_nom !== '' ? ' — ' . $client_nom : 
                 <strong class="livreur-suivi-topbar__countdown-value" id="livreur-topbar-countdown-value">—</strong>
             </div>
         </div>
-        <a href="/index.php" class="livreur-suivi-topbar__action livreur-suivi-topbar__action--brand" aria-label="Yaye Maty — Accueil">
+        <a href="<?php echo public_url('/index.php'); ?>" class="livreur-suivi-topbar__action livreur-suivi-topbar__action--brand" aria-label="Yaye Maty — Accueil">
             <?php $brand_logo_class = 'livreur-suivi-topbar__logo'; include __DIR__ . '/includes/brand_logo.php'; ?>
         </a>
     </header>
@@ -247,7 +247,7 @@ window.LIVREUR_TRACKING_CONFIG = {
 </script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate.js" crossorigin="anonymous"></script>
-<script src="/js/livreur-route-api.js<?php echo asset_version_query(); ?>"></script>
+<script src="<?php echo asset_url('/js/livreur-route-api.js'); ?>"></script>
 <?php if ($realtime_configured): ?>
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script>
 <?php endif; ?>

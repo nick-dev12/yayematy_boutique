@@ -22,6 +22,33 @@
   animation: guestCheckoutFadeIn 0.22s ease;
 }
 
+/* Fiche produit : modal ancrée au-dessus du bloc produit, fond léger */
+.guest-checkout-modal--anchored {
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+.guest-checkout-modal--anchored .guest-checkout-modal__backdrop {
+  background: rgba(26, 26, 26, 0.38);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.guest-checkout-modal--anchored .guest-checkout-modal__panel {
+  position: fixed;
+  left: 50%;
+  top: var(--guest-checkout-panel-top, 1rem);
+  transform: translateX(-50%);
+  width: min(100%, 26rem);
+  max-width: calc(100% - 2rem);
+  max-height: min(85vh, 34rem);
+  margin: 0;
+  border-radius: var(--radius-lg, 1rem);
+  box-shadow: 0 1rem 2.5rem rgba(26, 26, 26, 0.22);
+  animation: guestCheckoutPopInAnchored 0.26s ease;
+}
+
 .guest-checkout-modal__panel {
   position: relative;
   z-index: 1;
@@ -358,6 +385,10 @@ body.guest-checkout-open {
     animation: guestCheckoutPopIn 0.26s ease;
   }
 
+  .guest-checkout-modal--anchored .guest-checkout-modal__panel {
+    animation: guestCheckoutPopInAnchored 0.26s ease;
+  }
+
   .guest-checkout-modal__hero {
     padding: 1.5rem 1.5rem 1.1rem;
     border-radius: 1.25rem 1.25rem 0 0;
@@ -399,5 +430,16 @@ body.guest-checkout-open {
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes guestCheckoutPopInAnchored {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.96) translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(0);
   }
 }

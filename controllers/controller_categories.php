@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/../models/model_categories.php';
+require_once __DIR__ . '/../includes/image_optimizer.php';
 
 /**
  * Upload une image de catégorie
@@ -18,34 +19,13 @@ function upload_categorie_image($file) {
     
     $upload_dir = __DIR__ . '/../upload/categories/';
     
-    // Créer le dossier s'il n'existe pas
     if (!file_exists($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
+        mkdir($upload_dir, 0755, true);
     }
-    
-    $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-    $max_size = 5 * 1024 * 1024; // 5MB
-    
-    $file_info = $file['image'];
-    
-    // Vérifier le type
-    if (!in_array($file_info['type'], $allowed_types)) {
-        return false;
-    }
-    
-    // Vérifier la taille
-    if ($file_info['size'] > $max_size) {
-        return false;
-    }
-    
-    // Générer un nom unique
-    $extension = pathinfo($file_info['name'], PATHINFO_EXTENSION);
-    $filename = uniqid('categorie_', true) . '.' . $extension;
-    $filepath = $upload_dir . $filename;
-    
-    // Déplacer le fichier
-    if (move_uploaded_file($file_info['tmp_name'], $filepath)) {
-        return 'categories/' . $filename;
+
+    $result = upload_store_optimized_image($file['image'], $upload_dir, 'categories', 'categorie_');
+    if (!empty($result['success']) && !empty($result['relative_path'])) {
+        return (string) $result['relative_path'];
     }
     
     return false;

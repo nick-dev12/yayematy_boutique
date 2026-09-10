@@ -6,10 +6,15 @@
 
 // Inclusion du fichier de connexion à la BDD
 require_once __DIR__ . '/../conn/conn.php';
+require_once __DIR__ . '/../includes/db_helpers.php';
 
 function _admin_cp_has_option_columns() {
     static $has = null;
     if ($has === null) {
+        if (!db_is_available()) {
+            $has = false;
+            return $has;
+        }
         global $db;
         try {
             $r = $db->query("SHOW COLUMNS FROM commande_produits LIKE 'couleur'");
@@ -24,6 +29,10 @@ function _admin_cp_has_option_columns() {
 function _admin_cp_has_nom_produit() {
     static $has = null;
     if ($has === null) {
+        if (!db_is_available()) {
+            $has = false;
+            return $has;
+        }
         global $db;
         try {
             $r = $db->query("SHOW COLUMNS FROM commande_produits LIKE 'nom_produit'");
@@ -38,6 +47,10 @@ function _admin_cp_has_nom_produit() {
 function _admin_cp_has_variante_columns() {
     static $has = null;
     if ($has === null) {
+        if (!db_is_available()) {
+            $has = false;
+            return $has;
+        }
         global $db;
         try {
             $r = $db->query("SHOW COLUMNS FROM commande_produits LIKE 'variante_id'");
@@ -55,6 +68,10 @@ function _admin_cp_has_variante_columns() {
  * @return array|false Tableau des commandes ou False en cas d'erreur
  */
 function get_all_commandes($statut = null) {
+    if (!db_is_available()) {
+        return [];
+    }
+
     global $db;
 
     try {
@@ -91,6 +108,10 @@ function get_all_commandes($statut = null) {
  * @return array|false Les données de la commande ou False si non trouvé
  */
 function get_commande_by_id($commande_id, $user_id = null) {
+    if (!db_is_available()) {
+        return false;
+    }
+
     global $db;
 
     try {
@@ -125,6 +146,10 @@ function get_commande_by_id($commande_id, $user_id = null) {
  * @return array|false Tableau des produits ou False en cas d'erreur
  */
 function get_produits_by_commande($commande_id) {
+    if (!db_is_available()) {
+        return [];
+    }
+
     global $db;
     
     try {
@@ -171,6 +196,10 @@ function get_produits_by_commande($commande_id) {
  * @return bool True en cas de succès, False sinon
  */
 function update_commande_statut($commande_id, $statut) {
+    if (!db_is_available()) {
+        return false;
+    }
+
     global $db;
 
     $commande = get_commande_by_id($commande_id);
@@ -263,6 +292,10 @@ function update_commande_statut($commande_id, $statut) {
  * @return int Le nombre de commandes
  */
 function count_commandes_by_statut($statut = null) {
+    if (!db_is_available()) {
+        return 0;
+    }
+
     global $db;
     
     try {
@@ -313,6 +346,10 @@ function get_montant_total_commandes($statut = null) {
  * @return array Tableau des commandes
  */
 function get_commandes_by_periode($periode, $annee = null, $mois = null, $date_debut = null, $date_fin = null, $jour = null) {
+    if (!db_is_available()) {
+        return [];
+    }
+
     global $db;
     $annee = $annee ?? (int) date('Y');
     $mois = $mois ?? (int) date('n');
@@ -425,5 +462,143 @@ function admin_commande_statut_label($statut) {
  */
 function admin_commande_mode_label($mode) {
     return ($mode === 'retrait') ? 'Récupération sur site' : 'Livraison';
+}
+
+/**
+ * Clé de regroupement client (user_id, téléphone ou nom).
+ */
+function admin_commande_client_key(array $commande) {
+    if (!empty($commande['user_id'])) {
+        return 'u:' . (int) $commande['user_id'];
+    }
+
+    $tel = preg_replace('/\D/', '', (string) ($commande['telephone_livraison'] ?? $commande['client_telephone'] ?? ''));
+    if ($tel !== '') {
+        return 't:' . $tel;
+    }
+
+    $nom = mb_strtolower(trim(
+        ($commande['user_prenom'] ?? '') . ' ' . ($commande['user_nom'] ?? '') .
+        ($commande['client_prenom'] ?? '') . ' ' . ($commande['client_nom'] ?? '')
+    ), 'UTF-8');
+
+    return 'n:' . md5($nom);
+}
+
+/**
+ * Regroupe les commandes d'un même client passées dans la même session (fenêtre temporelle).
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function admin_group_commandes_for_list(array $commandes, $session_gap_seconds = 180) {
+    if (empty($commandes)) {
+        return [];
+    }
+
+    $session_gap_seconds = max(30, (int) $session_gap_seconds);
+
+    usort($commandes, function ($a, $b) {
+        return strtotime($a['date_commande'] ?? 'now') <=> strtotime($b['date_commande'] ?? 'now');
+    });
+
+    $groups = [];
+    foreach ($commandes as $commande) {
+        $key = admin_commande_client_key($commande);
+        $ts = strtotime($commande['date_commande'] ?? 'now');
+        $merged = false;
+
+        foreach ($groups as &$group) {
+            if ($group['client_key'] !== $key) {
+                continue;
+            }
+            $last = $group['commandes'][count($group['commandes']) - 1];
+            $last_ts = strtotime($last['date_commande'] ?? 'now');
+            if (abs($ts - $last_ts) <= $session_gap_seconds) {
+                $group['commandes'][] = $commande;
+                $merged = true;
+                break;
+            }
+        }
+        unset($group);
+
+        if (!$merged) {
+            $groups[] = [
+                'client_key' => $key,
+                'commandes' => [$commande],
+            ];
+        }
+    }
+
+    $result = [];
+    foreach ($groups as $group) {
+        $cmds = $group['commandes'];
+        usort($cmds, function ($a, $b) {
+            return strtotime($b['date_commande'] ?? 'now') <=> strtotime($a['date_commande'] ?? 'now');
+        });
+
+        $first = $cmds[0];
+        $client_nom = trim(
+            trim((string) ($first['user_prenom'] ?? $first['client_prenom'] ?? '')) . ' ' .
+            trim((string) ($first['user_nom'] ?? $first['client_nom'] ?? ''))
+        );
+        if ($client_nom === '') {
+            $client_nom = '—';
+        }
+
+        $ids = array_values(array_filter(array_map(function ($c) {
+            return (int) ($c['id'] ?? 0);
+        }, $cmds)));
+
+        $numeros = array_values(array_filter(array_map(function ($c) {
+            return (string) ($c['numero_commande'] ?? '');
+        }, $cmds)));
+
+        $montant = array_sum(array_map(function ($c) {
+            return (float) ($c['montant_total'] ?? 0);
+        }, $cmds));
+
+        $statuts = array_unique(array_map(function ($c) {
+            return (string) ($c['statut'] ?? 'en_attente');
+        }, $cmds));
+
+        $result[] = [
+            'ids' => $ids,
+            'ids_param' => implode(',', $ids),
+            'commandes' => $cmds,
+            'client_nom' => $client_nom,
+            'telephone' => trim((string) ($first['telephone_livraison'] ?? $first['client_telephone'] ?? '')) ?: '—',
+            'numeros' => $numeros,
+            'nb_commandes' => count($cmds),
+            'montant_total' => $montant,
+            'statut' => count($statuts) === 1 ? $statuts[0] : ($cmds[0]['statut'] ?? 'en_attente'),
+            'mode_livraison' => (string) ($first['mode_livraison'] ?? 'livraison'),
+            'date_recente' => $cmds[0]['date_commande'] ?? null,
+        ];
+    }
+
+    usort($result, function ($a, $b) {
+        return strtotime($b['date_recente'] ?? 'now') <=> strtotime($a['date_recente'] ?? 'now');
+    });
+
+    return $result;
+}
+
+/**
+ * Met à jour le statut de plusieurs commandes (traitement groupé).
+ */
+function update_commandes_statut_batch(array $commande_ids, $statut) {
+    $commande_ids = array_values(array_unique(array_filter(array_map('intval', $commande_ids))));
+    if (empty($commande_ids)) {
+        return false;
+    }
+
+    $all_ok = true;
+    foreach ($commande_ids as $commande_id) {
+        if (!update_commande_statut($commande_id, $statut)) {
+            $all_ok = false;
+        }
+    }
+
+    return $all_ok;
 }
 

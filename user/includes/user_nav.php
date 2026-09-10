@@ -48,7 +48,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <i class="fas fa-home"></i>
                 <span>Tableau de bord</span>
             </a>
-            <a href="/panier.php" class="menu-item">
+            <a href="<?php echo public_url('/panier.php'); ?>" class="menu-item">
                 <i class="fas fa-shopping-cart"></i>
                 <span>Mon panier</span>
             </a>

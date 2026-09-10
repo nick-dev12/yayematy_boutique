@@ -1,15 +1,8 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Détails d'une facture B2B (équivalent devis/details.php)
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 require_once __DIR__ . '/../includes/require_access.php';
 
 require_once __DIR__ . '/../../includes/admin_permissions.php';
@@ -76,9 +69,9 @@ $bl_livraison_statut = $bl_livraison_suivable ? livreur_facture_statut_livraison
     <title>Facture <?php echo htmlspecialchars($bl['numero_bl'] ?? ''); ?> — Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-devis-compta-pages.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-invoice-onglets.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-devis-compta-pages.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-invoice-onglets.css'); ?>">
 </head>
 <body class="page-admin-doc-detail">
     <?php include '../includes/nav.php'; ?>

@@ -1,18 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page de modification de la configuration de la section4
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-// Vérifier si l'admin est connecté
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 // Récupérer la configuration actuelle
 require_once __DIR__ . '/../../models/model_section4.php';
 $config = get_section4_config();

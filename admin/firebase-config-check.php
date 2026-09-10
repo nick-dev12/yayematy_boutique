@@ -1,15 +1,9 @@
 <?php
-require_once __DIR__ . '/../includes/session_user.php';
+require_once __DIR__ . '/includes/admin_auth.php';
 /**
  * Page de vérification de la configuration Firebase
  * Affiche la config actuelle et les instructions pour la corriger
  */
-session_start_persistent();
-if (!isset($_SESSION['admin_id'])) {
-    header('Location: login.php');
-    exit;
-}
-
 $config = [
     'apiKey' => 'AIzaSyAOGTcYf7i-Jj6jj5KuTOJboFVagkbdBW4',
     'projectId' => 'sugar-paper',
@@ -26,7 +20,7 @@ $config = [
     <title>Vérification config Firebase - Admin</title>
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
 </head>
 <body>
     <?php include 'includes/nav.php'; ?>

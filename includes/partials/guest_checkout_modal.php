@@ -48,8 +48,8 @@ $guest_info = function_exists('guest_checkout_get_info') ? guest_checkout_get_in
 
                 <div class="guest-checkout-modal__actions">
                     <button type="submit" class="guest-checkout-btn guest-checkout-btn--primary" id="guestCheckoutSubmit">
-                        <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
-                        Passer la commande
+                        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                        Ajouter au panier
                     </button>
                     <button type="button" class="guest-checkout-btn guest-checkout-btn--ghost" data-guest-checkout-close>
                         Annuler

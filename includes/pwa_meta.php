@@ -18,4 +18,4 @@ $asset_version = get_asset_version();
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Yaye Maty">
 <meta name="application-name" content="Yaye Maty">
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="<?php echo public_url('/manifest.json'); ?>">

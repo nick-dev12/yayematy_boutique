@@ -33,11 +33,11 @@ $seo_canonical = $base . '/nouveautes.php';
     <?php include __DIR__ . '/includes/pwa_meta.php'; ?>
     <?php include __DIR__ . '/includes/seo_meta.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/a_style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/catalogue-grid.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/responsive-site.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/a_style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-grid.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/responsive-site.css'); ?>">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
     <style>
         .page-header {

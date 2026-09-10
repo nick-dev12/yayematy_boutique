@@ -1,15 +1,8 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Paramètres bulletins de paie — en-tête employeur & rubriques affichées
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 require_once __DIR__ . '/../includes/require_access.php';
 require_once __DIR__ . '/../../models/model_bulletin_paie.php';
 
@@ -144,9 +137,9 @@ $pct_ret_codes = bp_retenues_codes_taux_brut();
     <title>Bulletin de paie — Paramètres</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-parametres-page.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-parametres-bulletin-paie.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-parametres-page.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-parametres-bulletin-paie.css'); ?>">
 </head>
 <body class="page-parametres-admin page-bulletin-paie-params">
     <?php include __DIR__ . '/../includes/nav.php'; ?>

@@ -6,6 +6,7 @@
 
 // Inclusion du fichier de connexion à la BDD
 require_once __DIR__ . '/../conn/conn.php';
+require_once __DIR__ . '/../includes/db_helpers.php';
 
 /**
  * Rôles autorisés pour les comptes admin
@@ -58,6 +59,10 @@ function normalize_admin_role($role) {
  */
 function admin_email_exists($email)
 {
+    if (!db_is_available()) {
+        return false;
+    }
+
     global $db;
 
     try {
@@ -77,6 +82,10 @@ function admin_email_exists($email)
  */
 function admin_exists()
 {
+    if (!db_is_available()) {
+        return false;
+    }
+
     global $db;
 
     try {
@@ -222,6 +231,10 @@ function update_admin_google_identity($admin_id, $firebase_uid, $auth_provider =
  */
 function get_admin_by_email($email)
 {
+    if (!db_is_available()) {
+        return false;
+    }
+
     global $db;
 
     try {
@@ -242,6 +255,10 @@ function get_admin_by_email($email)
  */
 function get_admin_by_id($id)
 {
+    if (!db_is_available()) {
+        return false;
+    }
+
     global $db;
 
     try {

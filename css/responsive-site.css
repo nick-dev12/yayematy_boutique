@@ -67,11 +67,39 @@ small,
   }
 }
 
+/* ── Footer — aligné sur le header (store-header.css) ────────── */
+.footer,
+.footer_list_item {
+  font-size: 1.4rem;
+}
+
+.footer_copy,
+.footer_tagline {
+  font-size: 1.1rem;
+}
+
+.footer_tagline strong {
+  font-size: 2.2rem;
+}
+
+.footer_item_titl {
+  font-size: 1.3rem;
+}
+
+.social-auth__divider,
+.social-auth-message {
+  font-size: 1.3rem;
+}
+
 /* ── Grilles produits unifiées (CRITICAL) ──────────────────────
    Mobile  : 2 cartes / ligne — centrées
    Tablette: 3 cartes / ligne (max) — centrées
-   Desktop : 5 cartes / ligne (max) — centrées
+   Desktop : 6 cartes / ligne (max) — centrées
    ───────────────────────────────────────────────────────────── */
+.home-our-products .home-products-shell .home-products-grid {
+  max-width: 100%;
+}
+
 .home-products-grid,
 .catalogue-products-grid,
 .produits-container,
@@ -85,7 +113,7 @@ small,
   display: flex !important;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 0.8rem;
   width: 100%;
   max-width: min(1200px, 100%);
@@ -108,6 +136,8 @@ small,
   width: auto !important;
   min-width: 0 !important;
   margin: 0 !important;
+  height: auto;
+  align-self: stretch;
 }
 
 .home-products-grid > p,
@@ -145,7 +175,7 @@ small,
   }
 }
 
-/* Desktop : max 5 cartes par ligne */
+/* Desktop : max 6 cartes par ligne */
 @media (min-width: 1024px) {
   .home-products-grid,
   .catalogue-products-grid,
@@ -157,7 +187,7 @@ small,
   .carousel-produits-outer .carousel1.carousel1-flex-mode,
   .produits-similaires .articles.carousel11,
   .section00 .produit_vedetes .articles.carousel11 {
-    gap: 1.6rem;
+    gap: 1.2rem;
   }
 
   .home-products-grid > .home-product-card,
@@ -168,23 +198,26 @@ small,
   .carousel11 > .carousel,
   .carousel-produits-outer .carousel1.carousel1-flex-mode > .carousel,
   .produits-similaires .articles > .carousel {
-    flex: 0 1 calc((100% - 6.4rem) / 5);
-    max-width: calc((100% - 6.4rem) / 5);
+    flex: 0 1 calc((100% - 6rem) / 6);
+    max-width: calc((100% - 6rem) / 6);
   }
 }
 
 /* ── Typographie cartes produit (mobile) ─────────────────────── */
 @media (max-width: 767px) {
   .home-product-name,
+  h3.home-product-name,
   .produit_vedete .articles .carousel #nom,
   .produit_vedetes .articles .carousel #nom,
   .carousel11 .carousel #nom,
   .produits-similaires .articles .carousel #nom {
-    font-size: 1.4rem !important;
+    font-size: 1.4rem !important; /* 14px — norme titres cartes */
     line-height: 1.35;
+    -webkit-line-clamp: 2;
+    min-height: calc(1.35em * 2);
   }
 
-  .home-product-price,
+  .home-product-price .price-current,
   .produit_vedete .articles .carousel .prix,
   .produit_vedetes .articles .carousel .prix,
   .carousel11 .carousel .prix,
@@ -193,12 +226,9 @@ small,
     font-weight: 700 !important;
   }
 
-  .home-product-body {
-    padding: 1.2rem 1rem 0.8rem;
-  }
-
-  .home-product-image {
-    padding: 1rem;
+  .home-product-price .price-old {
+    font-size: 1.2rem !important;
+    font-weight: 500 !important;
   }
 
   .home-btn-primary {
@@ -213,8 +243,9 @@ small,
   color: inherit;
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+  min-height: 0;
   cursor: pointer;
 }
 
@@ -222,7 +253,6 @@ small,
   color: var(--color-bleu);
 }
 
-.home-product-card form {
-  position: relative;
-  z-index: 2;
+.home-product-card {
+  height: 100%;
 }

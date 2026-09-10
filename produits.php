@@ -46,18 +46,16 @@ $seo_canonical = $base . '/produits.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php include __DIR__ . '/includes/pwa_meta.php'; ?>
     <?php include __DIR__ . '/includes/seo_meta.php'; ?>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/a_style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/catalogue-grid.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/product-cards.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/catalogue-responsive.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/responsive-site.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/product-share.css<?php echo asset_version_query(); ?>">
+    <?php
+    require_once __DIR__ . '/includes/asset_version.php';
+    require_once __DIR__ . '/includes/head_public_assets.php';
+    render_public_head_assets();
+    ?>
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-grid.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/product-cards.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-responsive.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/responsive-site.css'); ?>">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <style>
         .produits-page-header {
@@ -280,16 +278,33 @@ $seo_canonical = $base . '/produits.php';
 
                             const returnUrl = (window.location.pathname + window.location.search).replace(/"/g, '&quot;');
                             let badgeHTML = '';
-                            if (produit.has_promotion) {
-                                badgeHTML = '<span class="home-product-badge home-product-badge--sale">Promo</span>';
+                            if (produit.has_promotion && produit.prix > 0) {
+                                const pct = Math.round((1 - produit.prix_affichage / produit.prix) * 100);
+                                badgeHTML = pct > 0
+                                    ? `<span class="home-product-badge home-product-badge--sale">-${pct}%</span>`
+                                    : '<span class="home-product-badge home-product-badge--sale">Promo</span>';
                             }
 
                             let prixHTML = '';
                             if (produit.has_promotion) {
-                                prixHTML = `<span class="price-old">${formatNumber(produit.prix)} FCFA</span>
-                                            <span class="price-sale">${formatNumber(produit.prix_affichage)} FCFA</span>`;
+                                prixHTML = formatPriceFcfaHtml(produit.prix, 'price-old') +
+                                    formatPriceFcfaHtml(produit.prix_affichage, 'price-current');
                             } else {
-                                prixHTML = `${formatNumber(produit.prix_affichage)} FCFA`;
+                                prixHTML = formatPriceFcfaHtml(produit.prix_affichage, 'price-current');
+                            }
+
+                            let starsHTML = '';
+                            if (produit.nb_avis && parseInt(produit.nb_avis, 10) > 0) {
+                                starsHTML = `<div class="home-product-rating" aria-hidden="true">
+                                <span class="home-product-stars">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </span>
+                                <span class="home-product-reviews">(${parseInt(produit.nb_avis, 10)})</span>
+                            </div>`;
                             }
 
                             let shareHTML = '';
@@ -301,23 +316,27 @@ $seo_canonical = $base . '/produits.php';
                                 });
                             }
 
-                            article.innerHTML = shareHTML + `
+                            article.innerHTML = shareHTML + badgeHTML + `
                                 <a href="produit.php?id=${produit.id}" class="home-product-card-link" aria-label="Voir ${escapeHtml(produit.nom)}">
                                 <div class="home-product-image">
-                                    ${badgeHTML}
-                                    <img src="${escapeHtml(produit.image_url || ('/upload/' + (produit.image_principale || 'produit1.jpg')))}" alt="${escapeHtml(produit.nom)}" onerror="this.src='/image/produit1.jpg'">
+                                    <img src="${escapeHtml(produit.image_url || ('/upload/' + (produit.image_principale || 'produit1.jpg')))}" alt="${escapeHtml(produit.nom)}" loading="lazy" decoding="async" onerror="this.src='/image/produit1.jpg'">
                                 </div>
                                 <div class="home-product-body">
                                     <h3 class="home-product-name">${escapeHtml(produit.nom)}</h3>
-                                    <p class="home-product-price">${prixHTML}</p>
+                                    ${starsHTML}
                                 </div>
                                 </a>
-                                <form method="POST" action="/add-to-panier.php">
+                                <div class="home-product-footer">
+                                <a href="produit.php?id=${produit.id}" class="home-product-price" aria-label="Voir ${escapeHtml(produit.nom)}">${prixHTML}</a>
+                                <form method="POST" action="<?php echo public_url('/add-to-panier.php'); ?>" class="home-product-cart-form">
                                     <input type="hidden" name="produit_id" value="${produit.id}">
                                     <input type="hidden" name="quantite" value="1">
                                     <input type="hidden" name="return_url" value="${returnUrl}">
-                                    <button type="submit" class="home-btn-primary"><i class="fa-solid fa-cart-shopping"></i> Acheter</button>
+                                    <button type="submit" class="home-product-cart-btn" aria-label="Ajouter ${escapeHtml(produit.nom)} au panier">
+                                        <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                                    </button>
                                 </form>
+                                </div>
                             `;
 
                             container.appendChild(article);
@@ -349,6 +368,14 @@ $seo_canonical = $base . '/produits.php';
 
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        }
+
+        function formatPriceFcfaHtml(amount, wrapperClass) {
+            const cls = (wrapperClass || 'price-current') + ' notranslate';
+            return '<span class="' + cls + '" translate="no">' +
+                '<span class="price-amount">' + formatNumber(amount) + '</span>' +
+                '<span class="price-currency">FCFA</span>' +
+                '</span>';
         }
 
         function escapeHtml(text) {

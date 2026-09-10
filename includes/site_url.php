@@ -22,26 +22,94 @@ function get_site_base_url() {
         return rtrim($site_url, '/');
     }
 
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    return $protocol . '://' . $host;
+    return get_request_origin_base_url();
 }
 
 /**
- * Segment d'URL entre l'hôte et /admin/ (ex. '' en racine, '/site_gateau' en sous-dossier WAMP).
+ * Segment d'URL entre l'hôte et la racine du projet (ex. '' en prod, '/yayematy_boutique' en local XAMPP).
  */
 function get_public_root_uri_path() {
     static $cached = null;
     if ($cached !== null) {
         return $cached;
     }
+
+    $doc_root = rtrim(str_replace('\\', '/', (string) ($_SERVER['DOCUMENT_ROOT'] ?? '')), '/');
+    $project_root = rtrim(str_replace('\\', '/', dirname(__DIR__)), '/');
+
+    if ($doc_root !== '' && strncmp($project_root, $doc_root, strlen($doc_root)) === 0) {
+        $suffix = substr($project_root, strlen($doc_root));
+        $cached = $suffix === '' ? '' : ('/' . ltrim($suffix, '/'));
+        return $cached;
+    }
+
     $script = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
     if ($script !== '' && preg_match('#^(.+?)/admin/#', $script, $m)) {
         $cached = $m[1];
         return $cached;
     }
+
     $cached = '';
     return $cached;
+}
+
+/**
+ * Chemin absolu sous l'hôte (CSS, pages, images) — compatible sous-dossier local.
+ *
+ * @param string $path Ex. /css/style.css, /index.php
+ */
+function public_url($path = '') {
+    $path = '/' . ltrim(str_replace('\\', '/', (string) $path), '/');
+    if ($path === '/') {
+        return rtrim(get_public_root_uri_path(), '/') ?: '/';
+    }
+    return rtrim(get_public_root_uri_path(), '/') . $path;
+}
+
+/**
+ * URL publique d'un fichier sous /upload/.
+ */
+function upload_public_url($relative_path = '') {
+    $relative_path = ltrim(str_replace('\\', '/', (string) $relative_path), '/');
+    return public_url('/upload/' . $relative_path);
+}
+
+/**
+ * Redirection HTTP vers une page du site (compatible sous-dossier).
+ *
+ * @param string $path Ex. /panier.php?added=1
+ */
+function redirect_to($path, $status = 302) {
+    header('Location: ' . public_url($path), true, (int) $status);
+    exit;
+}
+
+/**
+ * Normalise une URL de retour (REQUEST_URI, chemin absolu ou relatif).
+ *
+ * @param string $url
+ * @param string $fallback Chemin par défaut si vide
+ */
+function normalize_redirect_target($url, $fallback = '/index.php') {
+    $url = trim(str_replace('\\', '/', (string) $url));
+    if ($url === '') {
+        return public_url($fallback);
+    }
+
+    if (preg_match('#^https?://#i', $url)) {
+        return $url;
+    }
+
+    $root = get_public_root_uri_path();
+    if ($root !== '' && (str_starts_with($url, $root . '/') || $url === $root)) {
+        return $url;
+    }
+
+    if (str_starts_with($url, '/')) {
+        return public_url($url);
+    }
+
+    return public_url('/' . ltrim($url, '/'));
 }
 
 /**

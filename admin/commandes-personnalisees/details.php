@@ -1,17 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Détails et traitement d'une commande personnalisée (Admin)
  * Design élégant, ergonomique et responsive
  */
-
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 $cp_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if ($cp_id <= 0) {
     header('Location: index.php');
@@ -92,8 +84,8 @@ $cp = get_commande_personnalisee_by_id($cp_id);
     <title>Commande personnalisée #<?php echo $cp['id']; ?> - Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-commandes-personnalisees.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-commandes-personnalisees.css'); ?>">
 </head>
 <body>
     <?php include '../includes/nav.php'; ?>
@@ -216,10 +208,10 @@ $cp = get_commande_personnalisee_by_id($cp_id);
                 <label>Images de référence (<?php echo count($cp_images); ?>)</label>
                 <div class="cp-images-grid">
                     <?php foreach ($cp_images as $img_index => $img_path): ?>
-                    <button type="button" class="cp-image-trigger" data-image-src="/upload/<?php echo htmlspecialchars($img_path); ?>">
-                        <img src="/upload/<?php echo htmlspecialchars($img_path); ?>"
+                    <button type="button" class="cp-image-trigger" data-image-src="<?php echo upload_public_url(htmlspecialchars($img_path, ENT_QUOTES, 'UTF-8')); ?>">
+                        <img src="<?php echo upload_public_url(htmlspecialchars($img_path, ENT_QUOTES, 'UTF-8')); ?>"
                             alt="Image de référence <?php echo (int) $img_index + 1; ?>"
-                            onerror="this.src='/image/produit1.jpg'">
+                            onerror="this.src='<?php echo htmlspecialchars(public_url('/image/produit1.jpg'), ENT_QUOTES, 'UTF-8'); ?>'">
                         <span class="cp-image-trigger-caption">
                             <strong>Image <?php echo (int) $img_index + 1; ?></strong>
                             <small>Cliquez pour agrandir</small>
@@ -324,9 +316,9 @@ $cp = get_commande_personnalisee_by_id($cp_id);
                 <p>Demande personnalisée #<?php echo (int) $cp['id']; ?></p>
             </div>
             <div class="cp-image-modal-body">
-                <img id="cpImageModalPreview" src="/upload/<?php echo htmlspecialchars($cp_images[0]); ?>"
+                <img id="cpImageModalPreview" src="<?php echo upload_public_url(htmlspecialchars($cp_images[0], ENT_QUOTES, 'UTF-8')); ?>"
                     alt="Image de référence de la demande personnalisée"
-                    onerror="this.src='/image/produit1.jpg'">
+                    onerror="this.src='<?php echo htmlspecialchars(public_url('/image/produit1.jpg'), ENT_QUOTES, 'UTF-8'); ?>'">
             </div>
         </div>
     </div>

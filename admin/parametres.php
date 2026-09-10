@@ -1,12 +1,9 @@
 <?php
-require_once __DIR__ . '/../includes/session_user.php';
+require_once __DIR__ . '/includes/admin_auth.php';
 /**
  * Page principale des paramètres - Regroupe toutes les configurations
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
 require_once __DIR__ . '/../includes/admin_ui_flags.php';
 
 // Vérifier si l'admin est connecté
@@ -32,7 +29,7 @@ if (isset($_SESSION['success_message'])) {
     <title>Paramètres - Administration</title>
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
 </head>
 
 <body>

@@ -8,16 +8,20 @@ if (!function_exists('get_asset_version')) {
     require_once __DIR__ . '/asset_version.php';
 }
 
+if (!function_exists('public_url')) {
+    require_once __DIR__ . '/site_url.php';
+}
+
 require_once __DIR__ . '/store_nav_account.php';
 $store_nav_account = store_nav_account_info();
 
 if (!isset($panier_count)) {
     $panier_count = 0;
-    if (isset($_SESSION['user_id'])) {
-        $model_path = __DIR__ . '/../models/model_panier.php';
-        if (file_exists($model_path)) {
-            require_once $model_path;
-            $panier_count = count_panier_items($_SESSION['user_id']);
+    $panier_invite_path = __DIR__ . '/panier_invite.php';
+    if (file_exists($panier_invite_path)) {
+        require_once $panier_invite_path;
+        if (function_exists('panier_count_items_courant')) {
+            $panier_count = panier_count_items_courant();
         }
     }
 }
@@ -44,32 +48,33 @@ if (!isset($bottom_nav_active)) {
     }
 }
 
-$panier_url = isset($_SESSION['user_id']) ? '/panier.php' : '/user/connexion.php?redirect=panier';
+$panier_url = public_url('/panier.php');
 
-$compte_url = $store_nav_account['url'];
+$compte_url = public_url($store_nav_account['url']);
 $compte_label = $store_nav_account['short_label'];
 
 $bottom_nav_menu_target = $bottom_nav_context === 'user' ? 'user' : 'store';
 ?>
-<link rel="stylesheet" href="/css/bottom-nav.css<?php echo asset_version_query(); ?>">
+<?php if (!defined('BOTTOM_NAV_CSS_LOADED')): define('BOTTOM_NAV_CSS_LOADED', true); ?>
+<link rel="stylesheet" href="<?php echo asset_url('/css/bottom-nav.css'); ?>">
+<?php endif; ?>
 <nav class="bottom-nav bottom-nav--floating bottom-nav--has-center" id="bottomNav" aria-label="Navigation principale">
-    <a href="/index.php"
+    <a href="<?php echo public_url('/index.php'); ?>"
         class="bottom-nav-item bottom-nav-item--accueil<?php echo $bottom_nav_active === 'accueil' ? ' is-active' : ''; ?>">
         <span class="bottom-nav-icon"><i class="fa-solid fa-house" aria-hidden="true"></i></span>
         <span class="bottom-nav-label">Accueil</span>
     </a>
-    <a href="/produits.php"
+    <a href="<?php echo public_url('/produits.php'); ?>"
         class="bottom-nav-item bottom-nav-item--produits<?php echo $bottom_nav_active === 'produits' ? ' is-active' : ''; ?>">
         <span class="bottom-nav-icon"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></span>
         <span class="bottom-nav-label">Produits</span>
     </a>
     <a href="<?php echo htmlspecialchars($panier_url); ?>"
-        class="bottom-nav-item bottom-nav-item--panier bottom-nav-item--center<?php echo $bottom_nav_active === 'panier' ? ' is-active' : ''; ?>">
+        class="bottom-nav-item bottom-nav-item--panier bottom-nav-item--center<?php echo $bottom_nav_active === 'panier' ? ' is-active' : ''; ?>"
+        title="Panier<?php echo $panier_count > 0 ? ' (' . (int) $panier_count . ')' : ''; ?>">
         <span class="bottom-nav-icon">
             <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
-            <?php if (isset($_SESSION['user_id']) && $panier_count > 0): ?>
-                <span class="bottom-nav-badge"><?php echo $panier_count > 9 ? '9+' : (int) $panier_count; ?></span>
-            <?php endif; ?>
+            <span class="bottom-nav-badge"<?php echo $panier_count <= 0 ? ' hidden' : ''; ?>><?php echo $panier_count > 9 ? '9+' : (int) $panier_count; ?></span>
         </span>
         <span class="bottom-nav-label">Panier</span>
     </a>

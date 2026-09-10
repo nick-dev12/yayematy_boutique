@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/../conn/conn.php';
+require_once __DIR__ . '/../includes/db_helpers.php';
 
 /**
  * Récupère toutes les zones de livraison actives
@@ -12,6 +13,10 @@ require_once __DIR__ . '/../conn/conn.php';
  * @return array Tableau des zones
  */
 function get_all_zones_livraison($statut = 'actif') {
+    if (!db_is_available()) {
+        return [];
+    }
+
     global $db;
     try {
         if ($statut) {

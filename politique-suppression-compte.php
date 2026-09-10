@@ -16,7 +16,7 @@ $contact_phone_tel = '+221773643529';
 $last_update = '28/07/2026';
 
 $is_logged_in = !empty($_SESSION['user_id']) && (int) $_SESSION['user_id'] > 0;
-$login_redirect = '/user/connexion.php?redirect=' . rawurlencode('/user/supprimer-compte.php');
+$login_redirect = public_url('/user/connexion.php') . '?redirect=' . rawurlencode('/user/supprimer-compte.php');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -26,10 +26,10 @@ $login_redirect = '/user/connexion.php?redirect=' . rawurlencode('/user/supprime
     <?php include __DIR__ . '/includes/pwa_meta.php'; ?>
     <?php include __DIR__ . '/includes/seo_meta.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/a_style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/legal-page.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/a_style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/legal-page.css'); ?>">
 </head>
 <body>
     <?php include __DIR__ . '/nav_bar.php'; ?>
@@ -41,7 +41,7 @@ $login_redirect = '/user/connexion.php?redirect=' . rawurlencode('/user/supprime
         <p>
             Cette page décrit votre <strong>droit de demander la suppression de votre compte client Yaye Maty</strong>,
             les données effacées ou conservées, ainsi que la procédure en ligne réservée aux utilisateurs <strong>connectés</strong>.
-            Elle complète notre <a href="/politique-confidentialite.php">Politique de confidentialité</a>.
+            Elle complète notre <a href="<?php echo public_url('/politique-confidentialite.php'); ?>">Politique de confidentialité</a>.
         </p>
 
         <nav class="legal-toc" aria-label="Sommaire">
@@ -161,7 +161,7 @@ $login_redirect = '/user/connexion.php?redirect=' . rawurlencode('/user/supprime
                     La suppression est <strong>définitive</strong> et ne peut pas être annulée.
                 </p>
                 <p>
-                    <a href="/user/supprimer-compte.php" class="legal-btn-delete">
+                    <a href="<?php echo public_url('/user/supprimer-compte.php'); ?>" class="legal-btn-delete">
                         <i class="fas fa-user-slash" aria-hidden="true"></i> Supprimer mon compte
                     </a>
                 </p>
@@ -183,9 +183,9 @@ $login_redirect = '/user/connexion.php?redirect=' . rawurlencode('/user/supprime
 
         <div class="legal-cross">
             <strong>Documents associés :</strong>
-            <a href="/politique-confidentialite.php">Politique de confidentialité</a>
+            <a href="<?php echo public_url('/politique-confidentialite.php'); ?>">Politique de confidentialité</a>
             ·
-            <a href="/conditions-utilisation.php">Conditions générales d'utilisation</a>
+            <a href="<?php echo public_url('/conditions-utilisation.php'); ?>">Conditions générales d'utilisation</a>
         </div>
 
         <a href="javascript:history.back()" class="back-link">

@@ -40,12 +40,12 @@ foreach ($commandes_livrees as $commande_livree) {
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <?php include __DIR__ . '/../includes/pwa_meta.php'; ?>
     <title>Commandes livrées — <?php echo htmlspecialchars(site_brand_name()); ?></title>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/user-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-mon-compte.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-mes-commandes.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-produits-livres.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-mon-compte.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-mes-commandes.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-produits-livres.css'); ?>">
 </head>
 <body class="user-page-produits-livres">
     <?php include 'includes/user_nav.php'; ?>
@@ -71,7 +71,7 @@ foreach ($commandes_livrees as $commande_livree) {
                 </div>
             </div>
             <div class="account-hero__actions">
-                <a href="/produits.php" class="account-btn account-btn--primary">
+                <a href="<?php echo public_url('/produits.php'); ?>" class="account-btn account-btn--primary">
                     <i class="fas fa-store" aria-hidden="true"></i>
                     Commander à nouveau
                 </a>
@@ -176,7 +176,7 @@ foreach ($commandes_livrees as $commande_livree) {
                     <h2><i class="fa-solid fa-palette" aria-hidden="true"></i> Demandes personnalisées reçues</h2>
                     <p>Vos créations sur mesure déjà livrées.</p>
                 </div>
-                <a href="/commande-personnalisee.php" class="account-block__link">
+                <a href="<?php echo public_url('/commande-personnalisee.php'); ?>" class="account-block__link">
                     Nouvelle demande <i class="fas fa-plus" aria-hidden="true"></i>
                 </a>
             </header>
@@ -186,7 +186,7 @@ foreach ($commandes_livrees as $commande_livree) {
                 <span class="account-empty__icon" aria-hidden="true"><i class="fas fa-palette"></i></span>
                 <h3>Aucune demande reçue</h3>
                 <p>Créez une commande personnalisée pour un produit unique.</p>
-                <a href="/commande-personnalisee.php" class="account-btn account-btn--primary">
+                <a href="<?php echo public_url('/commande-personnalisee.php'); ?>" class="account-btn account-btn--primary">
                     <i class="fas fa-palette" aria-hidden="true"></i>
                     Faire une demande
                 </a>

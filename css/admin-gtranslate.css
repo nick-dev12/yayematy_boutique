@@ -1,0 +1,226 @@
+/**
+ * GTranslate — même apparence que la boutique (nav-lang-switcher)
+ */
+
+.admin-sidebar .nav-lang-switcher,
+.admin-login-lang.nav-lang-switcher {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 48px;
+}
+
+.admin-sidebar .sidebar-header .nav-lang-switcher {
+  margin-top: 0.25rem;
+}
+
+.admin-sidebar .nav-lang-switcher .gtranslate-lang-wrapper,
+.admin-login-lang.nav-lang-switcher .gtranslate-lang-wrapper {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-sidebar .nav-lang-switcher #gt_float_wrapper,
+.admin-login-lang.nav-lang-switcher #gt_float_wrapper {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0;
+  line-height: 0;
+  border-radius: 50%;
+  border: 1px solid var(--color-border, rgba(140, 140, 140, 0.22));
+  background: var(--color-blanc, #fff);
+  box-shadow: none;
+  overflow: visible;
+  width: auto !important;
+  max-width: none;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher:hover,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher:hover {
+  border-color: var(--color-orange, #f25c19);
+  background: rgba(var(--color-orange-rgb, 242, 92, 25), 0.06);
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt-selected,
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt-current-lang,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt-selected,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt-current-lang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  padding: 0 !important;
+  background: transparent;
+  text-transform: none;
+  overflow: visible;
+  font-size: 0 !important;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher img,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher img {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.admin-sidebar .nav-lang-switcher .gt-lang-code,
+.admin-sidebar .nav-lang-switcher .gt_float_switcher-arrow,
+.admin-login-lang.nav-lang-switcher .gt-lang-code,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher-arrow {
+  display: none !important;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt_options {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  right: auto;
+  z-index: 10050;
+  min-width: 13.5rem;
+  max-height: none;
+  padding: 0.5rem;
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+  background: var(--color-blanc, #fff);
+  box-shadow: var(--shadow-lg, 0 8px 32px rgba(26, 26, 26, 0.1));
+  float: none;
+  white-space: nowrap;
+  transform: translateX(-50%) translateY(-6px) scale(0.98);
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt_options.gt-open {
+  opacity: 1 !important;
+  transform: translateX(-50%) translateY(0) scale(1) !important;
+  max-width: none !important;
+  width: auto !important;
+}
+
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt_options {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  left: auto;
+  z-index: 10050;
+  min-width: 13.5rem;
+  max-height: none;
+  padding: 0.5rem;
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+  background: var(--color-blanc, #fff);
+  box-shadow: var(--shadow-lg, 0 8px 32px rgba(26, 26, 26, 0.1));
+  float: none;
+  white-space: nowrap;
+  transform: translateY(-6px) scale(0.98);
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt_options.gt-open {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+  max-width: none !important;
+  width: auto !important;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt_options a,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt_options a {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 2.75rem;
+  height: auto;
+  margin: 0;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--color-noir, #1a1a1a);
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt_options a .gt-lang-code,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt_options a .gt-lang-code {
+  display: inline-block !important;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: inherit;
+  text-align: left;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt_options a .gt-lang-label,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt_options a .gt-lang-label {
+  display: none !important;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt_options a:hover,
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt_options a:focus-visible,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt_options a:hover,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt_options a:focus-visible {
+  background: rgba(var(--color-orange-rgb, 242, 92, 25), 0.1);
+  color: var(--color-orange-dark, #d94f12);
+  outline: none;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt_options a img,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt_options a img {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.admin-login-lang.nav-lang-switcher {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 20;
+}
+
+@media (max-width: 480px) {
+  .admin-login-lang.nav-lang-switcher {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+}

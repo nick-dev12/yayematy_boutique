@@ -38,9 +38,9 @@ $fiches_actifs = count(array_filter($fiches, function ($r) {
     <title>Employés — Administration</title>
     <?php require_once __DIR__ . '/../../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-comptes-page.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-employes-rh.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-comptes-page.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-employes-rh.css'); ?>">
 </head>
 <body class="page-comptes page-employes-rh">
     <?php include __DIR__ . '/../../includes/nav.php'; ?>
@@ -187,5 +187,5 @@ $fiches_actifs = count(array_filter($fiches, function ($r) {
             </div>
         <?php endif; ?>
     </div><!-- .page-comptes-wrap -->
-    <script src="/js/admin-employes-index-search.js<?php echo asset_version_query(); ?>"></script>
+    <script src="<?php echo asset_url('/js/admin-employes-index-search.js'); ?>"></script>
     <?php include __DIR__ . '/../../includes/footer.php'; ?>

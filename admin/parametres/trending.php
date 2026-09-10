@@ -1,18 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page de modification de la configuration de la section trending
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-// Vérifier si l'admin est connecté
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 // Récupérer la configuration actuelle
 require_once __DIR__ . '/../../models/model_trending.php';
 $config = get_trending_config();
@@ -54,7 +45,7 @@ if (isset($_SESSION['success_message'])) {
     <title>Configuration Trending - Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
 </head>
 <body>
     <?php include '../includes/nav.php'; ?>
@@ -130,11 +121,11 @@ if (isset($_SESSION['success_message'])) {
                         <div class="current-image">
                             <strong>Image actuelle:</strong>
                             <?php if ($config['image'] !== 'speaker.png'): ?>
-                                <img src="/upload/trending/<?php echo htmlspecialchars($config['image']); ?>" 
+                                <img src="<?php echo upload_public_url('trending/' . htmlspecialchars($config['image'], ENT_QUOTES, 'UTF-8')); ?>" 
                                      alt="Image actuelle"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                             <?php else: ?>
-                                <img src="/image/<?php echo htmlspecialchars($config['image']); ?>" 
+                                <img src="<?php echo public_url('/image/' . htmlspecialchars($config['image'], ENT_QUOTES, 'UTF-8')); ?>" 
                                      alt="Image actuelle"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                             <?php endif; ?>

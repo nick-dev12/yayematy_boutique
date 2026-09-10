@@ -24,10 +24,10 @@ $last_update = '28/07/2026';
     <?php include __DIR__ . '/includes/pwa_meta.php'; ?>
     <?php include __DIR__ . '/includes/seo_meta.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/a_style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/legal-page.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/a_style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/legal-page.css'); ?>">
 </head>
 <body>
     <?php include __DIR__ . '/nav_bar.php'; ?>
@@ -50,7 +50,7 @@ $last_update = '28/07/2026';
             En créant un compte, en parcourant le site, en passant commande ou en utilisant l'application mobile officielle Yaye Maty
             (identifiant iOS&nbsp;: <strong>com.sugarpaper.app</strong>, package Android&nbsp;: <strong>com.sugarpaper.app</strong>),
             vous reconnaissez avoir lu, compris et accepté sans réserve les présentes CGU, ainsi que notre
-            <a href="/politique-confidentialite.php">Politique de confidentialité</a>, qui en fait partie intégrante.
+            <a href="<?php echo public_url('/politique-confidentialite.php'); ?>">Politique de confidentialité</a>, qui en fait partie intégrante.
         </p>
         <p>
             Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser nos services.
@@ -133,7 +133,7 @@ $last_update = '28/07/2026';
             Yaye Maty peut suspendre ou clôturer un compte en cas de manquement aux CGU, fraude, impayé ou injonction légale.
             La clôture n'efface pas les obligations nées avant la clôture (commandes en cours, factures, litiges).
             Vous pouvez demander la suppression de votre compte conformément à la
-            <a href="/politique-suppression-compte.php">Politique de suppression de compte</a>
+            <a href="<?php echo public_url('/politique-suppression-compte.php'); ?>">Politique de suppression de compte</a>
             (connexion requise pour le formulaire en ligne).
         </p>
 
@@ -338,12 +338,12 @@ $last_update = '28/07/2026';
         <h2 id="cgu-13">13. Données personnelles</h2>
         <p>
             Le traitement de vos données personnelles est décrit dans notre
-            <a href="/politique-confidentialite.php">Politique de confidentialité</a>, incluant&nbsp;:
+            <a href="<?php echo public_url('/politique-confidentialite.php'); ?>">Politique de confidentialité</a>, incluant&nbsp;:
             collecte, finalités, durées de conservation, droits des personnes, cookies, application mobile, localisation GPS, suivi livraison et import de contacts.
         </p>
         <p>
             En utilisant le Service, vous reconnaissez en avoir pris connaissance. Pour exercer vos droits ou supprimer votre compte, consultez la
-            <a href="/politique-suppression-compte.php">Politique de suppression de compte</a>
+            <a href="<?php echo public_url('/politique-suppression-compte.php'); ?>">Politique de suppression de compte</a>
             ou contactez
             <a href="mailto:<?php echo htmlspecialchars($contact_email, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($contact_email, ENT_QUOTES, 'UTF-8'); ?></a>.
         </p>
@@ -398,13 +398,13 @@ $last_update = '28/07/2026';
 
         <div class="legal-cross">
             <strong>Documents associés :</strong>
-            <a href="/politique-confidentialite.php">Politique de confidentialité</a>
+            <a href="<?php echo public_url('/politique-confidentialite.php'); ?>">Politique de confidentialité</a>
             ·
             <a href="/politique-confidentialite.php#priv-9-gps">Suivi GPS livraison</a>
             ·
             <a href="/politique-confidentialite.php#priv-9-contacts">Import contacts</a>
             ·
-            <a href="/politique-suppression-compte.php">Politique de suppression de compte</a>
+            <a href="<?php echo public_url('/politique-suppression-compte.php'); ?>">Politique de suppression de compte</a>
         </div>
 
         <a href="javascript:history.back()" class="back-link">

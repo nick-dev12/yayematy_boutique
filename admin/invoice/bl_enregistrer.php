@@ -1,14 +1,8 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Création BL — mêmes champs / validation que create.php (devis), puis client B2B + lignes HT
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
 require_once __DIR__ . '/../includes/require_access.php';
 
 

@@ -189,7 +189,7 @@ $invoice_hub_tab = isset($admin_invoice_hub_active_tab) ? (string) $admin_invoic
 
 ?>
 
-<link rel="stylesheet" href="/css/bottom-nav.css<?php echo asset_version_query(); ?>">
+<link rel="stylesheet" href="<?php echo asset_url('/css/bottom-nav.css'); ?>">
 
 <nav class="bottom-nav bottom-nav--floating bottom-nav--has-center bottom-nav--admin<?php echo $is_contable_bottom ? ' bottom-nav--contable' : ''; ?><?php echo $is_livreur_bottom ? ' bottom-nav--livreur' : ''; ?><?php echo $is_utilisateur_bottom ? ' bottom-nav--utilisateur' : ''; ?>" id="adminBottomNav" aria-label="Navigation administration">
 

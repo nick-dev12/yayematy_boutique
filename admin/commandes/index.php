@@ -1,17 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page de liste des commandes non traitées (Admin)
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-// Vérifier si l'admin est connecté
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
 
 // Récupérer toutes les commandes
 require_once __DIR__ . '/../../models/model_commandes_admin.php';
@@ -31,6 +23,7 @@ if (isset($_SESSION['commande_manuelle_post'])) unset($_SESSION['commande_manuel
 $commandes = array_filter($toutes_commandes, function($commande) {
     return $commande['statut'] !== 'livree' && $commande['statut'] !== 'paye' && $commande['statut'] !== 'annulee';
 });
+$commandes_groupes = admin_group_commandes_for_list($commandes);
 
 // Statistiques
 $total_commandes = count_commandes_by_statut();
@@ -49,9 +42,9 @@ $montant_total_a_traiter = array_sum(array_column($commandes, 'montant_total'));
     <title>Commandes Non Traitées - Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-dashboard-home.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-commandes-pages.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard-home.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-commandes-pages.css'); ?>">
 </head>
 
 <body class="page-commandes-index">
@@ -78,8 +71,8 @@ $montant_total_a_traiter = array_sum(array_column($commandes, 'montant_total'));
                     </div>
                 </div>
                 <div class="prod-catalog-hero__meta">
-                    <span class="prod-catalog-hero__count"><?php echo count($commandes); ?></span>
-                    <span class="prod-catalog-hero__count-label">en attente</span>
+                    <span class="prod-catalog-hero__count"><?php echo count($commandes_groupes); ?></span>
+                    <span class="prod-catalog-hero__count-label">lot<?php echo count($commandes_groupes) > 1 ? 's' : ''; ?> client</span>
                 </div>
             </div>
         </header>
@@ -88,6 +81,13 @@ $montant_total_a_traiter = array_sum(array_column($commandes, 'montant_total'));
     <div class="prod-catalog-flash message success">
         <i class="fas fa-check-circle"></i>
         <span><?php echo htmlspecialchars($_SESSION['success_message']); unset($_SESSION['success_message']); ?></span>
+    </div>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['error_message'])): ?>
+    <div class="prod-catalog-flash message error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span><?php echo htmlspecialchars($_SESSION['error_message']); unset($_SESSION['error_message']); ?></span>
     </div>
     <?php endif; ?>
 
@@ -119,7 +119,7 @@ $montant_total_a_traiter = array_sum(array_column($commandes, 'montant_total'));
             <header class="prod-catalog-main__head">
                 <div class="prod-catalog-main__head-text">
                     <h2><i class="fa-solid fa-list-check"></i> Commandes à traiter</h2>
-                    <p class="prod-catalog-main__filter-hint"><?php echo count($commandes); ?> commande<?php echo count($commandes) > 1 ? 's' : ''; ?> nécessitent une action.</p>
+                    <p class="prod-catalog-main__filter-hint"><?php echo count($commandes); ?> commande<?php echo count($commandes) > 1 ? 's' : ''; ?> · <?php echo count($commandes_groupes); ?> acheteur<?php echo count($commandes_groupes) > 1 ? 's' : ''; ?> à traiter.</p>
                 </div>
                 <div class="prod-catalog-toolbar">
                     <button type="button" class="btn-primary" id="btn-commande-manuelle" aria-label="Ajouter une commande manuellement">
@@ -141,7 +141,7 @@ $montant_total_a_traiter = array_sum(array_column($commandes, 'montant_total'));
                 </div>
             </div>
 
-        <?php if (empty($commandes)): ?>
+        <?php if (empty($commandes_groupes)): ?>
         <div class="prod-catalog-empty">
             <i class="fas fa-shopping-bag"></i>
             <h3>Aucune commande à traiter</h3>
@@ -149,19 +149,31 @@ $montant_total_a_traiter = array_sum(array_column($commandes, 'montant_total'));
         </div>
         <?php else: ?>
         <div class="dash-cmd-grid">
-            <?php foreach ($commandes as $commande):
-                $client_nom = trim(($commande['user_prenom'] ?? '') . ' ' . ($commande['user_nom'] ?? '')) ?: '—';
-                $telephone_aff = trim($commande['telephone_livraison'] ?? '') ?: '—';
-                $date_aff = date('d/m/Y H:i', strtotime($commande['date_commande']));
-                $statut_cmd = (string) ($commande['statut'] ?? 'en_attente');
+            <?php foreach ($commandes_groupes as $groupe):
+                $client_nom = $groupe['client_nom'];
+                $telephone_aff = $groupe['telephone'];
+                $date_aff = $groupe['date_recente'] ? date('d/m/Y H:i', strtotime($groupe['date_recente'])) : '—';
+                $statut_cmd = (string) $groupe['statut'];
                 $statut_label = admin_commande_statut_label($statut_cmd);
-                $mode_cmd = (string) ($commande['mode_livraison'] ?? 'livraison');
+                $mode_cmd = (string) $groupe['mode_livraison'];
                 $mode_label = admin_commande_mode_label($mode_cmd);
+                $numeros_aff = $groupe['numeros'];
+                $details_url = 'details.php?ids=' . rawurlencode($groupe['ids_param']);
             ?>
-            <article class="dash-cmd-card">
+            <article class="dash-cmd-card<?php echo $groupe['nb_commandes'] > 1 ? ' dash-cmd-card--grouped' : ''; ?>">
                 <div>
                     <h3 class="dash-cmd-card__client"><?php echo htmlspecialchars($client_nom); ?></h3>
                     <p class="dash-cmd-card__tel"><?php echo htmlspecialchars($telephone_aff); ?></p>
+                    <?php if (!empty($numeros_aff)): ?>
+                    <p class="dash-cmd-card__nums">
+                        <?php if ($groupe['nb_commandes'] > 1): ?>
+                            <span class="dash-cmd-card__nums-badge"><?php echo (int) $groupe['nb_commandes']; ?> commandes</span>
+                        <?php endif; ?>
+                        <?php foreach ($numeros_aff as $num): ?>
+                            <span class="dash-cmd-card__num">#<?php echo htmlspecialchars($num); ?></span>
+                        <?php endforeach; ?>
+                    </p>
+                    <?php endif; ?>
                     <div class="dash-cmd-card__meta">
                         <span class="dash-cmd-card__statut commande-statut statut-<?php echo htmlspecialchars($statut_cmd); ?>">
                             <?php echo htmlspecialchars($statut_label); ?>
@@ -173,10 +185,10 @@ $montant_total_a_traiter = array_sum(array_column($commandes, 'montant_total'));
                     </div>
                 </div>
                 <div>
-                    <span class="dash-cmd-card__amount"><?php echo number_format((float) $commande['montant_total'], 0, ',', ' '); ?> FCFA</span>
+                    <span class="dash-cmd-card__amount"><?php echo number_format((float) $groupe['montant_total'], 0, ',', ' '); ?> FCFA</span>
                     <span class="dash-cmd-card__date"><i class="fa-regular fa-clock"></i> <?php echo htmlspecialchars($date_aff); ?></span>
                 </div>
-                <a href="details.php?id=<?php echo (int) $commande['id']; ?>" class="dash-cmd-card__btn">
+                <a href="<?php echo htmlspecialchars($details_url); ?>" class="dash-cmd-card__btn">
                     <i class="fas fa-eye"></i> Voir
                 </a>
             </article>
@@ -381,6 +393,15 @@ $montant_total_a_traiter = array_sum(array_column($commandes, 'montant_total'));
         function openModal() {
             if (modal) modal.classList.add('modal-open');
             document.body.style.overflow = 'hidden';
+            var sidebar = document.getElementById('adminSidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) sidebar.classList.remove('show');
+            if (overlay) overlay.classList.remove('show');
+            if (typeof window.setAdminSidebarOpen === 'function') {
+                window.setAdminSidebarOpen(false);
+            } else {
+                document.documentElement.classList.remove('admin-sidebar-open');
+            }
         }
 
         function closeModal() {

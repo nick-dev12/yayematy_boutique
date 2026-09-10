@@ -118,3 +118,12 @@ if (!function_exists('guest_checkout_clear')) {
         unset($_SESSION['guest_checkout']);
     }
 }
+
+if (!function_exists('guest_checkout_message_needs_info')) {
+    function guest_checkout_message_needs_info(string $message): bool
+    {
+        return stripos($message, 'nom') !== false
+            || stripos($message, 'téléphone') !== false
+            || stripos($message, 'telephone') !== false;
+    }
+}

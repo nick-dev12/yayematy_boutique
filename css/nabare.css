@@ -87,7 +87,7 @@ nav.nav-planete-gateau {
 }
 
 /* Styles legacy - exclus header boutique + barre bottom-nav */
-nav:not(.nav-planete-gateau):not(.bottom-nav) {
+nav:not(.nav-planete-gateau):not(.bottom-nav):not(.footer_col) {
   padding: 0 40px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);

@@ -240,12 +240,10 @@ if (!function_exists('admin_route_relative_path')) {
      * URL absolue (chemin) vers une page sous admin/
      */
     function admin_route_build_url($relativeUnderAdmin) {
-        $script = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
-        $dir = dirname($script);
-        if (preg_match('#^(.*)/admin(?:/|$)#', $dir, $m)) {
-            return $m[1] . '/admin/' . ltrim($relativeUnderAdmin, '/');
+        if (!function_exists('public_url')) {
+            require_once __DIR__ . '/site_url.php';
         }
-        return '/admin/' . ltrim($relativeUnderAdmin, '/');
+        return public_url('/admin/' . ltrim(str_replace('\\', '/', (string) $relativeUnderAdmin), '/'));
     }
 
     /**

@@ -89,7 +89,7 @@ if ($facture_can_share && !function_exists('asset_version_query')) {
     <meta property="og:site_name" content="Yaye Maty">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php if ($facture_can_share): ?>
-    <link rel="stylesheet" href="/css/platform-share-modal.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/platform-share-modal.css'); ?>">
     <?php endif; ?>
     <style>
         * {
@@ -853,7 +853,7 @@ if ($facture_can_share && !function_exists('asset_version_query')) {
     </script>
     <?php if ($facture_can_share): ?>
     <?php include __DIR__ . '/partials/platform_share_modal.php'; ?>
-    <script src="/js/platform-share-modal.js<?php echo asset_version_query(); ?>"></script>
+    <script src="<?php echo asset_url('/js/platform-share-modal.js'); ?>"></script>
     <?php endif; ?>
 </body>
 

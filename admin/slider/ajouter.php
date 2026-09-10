@@ -1,18 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page d'ajout d'un slide
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-// Vérifier si l'admin est connecté
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 // Traiter le formulaire
 require_once __DIR__ . '/../../controllers/controller_slider.php';
 $result = process_add_slide();

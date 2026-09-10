@@ -1,11 +1,5 @@
 <?php
-require_once __DIR__ . '/../../../includes/session_user.php';
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../../login.php');
-    exit;
-}
+require_once __DIR__ . '/../../includes/admin_auth.php';
 
 require_once __DIR__ . '/../../includes/require_access.php';
 
@@ -75,9 +69,9 @@ $curr_pdf_ok = $curr_pdf_rel !== '' && strpos($curr_pdf_rel, '..') === false
     <title>Modifier employé — Administration</title>
     <?php require_once __DIR__ . '/../../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-comptes-page.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-employes-rh.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-comptes-page.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-employes-rh.css'); ?>">
 </head>
 <body class="page-comptes page-employes-rh page-employes-modifier">
     <?php include __DIR__ . '/../../includes/nav.php'; ?>

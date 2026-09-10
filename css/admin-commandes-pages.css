@@ -45,6 +45,36 @@
   font-variant-numeric: tabular-nums;
 }
 
+.dash-cmd-card__nums {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+}
+
+.dash-cmd-card__nums-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: rgba(46, 125, 181, 0.12);
+  color: var(--color-bleu, #2e7db5);
+}
+
+.dash-cmd-card__num {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-noir, #1a1a1a);
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-cmd-card--grouped {
+  border-left: 3px solid var(--color-bleu, #2e7db5);
+}
+
 .dash-cmd-card__meta {
   display: flex;
   flex-wrap: wrap;
@@ -338,5 +368,38 @@
 
   .page-commandes-index .dash-cmd-grid {
     gap: 0.5rem;
+  }
+}
+
+/* ── Modal commande manuelle (responsive vs sidebar) ─────────── */
+.page-commandes-index .modal-commande-manuelle-content {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .page-commandes-index .form-section-card {
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+
+  .page-commandes-index .form-section-header h3 {
+    font-size: 1rem;
+  }
+
+  .page-commandes-index .search-input-wrapper input,
+  .page-commandes-index .form-col-client input,
+  .page-commandes-index .form-col-client textarea,
+  .page-commandes-index .form-col-client select {
+    font-size: 1rem;
+  }
+
+  .page-commandes-index .form-commande-manuelle-actions {
+    position: sticky;
+    bottom: 0;
+    background: var(--color-blanc, #fff);
+    margin-top: 16px;
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -4px 16px rgba(26, 26, 26, 0.06);
+    z-index: 2;
   }
 }

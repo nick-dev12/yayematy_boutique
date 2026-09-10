@@ -1,18 +1,9 @@
 <?php
-require_once __DIR__ . '/../includes/session_user.php';
+require_once __DIR__ . '/includes/admin_auth.php';
 /**
  * Page de profil administrateur - Modification des informations
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-// Vérifier si l'admin est connecté
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: login.php');
-    exit;
-}
-
 // Récupérer les informations de l'administrateur
 require_once __DIR__ . '/../models/model_admin.php';
 $admin = get_admin_by_id($_SESSION['admin_id']);
@@ -127,7 +118,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_mot_de_passe
     
     // Si aucune erreur, procéder à la mise à jour
     if (empty($errors)) {
-        require_once __DIR__ . '/../conn/conn.php';
+        require_once __DIR__ . '/../includes/db_helpers.php';
+        if (!db_is_available()) {
+            $error_message = 'Connexion à la base de données indisponible. Réessayez plus tard.';
+        } else {
         global $db;
         
         // Protection contre les injections SQL : utilisation de PDO avec prepared statements
@@ -145,6 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_mot_de_passe
         } else {
             $error_message = 'Une erreur est survenue lors de la modification du mot de passe. Veuillez réessayer.';
         }
+        }
     } else {
         $error_message = implode('<br>', $errors);
     }
@@ -160,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier_mot_de_passe
     <title>Mon Profil - Administration Yaye Maty</title>
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
 </head>
 
 <body>

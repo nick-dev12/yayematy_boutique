@@ -75,6 +75,13 @@ function create_facture($commande_id) {
  * @return array|false
  */
 function get_facture_by_commande($commande_id) {
+    if (!function_exists('db_is_available')) {
+        require_once __DIR__ . '/../includes/db_helpers.php';
+    }
+    if (!db_is_available()) {
+        return false;
+    }
+
     global $db;
     try {
         $stmt = $db->prepare("SELECT * FROM factures WHERE commande_id = :cid");

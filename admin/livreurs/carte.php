@@ -1,18 +1,8 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Carte admin — tous les livreurs en livraison GPS en même temps
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
-require_once __DIR__ . '/../../includes/admin_route_access.php';
-admin_route_enforce();
-
 require_once __DIR__ . '/../../includes/admin_permissions.php';
 require_once __DIR__ . '/../../includes/site_brand.php';
 require_once __DIR__ . '/../../models/model_livreur_tracking.php';
@@ -38,9 +28,9 @@ $nb_actifs = count($livreurs);
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-livreurs-carte.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-livreur-tracking-ui.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-livreurs-carte.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-livreur-tracking-ui.css'); ?>">
 </head>
 <body class="page-livreurs-carte">
 <?php include __DIR__ . '/../includes/nav.php'; ?>
@@ -70,7 +60,7 @@ $nb_actifs = count($livreurs);
 
     <?php if (!$tables_ready): ?>
     <div class="livreurs-carte-empty">
-        <p class="message error"><i class="fas fa-database"></i> Module GPS non installé. Exécutez la migration SQL.</p>
+        <p class="message error"><i class="fas fa-database"></i> Module GPS indisponible. Vérifiez que MySQL est démarré, puis rechargez la page.</p>
     </div>
     <?php else: ?>
     <div class="livreurs-carte-layout">
@@ -119,7 +109,7 @@ window.LIVREURS_CARTE_CONFIG = {
 };
 </script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-<script src="/js/admin-livreurs-carte.js<?php echo asset_version_query(); ?>"></script>
+<script src="<?php echo asset_url('/js/admin-livreurs-carte.js'); ?>"></script>
 <?php endif; ?>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>

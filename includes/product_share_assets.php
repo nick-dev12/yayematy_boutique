@@ -44,13 +44,13 @@ if (!function_exists('product_share_render_assets')) {
         }
         $done = true;
 
-        if (!function_exists('asset_version_query')) {
+        if (!function_exists('asset_url')) {
             require_once __DIR__ . '/asset_version.php';
         }
 
-        echo '<link rel="stylesheet" href="/css/product-share.css' . asset_version_query() . '">' . "\n";
-        echo '<link rel="stylesheet" href="/css/platform-share-modal.css' . asset_version_query() . '">' . "\n";
+        echo '<link rel="stylesheet" href="' . htmlspecialchars(asset_url('/css/product-share.css'), ENT_QUOTES, 'UTF-8') . '">' . "\n";
+        echo '<link rel="stylesheet" href="' . htmlspecialchars(asset_url('/css/platform-share-modal.css'), ENT_QUOTES, 'UTF-8') . '">' . "\n";
         include __DIR__ . '/partials/platform_share_modal.php';
-        echo '<script src="/js/platform-share-modal.js' . asset_version_query() . '" defer></script>' . "\n";
+        echo '<script src="' . htmlspecialchars(asset_url('/js/platform-share-modal.js'), ENT_QUOTES, 'UTF-8') . '" defer></script>' . "\n";
     }
 }

@@ -4,6 +4,10 @@
  * Options : link_prefix, show_delete, status_badge
  */
 
+if (!function_exists('public_url')) {
+    require_once __DIR__ . '/../../includes/site_url.php';
+}
+
 if (!function_exists('render_dash_product_card')) {
     function render_dash_product_card($produit, $dash_card_rank = 0, $dash_card_sold = null, $options = [])
     {
@@ -18,7 +22,9 @@ if (!function_exists('render_dash_product_card')) {
         $id = (int) ($produit['id'] ?? 0);
         $nom = htmlspecialchars($produit['nom'] ?? 'Produit');
         $categorie = htmlspecialchars($produit['categorie_nom'] ?? 'Sans catégorie');
-        $image = '/upload/' . htmlspecialchars($produit['image_principale'] ?? 'produit1.jpg');
+        $image_name = trim((string) ($produit['image_principale'] ?? ''));
+        $image = public_url('/upload/' . ($image_name !== '' ? $image_name : 'produit1.jpg'));
+        $image_fallback = public_url('/image/produit1.jpg');
         $stock = (int) ($produit['stock'] ?? 0);
         $statut = $produit['statut'] ?? 'actif';
         $prix = (float) ($produit['prix'] ?? 0);
@@ -59,7 +65,7 @@ if (!function_exists('render_dash_product_card')) {
             <?php if ($prix_promo !== null): ?>
             <span class="dash-prod-card__promo">Promo</span>
             <?php endif; ?>
-            <img src="<?php echo $image; ?>" alt="<?php echo $nom; ?>" onerror="this.src='/image/produit1.jpg'">
+            <img src="<?php echo htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo $nom; ?>" onerror="this.src='<?php echo htmlspecialchars($image_fallback, ENT_QUOTES, 'UTF-8'); ?>'">
         </a>
         <div class="dash-prod-card__body">
             <span class="dash-prod-card__cat"><?php echo $categorie; ?></span>

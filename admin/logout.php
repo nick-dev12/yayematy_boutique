@@ -6,11 +6,15 @@ require_once __DIR__ . '/../includes/session_user.php';
  */
 
 session_start_persistent();
+require_once __DIR__ . '/../includes/site_url.php';
 
 // Supprimer les tokens FCM de l'admin avant déconnexion
 if (isset($_SESSION['admin_id'])) {
-    require_once __DIR__ . '/../models/model_fcm.php';
-    delete_fcm_tokens_by_admin((int) $_SESSION['admin_id']);
+    require_once __DIR__ . '/../includes/db_helpers.php';
+    if (db_is_available()) {
+        require_once __DIR__ . '/../models/model_fcm.php';
+        delete_fcm_tokens_by_admin((int) $_SESSION['admin_id']);
+    }
 }
 
 // Détruire toutes les variables de session
@@ -33,8 +37,7 @@ if (ini_get('session.use_cookies')) {
 session_destroy();
 
 // Rediriger vers la page d'accueil
-header('Location: /index.php');
-exit;
+redirect_to('/index.php');
 
 ?>
 

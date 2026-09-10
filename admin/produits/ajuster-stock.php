@@ -1,17 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page d'ajustement du stock d'un produit
  * Affiche: stock total, quantité vendue, stock restant (total - vendu), comptabilité, formulaire d'ajustement, historique
  */
-
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 $produit_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 if ($produit_id <= 0) {
     header('Location: index.php');
@@ -67,7 +59,7 @@ if (isset($_SESSION['success_message'])) {
     <title>Ajuster le stock - <?php echo htmlspecialchars($produit['nom']); ?> - Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
     <style>
         .ajuster-stock-layout {
             display: grid;
@@ -383,8 +375,8 @@ if (isset($_SESSION['success_message'])) {
     <?php endif; ?>
 
     <div class="produit-preview">
-        <img src="/upload/<?php echo htmlspecialchars($produit['image_principale'] ?? ''); ?>" alt=""
-            onerror="this.src='/image/produit1.jpg'">
+        <img src="<?php echo upload_public_url(htmlspecialchars($produit['image_principale'] ?? '', ENT_QUOTES, 'UTF-8')); ?>" alt=""
+            onerror="this.src='<?php echo htmlspecialchars(public_url('/image/produit1.jpg'), ENT_QUOTES, 'UTF-8'); ?>'">
         <div class="produit-preview-info">
             <h3><?php echo htmlspecialchars($produit['nom']); ?></h3>
             <span class="prix"><?php echo number_format($prix_produit, 0, ',', ' '); ?> FCFA / unité</span>

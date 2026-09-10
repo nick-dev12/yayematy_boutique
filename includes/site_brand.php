@@ -32,6 +32,10 @@ if (!function_exists('site_brand_logo')) {
             return $cached;
         }
 
+        if (!function_exists('public_url')) {
+            require_once __DIR__ . '/site_url.php';
+        }
+
         if (!function_exists('get_site_brand_logo_path')) {
             $model = __DIR__ . '/../models/model_site_brand.php';
             if (is_file($model)) {
@@ -39,12 +43,12 @@ if (!function_exists('site_brand_logo')) {
             }
         }
 
+        $path = '/image/yaye_maty_logo.png';
         if (function_exists('get_site_brand_logo_path')) {
-            $cached = get_site_brand_logo_path();
-            return $cached;
+            $path = get_site_brand_logo_path();
         }
 
-        $cached = '/image/yaye_maty_logo.png';
+        $cached = public_url($path);
         return $cached;
     }
 }

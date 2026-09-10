@@ -1,37 +1,38 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page de liste des commandes livrées (Admin)
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-// Vérifier si l'admin est connecté
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 // Récupérer uniquement les commandes avec le statut "livree"
 require_once __DIR__ . '/../../models/model_commandes_admin.php';
 $toutes_commandes = get_all_commandes();
 
-// Filtrer pour ne garder que les commandes avec le statut "livree" ou "paye"
+// Filtrer : commandes payées (= livrées) ou explicitement marquées livrées
 $commandes_livrees = array_filter($toutes_commandes, function ($commande) {
-    return $commande['statut'] === 'livree' || $commande['statut'] === 'paye';
+    $statut = (string) ($commande['statut'] ?? '');
+    return $statut === 'livree' || $statut === 'paye';
 });
 
-// Par défaut : afficher uniquement les livraisons du jour. Option pour inclure les jours précédents
-$jours_precedents = isset($_GET['jours_precedents']) && $_GET['jours_precedents'] === '1';
-if (!$jours_precedents) {
+// Option : limiter aux livraisons du jour uniquement
+$filtre_jour = isset($_GET['jour']) && $_GET['jour'] === '1';
+if ($filtre_jour) {
     $aujourd_hui = date('Y-m-d');
     $commandes_livrees = array_filter($commandes_livrees, function ($c) use ($aujourd_hui) {
-        $date_ref = !empty($c['date_livraison']) ? $c['date_livraison'] : $c['date_commande'];
-        $date_c = date('Y-m-d', strtotime($date_ref));
-        return $date_c === $aujourd_hui;
+        $date_ref = !empty($c['date_livraison']) ? $c['date_livraison'] : ($c['date_commande'] ?? '');
+        if ($date_ref === '') {
+            return false;
+        }
+        return date('Y-m-d', strtotime($date_ref)) === $aujourd_hui;
     });
 }
+
+// Plus récentes en premier (date de livraison ou de commande)
+usort($commandes_livrees, function ($a, $b) {
+    $da = strtotime(!empty($a['date_livraison']) ? $a['date_livraison'] : ($a['date_commande'] ?? 'now'));
+    $db = strtotime(!empty($b['date_livraison']) ? $b['date_livraison'] : ($b['date_commande'] ?? 'now'));
+    return $db <=> $da;
+});
 
 // Statistiques
 $total_commandes = count_commandes_by_statut();
@@ -50,7 +51,7 @@ $montant_total_livrees = get_montant_total_commandes('livree') + get_montant_tot
     <title>Commandes Livrées - Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
 </head>
 
 <body>
@@ -93,15 +94,17 @@ $montant_total_livrees = get_montant_total_commandes('livree') + get_montant_tot
     <section class="content-section">
         <div class="section-header">
             <div class="section-title">
-                <h2><i class="fas fa-check-circle"></i> Commandes Reçues (<?php echo count($commandes_livrees); ?>)</h2>
+                <h2><i class="fas fa-check-circle"></i> Commandes livrées / payées (<?php echo count($commandes_livrees); ?>)</h2>
             </div>
             <div class="form-actions" style="flex-wrap: wrap;">
-                <?php if ($jours_precedents): ?>
+                <?php if ($filtre_jour): ?>
                     <a href="livrees.php" class="btn-link">
-                        <i class="fas fa-calendar-day"></i> Voir uniquement les livraisons du jour
+                        <i class="fas fa-calendar-alt"></i> Voir toutes les commandes livrées
                     </a>
                 <?php else: ?>
-
+                    <a href="livrees.php?jour=1" class="btn-link">
+                        <i class="fas fa-calendar-day"></i> Livraisons du jour uniquement
+                    </a>
                 <?php endif; ?>
                 <a href="index.php" class="btn-link">
                     <i class="fas fa-shopping-bag"></i> Voir les commandes à traiter
@@ -116,7 +119,9 @@ $montant_total_livrees = get_montant_total_commandes('livree') + get_montant_tot
             <div class="empty-state">
                 <i class="fas fa-box-open"></i>
                 <h3>Aucune commande livrée</h3>
-                <p>Aucune commande n'a encore été livrée.</p>
+                <p><?php echo $filtre_jour
+                    ? 'Aucune commande payée ou livrée pour la date du jour.'
+                    : 'Aucune commande n\'a encore été marquée comme payée ou livrée.'; ?></p>
             </div>
         <?php else: ?>
             <div class="commandes-grid">
@@ -127,7 +132,13 @@ $montant_total_livrees = get_montant_total_commandes('livree') + get_montant_tot
                                 <h3>Commande #<?php echo htmlspecialchars($commande['numero_commande']); ?></h3>
                                 <p>
                                     <strong>Client:</strong>
-                                    <?php echo htmlspecialchars(trim(($commande['user_prenom'] ?? '') . ' ' . ($commande['user_nom'] ?? ''))); ?><br>
+                                    <?php
+                                    $client_nom = trim(
+                                        trim((string) ($commande['user_prenom'] ?? $commande['client_prenom'] ?? '')) . ' ' .
+                                        trim((string) ($commande['user_nom'] ?? $commande['client_nom'] ?? ''))
+                                    );
+                                    echo htmlspecialchars($client_nom !== '' ? $client_nom : '—');
+                                    ?><br>
                                     <span
                                         class="client-email"><?php echo !empty($commande['user_email']) ? htmlspecialchars($commande['user_email']) : '—'; ?></span>
                                 </p>

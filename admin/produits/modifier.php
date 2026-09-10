@@ -1,18 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page de modification de produit
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-// Vérifier si l'admin est connecté
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 // Récupérer l'ID du produit
 $produit_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -619,8 +610,6 @@ $categories = get_all_categories();
 
             <div class="form-group">
                 <label><i class="fas fa-layer-group"></i> Variantes du produit (optionnel)</label>
-                <p style="font-size: 12px; color: #666; margin-bottom: 12px;">Ajoutez des variantes avec un nom, un prix
-                    et une image différents. Les options couleur, poids et taille s'appliquent aussi aux variantes.</p>
                 <div id="variantes-container" class="variantes-container">
                     <?php if (!empty($variantes)): ?>
                     <?php foreach ($variantes as $idx => $var): ?>
@@ -678,130 +667,8 @@ $categories = get_all_categories();
                     une variante</button>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Poids disponibles</label>
-                    <div class="options-add-block options-with-surcharge">
-                        <div class="options-add-row">
-                            <input type="text" id="poids-input" placeholder="Ex: 500g, 1kg" class="options-input">
-                            <input type="number" id="poids-surcharge" placeholder="+ FCFA" min="0" step="1"
-                                class="options-surcharge" title="Montant à ajouter au prix">
-                            <button type="button" class="btn-add-option" id="btn-add-poids">
-                                <i class="fas fa-plus"></i> Ajouter
-                            </button>
-                        </div>
-                        <div id="poids-list" class="options-tags-list options-tags-with-surcharge"></div>
-                        <?php
-                        $poids_val = $produit['poids'] ?? '';
-                        if ($poids_val === '[]' || $poids_val === '') {
-                            $poids_val = '';
-                        } elseif ($poids_val) {
-                            $poids_dec = json_decode($poids_val, true);
-                            if (is_array($poids_dec)) {
-                                $poids_dec = array_filter($poids_dec, function($x) {
-                                    $v = is_array($x) ? ($x['v'] ?? '') : $x;
-                                    return $v !== '' && $v !== '[]';
-                                });
-                                $poids_val = !empty($poids_dec) ? json_encode(array_values($poids_dec)) : '';
-                            }
-                        }
-                        ?>
-                        <input type="hidden" name="poids" id="poids-hidden"
-                            value="<?php echo htmlspecialchars($poids_val); ?>">
-                    </div>
-                    <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Poids + montant
-                        optionnel (ex: 1kg + 300). Laissez vide pour 0.</small>
-                </div>
-
-                <!-- <div class="form-group">
-                    <label for="unite">Unité par défaut</label>
-                    <select id="unite" name="unite">
-                        <option value="unité" <?php echo (($produit['unite'] ?? '') == 'unité') ? 'selected' : ''; ?>>Unité</option>
-                        <option value="kg" <?php echo (($produit['unite'] ?? '') == 'kg') ? 'selected' : ''; ?>>Kilogramme</option>
-                        <option value="g" <?php echo (($produit['unite'] ?? '') == 'g') ? 'selected' : ''; ?>>Gramme</option>
-                        <option value="L" <?php echo (($produit['unite'] ?? '') == 'L') ? 'selected' : ''; ?>>Litre</option>
-                    </select>
-                </div> -->
-            </div>
-
-            <?php
-            $couleurs_init = [];
-            $couleurs_raw = trim($produit['couleurs'] ?? '');
-            if ($couleurs_raw) {
-                $dec = json_decode($couleurs_raw, true);
-                if (is_array($dec)) {
-                    $couleurs_init = array_filter($dec, function($c) {
-                        return is_string($c) && preg_match('/^#[0-9A-Fa-f]{6}$/', $c);
-                    });
-                }
-            }
-            ?>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Couleurs disponibles (optionnel)</label>
-                    <div class="couleurs-picker-block">
-                        <div class="couleurs-add-row">
-                            <input type="color" id="couleur-input" value="#F25C19" title="Choisir une couleur">
-                            <button type="button" class="btn-add-couleur" id="btn-add-couleur">
-                                <i class="fas fa-plus"></i> Ajouter cette couleur
-                            </button>
-                        </div>
-                        <div id="couleurs-list" class="couleurs-swatches"></div>
-                        <?php
-                        $couleurs_hidden_val = ($couleurs_raw && $couleurs_raw !== '[]') ? (empty($couleurs_init) ? $couleurs_raw : json_encode($couleurs_init)) : '';
-                        ?>
-                        <input type="hidden" name="couleurs" id="couleurs-hidden"
-                            value="<?php echo htmlspecialchars($couleurs_hidden_val); ?>">
-                    </div>
-                    <?php if ($couleurs_raw && empty($couleurs_init)): ?>
-                    <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Ancien format (texte)
-                        : <?php echo htmlspecialchars($couleurs_raw); ?> — remplacez par des couleurs via le sélecteur
-                        ci-dessus.</small>
-                    <?php else: ?>
-                    <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Cliquez sur la
-                        pastille pour choisir une couleur, puis sur « Ajouter ». Vous pouvez ajouter plusieurs
-                        couleurs.</small>
-                    <?php endif; ?>
-                </div>
-                <!-- <div class="form-group">
-                    <label>Tailles disponibles</label>
-                    <div class="options-add-block options-with-surcharge">
-                        <div class="options-add-row">
-                            <input type="text" id="taille-input" placeholder="Ex: S, M, L" class="options-input">
-                            <input type="number" id="taille-surcharge" placeholder="+ FCFA" min="0" step="1"
-                                class="options-surcharge" title="Montant à ajouter au prix">
-                            <button type="button" class="btn-add-option" id="btn-add-taille">
-                                <i class="fas fa-plus"></i> Ajouter
-                            </button>
-                        </div>
-                        <div id="taille-list" class="options-tags-list options-tags-with-surcharge"></div>
-                        <?php
-                        $taille_val = $produit['taille'] ?? '';
-                        if ($taille_val === '[]' || $taille_val === '') {
-                            $taille_val = '';
-                        } elseif ($taille_val) {
-                            $taille_dec = json_decode($taille_val, true);
-                            if (is_array($taille_dec)) {
-                                $taille_dec = array_filter($taille_dec, function($x) {
-                                    $v = is_array($x) ? ($x['v'] ?? '') : $x;
-                                    return $v !== '' && $v !== '[]';
-                                });
-                                $taille_val = !empty($taille_dec) ? json_encode(array_values($taille_dec)) : '';
-                            }
-                        }
-                        ?>
-                        <input type="hidden" name="taille" id="taille-hidden"
-                            value="<?php echo htmlspecialchars($taille_val); ?>">
-                    </div>
-                    <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Taille + montant
-                        optionnel (ex: L + 200). Laissez vide pour 0.</small>
-                </div> -->
-            </div>
-
             <div class="form-group">
                 <label><i class="fas fa-image"></i> Images du produit</label>
-                <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Images actuelles — cliquez sur &times;
-                    pour supprimer une image. La première est l'image principale.</p>
                 <?php 
                 $images_produit = [];
                 if (!empty($produit['images'])) {
@@ -819,7 +686,7 @@ $categories = get_all_categories();
                         <span class="img-badge"><?php echo $idx === 0 ? 'Principale' : ($idx + 1); ?></span>
                         <button type="button" class="img-remove-btn" title="Supprimer cette image">&times;</button>
                         <img src="../../upload/<?php echo htmlspecialchars($img_path); ?>"
-                            alt="Image <?php echo $idx + 1; ?>" onerror="this.src='/image/produit1.jpg'">
+                            alt="Image <?php echo $idx + 1; ?>" onerror="this.src='<?php echo htmlspecialchars(public_url('/image/produit1.jpg'), ENT_QUOTES, 'UTF-8'); ?>'">
                     </div>
                     <?php endforeach; ?>
                 </div>

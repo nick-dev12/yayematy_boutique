@@ -35,7 +35,7 @@ if (!$is_bg_tracker_frame && !$is_livreur_suivi_page && isset($_SESSION['admin_i
     require_once __DIR__ . '/../../includes/admin_permissions.php';
     if (function_exists('admin_can_livreur_gps') && admin_can_livreur_gps()) {
         require_once __DIR__ . '/../../includes/asset_version.php';
-        echo '<script src="/js/livreur-bg-tracker.js' . asset_version_query() . '"></script>';
+        echo '<script src="' . htmlspecialchars(asset_url('/js/livreur-bg-tracker.js'), ENT_QUOTES, 'UTF-8') . '"></script>';
     }
 }
 ?>
@@ -47,6 +47,10 @@ if (product_share_should_load_assets()) {
 }
 ?>
 <?php include __DIR__ . '/../../includes/floating_back_button.php'; ?>
+<?php
+require_once __DIR__ . '/../../includes/gtranslate.php';
+gtranslate_render_core();
+?>
 </body>
 </html>
 

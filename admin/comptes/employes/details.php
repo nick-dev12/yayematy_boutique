@@ -1,15 +1,8 @@
 <?php
-require_once __DIR__ . '/../../../includes/session_user.php';
+require_once __DIR__ . '/../../includes/admin_auth.php';
 /**
  * Détail employé — infos, QR badge, absences et justificatifs (fiche employes uniquement).
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../../login.php');
-    exit;
-}
-
 require_once __DIR__ . '/../../includes/require_access.php';
 
 $role = $_SESSION['admin_role'] ?? '';
@@ -453,9 +446,9 @@ $titre = htmlspecialchars(trim(($f['prenom'] ?? '') . ' ' . ($f['nom'] ?? ''))) 
     <title><?php echo $titre; ?></title>
     <?php require_once __DIR__ . '/../../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-comptes-page.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-employes-rh.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-comptes-page.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-employes-rh.css'); ?>">
 </head>
 <body class="page-comptes page-employes-rh page-employes-detail<?php
     echo $doc_panel_open ? ' er-docs-modal-open' : '';
@@ -1754,11 +1747,11 @@ $titre = htmlspecialchars(trim(($f['prenom'] ?? '') . ' ' . ($f['nom'] ?? ''))) 
             </div>
         </div>
     </div>
-    <script src="/js/admin-carte-rh-scale.js<?php echo asset_version_query(); ?>" defer></script>
-    <script src="/js/admin-employes-detail-documents.js<?php echo asset_version_query(); ?>" defer></script>
-    <script src="/js/admin-employes-detail-sanctions.js<?php echo asset_version_query(); ?>" defer></script>
-    <script src="/js/admin-employes-detail-abs-autorisations.js<?php echo asset_version_query(); ?>" defer></script>
-    <script src="/js/admin-employes-detail-prets.js<?php echo asset_version_query(); ?>" defer></script>
-    <script src="/js/admin-employes-detail-conges.js<?php echo asset_version_query(); ?>" defer></script>
-    <script src="/js/admin-employes-detail-bulletin-paie.js<?php echo asset_version_query(); ?>" defer></script>
+    <script src="<?php echo asset_url('/js/admin-carte-rh-scale.js'); ?>" defer></script>
+    <script src="<?php echo asset_url('/js/admin-employes-detail-documents.js'); ?>" defer></script>
+    <script src="<?php echo asset_url('/js/admin-employes-detail-sanctions.js'); ?>" defer></script>
+    <script src="<?php echo asset_url('/js/admin-employes-detail-abs-autorisations.js'); ?>" defer></script>
+    <script src="<?php echo asset_url('/js/admin-employes-detail-prets.js'); ?>" defer></script>
+    <script src="<?php echo asset_url('/js/admin-employes-detail-conges.js'); ?>" defer></script>
+    <script src="<?php echo asset_url('/js/admin-employes-detail-bulletin-paie.js'); ?>" defer></script>
     <?php include __DIR__ . '/../../includes/footer.php'; ?>

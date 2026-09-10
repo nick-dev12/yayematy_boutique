@@ -1,15 +1,8 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Gestion des absences employés — saisie et justificatifs (admin / RH)
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 require_once __DIR__ . '/../includes/require_access.php';
 
 $role = $_SESSION['admin_role'] ?? '';
@@ -254,9 +247,9 @@ $page_title = 'Gestion des absences';
     <title><?php echo htmlspecialchars($page_title); ?> — Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-comptes-page.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-absences.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-comptes-page.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-absences.css'); ?>">
 </head>
 <body class="page-comptes page-absences">
     <?php include '../includes/nav.php'; ?>
@@ -352,7 +345,7 @@ $page_title = 'Gestion des absences';
                                     <td data-label="Justificatif" class="abs-table__justif">
                                         <?php if (!empty($a['justif_id'])): ?>
                                             <?php if (!empty($a['justif_fichier'])): ?>
-                                                <a href="/upload/<?php echo htmlspecialchars($a['justif_fichier']); ?>" target="_blank" rel="noopener" class="abs-link-file"><i class="fas fa-image" aria-hidden="true"></i> Voir l’image</a>
+                                                <a href="<?php echo upload_public_url(htmlspecialchars($a['justif_fichier'], ENT_QUOTES, 'UTF-8')); ?>" target="_blank" rel="noopener" class="abs-link-file"><i class="fas fa-image" aria-hidden="true"></i> Voir l’image</a>
                                             <?php endif; ?>
                                             <?php if (!empty($a['justif_texte'])): ?>
                                                 <span class="abs-justif-snippet" title="<?php echo htmlspecialchars($a['justif_texte']); ?>"><?php echo htmlspecialchars(mb_strimwidth($a['justif_texte'], 0, 80, '…', 'UTF-8')); ?></span>
@@ -511,5 +504,5 @@ $page_title = 'Gestion des absences';
         </div>
     </div>
 
-    <script src="/js/admin-absences-ui.js<?php echo asset_version_query(); ?>"></script>
+    <script src="<?php echo asset_url('/js/admin-absences-ui.js'); ?>"></script>
     <?php include '../includes/footer.php'; ?>

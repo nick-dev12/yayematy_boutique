@@ -376,6 +376,10 @@ function get_produits_en_promo($offset = 0, $limit = 50)
  */
 function count_produits_en_promo()
 {
+    if (!db_is_available()) {
+        return 0;
+    }
+
     global $db;
 
     try {
@@ -458,7 +462,11 @@ function get_produits_nouveautes_paginated($offset = 0, $limit = 20)
  */
 function get_produits_plus_vendus($limit = 8)
 {
-    global $db;
+    $db = app_db();
+    if (!$db) {
+        return [];
+    }
+
     $limit = max(1, (int) $limit);
 
     try {
@@ -489,7 +497,11 @@ function get_produits_plus_vendus($limit = 8)
  */
 function get_produits_aleatoires($limit = 10, $exclude_ids = [])
 {
-    global $db;
+    $db = app_db();
+    if (!$db) {
+        return [];
+    }
+
     $limit = max(1, (int) $limit);
     $exclude_ids = array_values(array_unique(array_filter(array_map('intval', (array) $exclude_ids))));
 

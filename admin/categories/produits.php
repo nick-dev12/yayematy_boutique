@@ -1,16 +1,8 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page d'affichage des produits d'une catégorie
  */
-
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 $categorie_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($categorie_id <= 0) {
@@ -58,9 +50,9 @@ $card_options = [
     <title><?php echo htmlspecialchars($categorie['nom']); ?> - Produits</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-dashboard-home.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-produits-index.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard-home.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-produits-index.css'); ?>">
 </head>
 <body class="page-produits-index page-categorie-produits">
     <?php include '../includes/nav.php'; ?>

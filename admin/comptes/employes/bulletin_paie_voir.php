@@ -1,15 +1,8 @@
 <?php
-require_once __DIR__ . '/../../../includes/session_user.php';
+require_once __DIR__ . '/../../includes/admin_auth.php';
 /**
  * Affichage / impression d’un bulletin de paie — mise en page A4
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../../login.php');
-    exit;
-}
-
 require_once __DIR__ . '/../../includes/require_access.php';
 
 $role = $_SESSION['admin_role'] ?? '';
@@ -127,7 +120,7 @@ $titre_page = 'Bulletin de paie — ' . trim(($em['prenom'] ?? '') . ' ' . ($em[
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($titre_page); ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-bulletin-paie.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-bulletin-paie.css'); ?>">
 </head>
 <body class="bp-a4-page">
     <header class="bp-toolbar no-print" role="toolbar">

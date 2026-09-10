@@ -102,11 +102,11 @@ $page_title = $is_livreur ? 'Livraisons du jour' : 'Livreurs GPS';
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-dashboard-home.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-livreurs-index.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-livreur-suivi.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-livreur-tracking-ui.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard-home.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-livreurs-index.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-livreur-suivi.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-livreur-tracking-ui.css'); ?>">
 </head>
 <body class="page-livreurs-index">
 <?php include __DIR__ . '/../includes/nav.php'; ?>
@@ -147,7 +147,7 @@ $page_title = $is_livreur ? 'Livraisons du jour' : 'Livreurs GPS';
     <?php if (!$tables_ready): ?>
     <div class="prod-catalog-flash message error">
         <i class="fas fa-database"></i>
-        <span>Module non installé. Exécutez : <code>php migrations/run_add_livreur_tracking.php</code></span>
+        <span>Module GPS indisponible. Vérifiez que MySQL est démarré, puis rechargez la page.</span>
     </div>
     <?php endif; ?>
 
@@ -457,8 +457,8 @@ window.LIVREUR_INDEX_UI = {
 };
 </script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-<script src="/js/livreur-route-api.js<?php echo asset_version_query(); ?>"></script>
-<script src="/js/admin-livreur-demarrage.js<?php echo asset_version_query(); ?>"></script>
-<script src="/js/admin-livreurs-index-ui.js<?php echo asset_version_query(); ?>"></script>
+<script src="<?php echo asset_url('/js/livreur-route-api.js'); ?>"></script>
+<script src="<?php echo asset_url('/js/admin-livreur-demarrage.js'); ?>"></script>
+<script src="<?php echo asset_url('/js/admin-livreurs-index-ui.js'); ?>"></script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>

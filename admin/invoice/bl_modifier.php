@@ -74,7 +74,7 @@ function bl_modifier_esc_attr($v): string
     <title>Modifier BL <?php echo bl_modifier_esc_attr($bl['numero_bl'] ?? ''); ?> — Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
 </head>
 <body>
     <?php include '../includes/nav.php'; ?>
@@ -281,7 +281,7 @@ function bl_modifier_esc_attr($v): string
 
     <?php include '../includes/footer.php'; ?>
 
-    <script src="/js/admin-produit-search-ui.js<?php echo asset_version_query(); ?>"></script>
+    <script src="<?php echo asset_url('/js/admin-produit-search-ui.js'); ?>"></script>
     <script>
     (function() {
         var FISCAL_TVA_PCT = <?php echo json_encode((float) $fiscal_tva_pourcent_devis_bl); ?>;

@@ -13,8 +13,7 @@ require_once __DIR__ . '/../models/model_fcm.php';
 $redirect_after_login = '/user/supprimer-compte.php';
 
 if (empty($_SESSION['user_id']) || (int) $_SESSION['user_id'] < 1) {
-    header('Location: /user/connexion.php?redirect=' . rawurlencode($redirect_after_login));
-    exit;
+    redirect_to('/user/connexion.php?redirect=' . rawurlencode($redirect_after_login));
 }
 
 $user_id = (int) $_SESSION['user_id'];
@@ -23,8 +22,7 @@ $user = get_user_by_id($user_id);
 if (!$user) {
     $_SESSION = [];
     session_destroy();
-    header('Location: /user/connexion.php?redirect=' . rawurlencode($redirect_after_login));
-    exit;
+    redirect_to('/user/connexion.php?redirect=' . rawurlencode($redirect_after_login));
 }
 
 if (empty($_SESSION['user_csrf'])) {
@@ -55,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         session_destroy();
 
-        header('Location: /index.php?compte_supprime=1');
+        redirect_to('/index.php?compte_supprime=1');
         exit;
     }
 
@@ -75,10 +73,10 @@ $user_label = trim(($user['prenom'] ?? '') . ' ' . ($user['nom'] ?? ''));
     <?php include __DIR__ . '/../includes/pwa_meta.php'; ?>
     <title>Supprimer mon compte — Yaye Maty</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/a_style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/legal-page.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/a_style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/legal-page.css'); ?>">
 </head>
 <body>
     <?php include __DIR__ . '/../nav_bar.php'; ?>
@@ -97,7 +95,7 @@ $user_label = trim(($user['prenom'] ?? '') . ' ' . ($user['nom'] ?? ''));
 
         <p>
             Cette action est <strong>irréversible</strong>. Consultez la
-            <a href="/politique-suppression-compte.php">politique de suppression de compte</a>
+            <a href="<?php echo public_url('/politique-suppression-compte.php'); ?>">politique de suppression de compte</a>
             pour connaître les données effacées et conservées.
         </p>
 
@@ -116,10 +114,10 @@ $user_label = trim(($user['prenom'] ?? '') . ' ' . ($user['nom'] ?? ''));
                     <a href="mailto:service@yayematy.com">service@yayematy.com</a>
                     avant de supprimer votre compte.
                 </p>
-                <p><a href="/user/mes-commandes.php">Voir mes commandes</a></p>
+                <p><a href="<?php echo public_url('/user/mes-commandes.php'); ?>">Voir mes commandes</a></p>
             </div>
         <?php else: ?>
-            <form class="legal-delete-form" method="post" action="/user/supprimer-compte.php">
+            <form class="legal-delete-form" method="post" action="<?php echo public_url('/user/supprimer-compte.php'); ?>">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($user_csrf, ENT_QUOTES, 'UTF-8'); ?>">
 
                 <div class="legal-form-group">
@@ -145,12 +143,12 @@ $user_label = trim(($user['prenom'] ?? '') . ' ' . ($user['nom'] ?? ''));
                     <button type="submit" class="legal-btn-delete">
                         <i class="fas fa-trash-alt" aria-hidden="true"></i> Supprimer définitivement mon compte
                     </button>
-                    <a href="/politique-suppression-compte.php" class="legal-btn-cancel">Annuler</a>
+                    <a href="<?php echo public_url('/politique-suppression-compte.php'); ?>" class="legal-btn-cancel">Annuler</a>
                 </div>
             </form>
         <?php endif; ?>
 
-        <a href="/user/mon-compte.php" class="back-link">
+        <a href="<?php echo public_url('/user/mon-compte.php'); ?>" class="back-link">
             <i class="fas fa-arrow-left" aria-hidden="true"></i> Retour à mon compte
         </a>
     </article>

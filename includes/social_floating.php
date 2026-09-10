@@ -21,21 +21,23 @@ if (!empty($whatsapp)) {
 }
 ?>
 <?php if (!function_exists('get_asset_version')) { require_once __DIR__ . '/asset_version.php'; } ?>
-<link rel="stylesheet" href="/css/social-floating.css<?php echo asset_version_query(); ?>">
+<?php if (!defined('SOCIAL_FLOATING_CSS_LOADED')): define('SOCIAL_FLOATING_CSS_LOADED', true); ?>
+<link rel="stylesheet" href="<?php echo asset_url('/css/social-floating.css'); ?>">
+<?php endif; ?>
 <div class="social-floating" id="socialFloating" aria-label="Réseaux sociaux">
     <?php if (!empty($whatsapp_url)): ?>
-    <a href="<?php echo htmlspecialchars($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer" class="social-floating-btn social-whatsapp" title="Contactez-nous sur WhatsApp">
-        <i class="fab fa-whatsapp"></i>
+    <a href="<?php echo htmlspecialchars($whatsapp_url); ?>" target="_blank" rel="noopener noreferrer" class="social-floating-btn social-whatsapp" title="Contactez-nous sur WhatsApp" aria-label="WhatsApp">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i>
     </a>
     <?php endif; ?>
     <?php if (!empty($tiktok)): ?>
-    <a href="<?php echo htmlspecialchars($tiktok); ?>" target="_blank" rel="noopener noreferrer" class="social-floating-btn social-tiktok" title="Suivez-nous sur TikTok">
-        <i class="fab fa-tiktok"></i>
+    <a href="<?php echo htmlspecialchars($tiktok); ?>" target="_blank" rel="noopener noreferrer" class="social-floating-btn social-tiktok" title="Suivez-nous sur TikTok" aria-label="TikTok">
+        <i class="fab fa-tiktok" aria-hidden="true"></i>
     </a>
     <?php endif; ?>
     <?php if (!empty($facebook)): ?>
-    <a href="<?php echo htmlspecialchars($facebook); ?>" target="_blank" rel="noopener noreferrer" class="social-floating-btn social-facebook" title="Suivez-nous sur Facebook">
-        <i class="fab fa-facebook-f"></i>
+    <a href="<?php echo htmlspecialchars($facebook); ?>" target="_blank" rel="noopener noreferrer" class="social-floating-btn social-facebook" title="Suivez-nous sur Facebook" aria-label="Facebook">
+        <i class="fab fa-facebook-f" aria-hidden="true"></i>
     </a>
     <?php endif; ?>
 </div>

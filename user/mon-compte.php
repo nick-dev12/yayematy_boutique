@@ -54,10 +54,10 @@ if ($user_initials === '') {
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <?php include __DIR__ . '/../includes/pwa_meta.php'; ?>
     <title>Mon Compte — <?php echo htmlspecialchars(site_brand_name()); ?></title>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/user-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-mon-compte.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-mon-compte.css'); ?>">
 </head>
 
 <body class="user-page-mon-compte">
@@ -87,7 +87,7 @@ if ($user_initials === '') {
             </div>
 
             <div class="account-hero__actions">
-                <a href="/index.php" class="account-btn account-btn--primary">
+                <a href="<?php echo public_url('/index.php'); ?>" class="account-btn account-btn--primary">
                     <i class="fas fa-store" aria-hidden="true"></i>
                     Continuer mes achats
                 </a>
@@ -127,12 +127,12 @@ if ($user_initials === '') {
                 <span class="account-stat__value"><?php echo (int) $nb_commandes; ?></span>
                 <span class="account-stat__label">Commandes</span>
             </a>
-            <a href="/panier.php" class="account-stat account-stat--panier">
+            <a href="<?php echo public_url('/panier.php'); ?>" class="account-stat account-stat--panier">
                 <span class="account-stat__icon"><i class="fas fa-shopping-cart" aria-hidden="true"></i></span>
                 <span class="account-stat__value"><?php echo (int) $nb_panier; ?></span>
                 <span class="account-stat__label">Au panier</span>
             </a>
-            <a href="/index.php" class="account-stat account-stat--favoris">
+            <a href="<?php echo public_url('/index.php'); ?>" class="account-stat account-stat--favoris">
                 <span class="account-stat__icon"><i class="fas fa-heart" aria-hidden="true"></i></span>
                 <span class="account-stat__value"><?php echo (int) $nb_favoris; ?></span>
                 <span class="account-stat__label">Favoris</span>

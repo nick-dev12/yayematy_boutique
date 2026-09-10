@@ -35,7 +35,7 @@ $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inacti
     <title>Gestion du Slider - Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
 </head>
 
 <body>
@@ -75,7 +75,7 @@ $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inacti
             <div class="slide-card">
                 <img src="<?php echo htmlspecialchars(upload_image_url('slider/' . ($slide['image'] ?? ''), 'original')); ?>"
                     alt="<?php echo htmlspecialchars($slide['titre']); ?>" class="slide-image"
-                    onerror="this.src='/image/produit1.jpg'">
+                    onerror="this.src='<?php echo htmlspecialchars(public_url('/image/produit1.jpg'), ENT_QUOTES, 'UTF-8'); ?>'">
                 <div class="slide-body">
                     <h3 class="slide-titre"><?php echo htmlspecialchars($slide['titre']); ?></h3>
                     <p class="slide-paragraphe"><?php echo htmlspecialchars($slide['paragraphe'] ?? ''); ?></p>

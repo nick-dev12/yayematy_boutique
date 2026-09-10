@@ -1,25 +1,20 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page de liste des commandes annulées (Admin)
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-// Vérifier si l'admin est connecté
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 // Récupérer toutes les commandes
 require_once __DIR__ . '/../../models/model_commandes_admin.php';
 $toutes_commandes = get_all_commandes();
 
 // Filtrer pour ne garder que les commandes avec le statut "annulee"
-$commandes_annulees = array_filter($toutes_commandes, function($commande) {
-    return $commande['statut'] === 'annulee';
+$commandes_annulees = array_filter($toutes_commandes, function ($commande) {
+    return ($commande['statut'] ?? '') === 'annulee';
+});
+
+usort($commandes_annulees, function ($a, $b) {
+    return strtotime($b['date_commande'] ?? 'now') <=> strtotime($a['date_commande'] ?? 'now');
 });
 
 // Statistiques
@@ -38,214 +33,10 @@ $montant_total_annulees = get_montant_total_commandes('annulee');
     <title>Commandes Annulées - Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <style>
-        .commandes-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-box {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            border-left: 4px solid #842029;
-        }
-
-        .stat-box h3 {
-            color: #6b2f20;
-            font-size: 14px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .stat-box .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: #842029;
-        }
-
-        .commandes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        @media (min-width: 300px) {
-            .commandes-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 300px));
-            }
-        }
-
-        .commande-item {
-            background: #ffffff;
-            border: 1px solid #e8e8e8;
-            border-radius: 12px;
-            padding: 20px;
-            max-width: 300px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .commande-item:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            transform: translateY(-3px);
-        }
-
-        .commande-header {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 15px;
-            gap: 10px;
-        }
-
-        .commande-info {
-            width: 100%;
-        }
-
-        .commande-info h3 {
-            color: #6b2f20;
-            font-size: 16px;
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .commande-info p {
-            color: #666;
-            font-size: 12px;
-            margin: 0;
-        }
-
-        .commande-info .client-email {
-            color: #999;
-            font-size: 11px;
-            margin-top: 4px;
-        }
-
-        .commande-statut {
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            align-self: flex-start;
-        }
-
-        .statut-annulee {
-            background: #f8d7da;
-            color: #842029;
-        }
-
-        .commande-details {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #e8e8e8;
-        }
-
-        .detail-item {
-            font-size: 13px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-        }
-
-        .detail-item label {
-            color: #666;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .detail-item .value {
-            color: #000000;
-            font-weight: 600;
-            text-align: right;
-            font-size: 13px;
-        }
-
-        .btn-view {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #918a44;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-            text-align: center;
-            width: 100%;
-            margin-top: 15px;
-        }
-
-        .btn-view:hover {
-            background-color: #6b2f20;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-
-        .empty-state i {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.4;
-            color: #842029;
-        }
-
-        .empty-state h3 {
-            font-size: 20px;
-            color: #6b2f20;
-            margin-bottom: 10px;
-        }
-
-        .empty-state p {
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .btn-link {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #918a44;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-link:hover {
-            background-color: #6b2f20;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-    </style>
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-commandes-pages.css'); ?>">
 </head>
-<body>
+<body class="page-commandes-annulees">
     <?php include '../includes/nav.php'; ?>
     
     <div class="content-header">
@@ -289,16 +80,28 @@ $montant_total_annulees = get_montant_total_commandes('annulee');
             </div>
         <?php else: ?>
             <div class="commandes-grid">
-                <?php foreach ($commandes_annulees as $commande): ?>
+                <?php foreach ($commandes_annulees as $commande):
+                    $client_nom = trim(
+                        trim((string) ($commande['user_prenom'] ?? $commande['client_prenom'] ?? '')) . ' ' .
+                        trim((string) ($commande['user_nom'] ?? $commande['client_nom'] ?? ''))
+                    );
+                    $client_email = trim((string) ($commande['user_email'] ?? $commande['client_email'] ?? ''));
+                    $telephone = trim((string) ($commande['telephone_livraison'] ?? $commande['client_telephone'] ?? ''));
+                    $adresse = trim((string) ($commande['adresse_livraison'] ?? ''));
+                    $adresse_courte = $adresse !== '' ? (mb_strlen($adresse) > 30 ? mb_substr($adresse, 0, 30) . '…' : $adresse) : '—';
+                ?>
                     <div class="commande-item">
                         <div class="commande-header">
                             <div class="commande-info">
-                                <h3>Commande #<?php echo htmlspecialchars($commande['numero_commande']); ?></h3>
+                                <h3>Commande #<?php echo htmlspecialchars((string) ($commande['numero_commande'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h3>
                                 <p>
-                                    <strong>Client:</strong> <?php echo htmlspecialchars($commande['user_prenom'] . ' ' . $commande['user_nom']); ?><br>
-                                    <span class="client-email"><?php echo htmlspecialchars($commande['user_email']); ?></span>
+                                    <strong>Client:</strong>
+                                    <?php echo htmlspecialchars($client_nom !== '' ? $client_nom : '—', ENT_QUOTES, 'UTF-8'); ?><br>
+                                    <span class="client-email"><?php echo htmlspecialchars($client_email !== '' ? $client_email : '—', ENT_QUOTES, 'UTF-8'); ?></span>
                                 </p>
-                                <p style="margin-top: 8px;">Date: <?php echo date('d/m/Y à H:i', strtotime($commande['date_commande'])); ?></p>
+                                <p class="commande-date">Date:
+                                    <?php echo !empty($commande['date_commande']) ? date('d/m/Y à H:i', strtotime($commande['date_commande'])) : '—'; ?>
+                                </p>
                             </div>
                             <span class="commande-statut statut-annulee">
                                 <i class="fas fa-ban"></i> Annulée
@@ -307,21 +110,19 @@ $montant_total_annulees = get_montant_total_commandes('annulee');
                         <div class="commande-details">
                             <div class="detail-item">
                                 <label>Montant total</label>
-                                <div class="value"><?php echo number_format($commande['montant_total'], 0, ',', ' '); ?> FCFA</div>
+                                <div class="value"><?php echo number_format((float) ($commande['montant_total'] ?? 0), 0, ',', ' '); ?> FCFA</div>
                             </div>
                             <div class="detail-item">
                                 <label>Adresse</label>
-                                <div class="value" style="font-size: 11px; max-width: 150px; text-align: right; word-break: break-word;">
-                                    <?php echo htmlspecialchars(substr($commande['adresse_livraison'], 0, 30)); ?>...
-                                </div>
+                                <div class="value small"><?php echo htmlspecialchars($adresse_courte, ENT_QUOTES, 'UTF-8'); ?></div>
                             </div>
                             <div class="detail-item">
                                 <label>Téléphone</label>
-                                <div class="value" style="font-size: 12px;"><?php echo htmlspecialchars($commande['telephone_livraison']); ?></div>
+                                <div class="value"><?php echo htmlspecialchars($telephone !== '' ? $telephone : '—', ENT_QUOTES, 'UTF-8'); ?></div>
                             </div>
                         </div>
-                        
-                        <a href="details.php?id=<?php echo $commande['id']; ?>" class="btn-view">
+
+                        <a href="details.php?id=<?php echo (int) ($commande['id'] ?? 0); ?>" class="btn-view">
                             <i class="fas fa-eye"></i> Voir les détails
                         </a>
                     </div>

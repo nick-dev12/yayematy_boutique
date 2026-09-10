@@ -14,6 +14,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_email'])) {
 
 require_once __DIR__ . '/../models/model_commandes.php';
 require_once __DIR__ . '/../includes/site_brand.php';
+require_once __DIR__ . '/../includes/site_url.php';
 
 $success_message = '';
 $error_message = '';
@@ -51,8 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['recommander'])) {
                 }
 
                 if ($added_count > 0) {
-                    header('Location: /panier.php?recommande=1&count=' . $added_count);
-                    exit;
+                    redirect_to('/panier.php?recommande=1&count=' . $added_count);
                 }
                 $error_message = 'Aucun produit disponible à recommander.';
             } else {
@@ -84,12 +84,12 @@ foreach ($commandes_annulees as $commande_annulee) {
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <?php include __DIR__ . '/../includes/pwa_meta.php'; ?>
     <title>Commandes annulées — <?php echo htmlspecialchars(site_brand_name()); ?></title>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/user-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-mon-compte.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-mes-commandes.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-commandes-annulees.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-mon-compte.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-mes-commandes.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-commandes-annulees.css'); ?>">
 </head>
 
 <body class="user-page-commandes-annulees">
@@ -120,7 +120,7 @@ foreach ($commandes_annulees as $commande_annulee) {
                     <i class="fas fa-shopping-bag" aria-hidden="true"></i>
                     Commandes actives
                 </a>
-                <a href="/produits.php" class="account-btn account-btn--outline">
+                <a href="<?php echo public_url('/produits.php'); ?>" class="account-btn account-btn--outline">
                     <i class="fas fa-store" aria-hidden="true"></i>
                     Voir les produits
                 </a>

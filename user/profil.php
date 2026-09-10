@@ -175,12 +175,12 @@ if (isset($_POST['telephone'])) {
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <?php include __DIR__ . '/../includes/pwa_meta.php'; ?>
     <title>Mon Profil — <?php echo htmlspecialchars(site_brand_name()); ?></title>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/user-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-mon-compte.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/auth-pages.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-profil.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-mon-compte.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/auth-pages.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-profil.css'); ?>">
     <?php include __DIR__ . '/../includes/auth_intl_tel_head.php'; ?>
 </head>
 
@@ -223,7 +223,7 @@ if (isset($_POST['telephone'])) {
                     <i class="fas fa-shopping-bag" aria-hidden="true"></i>
                     Mes commandes
                 </a>
-                <a href="/index.php" class="account-btn account-btn--ghost">
+                <a href="<?php echo public_url('/index.php'); ?>" class="account-btn account-btn--ghost">
                     <i class="fas fa-store" aria-hidden="true"></i>
                     Boutique
                 </a>

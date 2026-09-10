@@ -2,49 +2,53 @@
 require_once __DIR__ . '/includes/session_user.php';
 session_start_persistent();
 
-// Inclusion des modèles
+require_once __DIR__ . '/includes/site_url.php';
+require_once __DIR__ . '/includes/asset_version.php';
+require_once __DIR__ . '/includes/image_optimizer.php';
 require_once __DIR__ . '/models/model_categories.php';
 require_once __DIR__ . '/models/model_produits.php';
 
-// Récupérer l'ID de la catégorie depuis l'URL
 $categorie_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-
-// Réinitialiser la variable pour éviter tout problème de cache
-unset($categorie);
 $categorie = null;
 
-// Récupérer les informations de la catégorie
 if ($categorie_id > 0) {
     $categorie = get_categorie_by_id($categorie_id);
 }
 
-// Si la catégorie n'existe pas, rediriger vers l'accueil
 if (!$categorie || !is_array($categorie) || empty($categorie['nom'])) {
-    header('Location: index.php');
+    header('Location: ' . public_url('/produits.php'));
     exit;
 }
 
-// Forcer la récupération du nom de la catégorie depuis le tableau
-$categorie_nom = isset($categorie['nom']) ? $categorie['nom'] : 'Catégorie';
+$categorie_nom = (string) $categorie['nom'];
+$categorie_description = trim((string) ($categorie['description'] ?? ''));
 
-// Récupérer tous les produits de cette catégorie
 $produits = get_produits_by_categorie($categorie_id);
 if ($produits === false) {
     $produits = [];
 }
 
-// Inclusion du fichier de connexion à la BDD (pour les autres fonctionnalités si nécessaire)
+$nb_produits = count($produits);
+
+$categorie_image = '';
+if (!empty($categorie['image'])) {
+    $categorie_image = upload_image_url($categorie['image'], 'md');
+} else {
+    $categorie_image = public_url('/image/market.png');
+}
+
 if (file_exists(__DIR__ . '/controllers/controller_commerce_users.php')) {
     require_once __DIR__ . '/controllers/controller_commerce_users.php';
 }
 
-// Meta SEO
-require_once __DIR__ . '/includes/site_url.php';
+require_once __DIR__ . '/includes/site_brand.php';
 $base = get_site_base_url();
-$seo_title = $categorie_nom . ' - Yaye Maty';
-$desc_cat = !empty($categorie['description']) ? strip_tags($categorie['description']) : 'Produits décoratifs pour gâteaux ' . $categorie_nom . ' : anniversaire, mariage, cérémonies. Yaye Maty - Personnalisez vos gâteaux.';
-$seo_description = mb_substr($desc_cat, 0, 160);
-$seo_canonical = $base . '/categorie.php?id=' . (int) $categorie_id;
+$seo_title = $categorie_nom . ' — ' . site_brand_name();
+$desc_cat = $categorie_description !== ''
+    ? $categorie_description
+    : 'Découvrez nos produits ' . $categorie_nom . ' sur ' . site_brand_name_market() . '.';
+$seo_description = mb_substr(strip_tags($desc_cat), 0, 160);
+$seo_canonical = rtrim($base, '/') . '/categorie.php?id=' . (int) $categorie_id;
 ?>
 
 <!DOCTYPE html>
@@ -59,88 +63,79 @@ $seo_canonical = $base . '/categorie.php?id=' . (int) $categorie_id;
         integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-    <link rel="stylesheet" href="/css/owl.carousel.min.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/owl.carousel.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/animate.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/animate.min.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/catalogue-grid.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/product-cards.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/catalogue-responsive.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/responsive-site.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/a_style.css<?php echo asset_version_query(); ?>">
-    <style>
-        /* Styles personnalisés pour les cartes produits */
-    </style>
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-grid.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/product-cards.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-responsive.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/responsive-site.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/a_style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/categorie-page.css'); ?>">
 </head>
 
-<body>
+<body class="page-categorie">
 
     <?php
     require_once __DIR__ . '/includes/render_product_card.php';
-    include('nav_bar.php');
+    include __DIR__ . '/nav_bar.php';
     ?>
 
     <?php if (isset($_GET['added']) && $_GET['added'] == '1'): ?>
-        <div
-            style="max-width: 600px; margin: 20px auto; padding: 15px 25px; background: rgba(46, 125, 181, 0.15); border-left: 4px solid var(--turquoise); border-radius: 8px; color: var(--titres);">
-            <i class="fas fa-check-circle"></i> Produit ajouté au panier avec succès.
-        </div>
+    <div class="categorie-alert categorie-alert--success">
+        <i class="fas fa-check-circle" aria-hidden="true"></i>
+        Produit ajouté au panier avec succès.
+    </div>
     <?php endif; ?>
     <?php if (isset($_GET['error'])): ?>
-        <div
-            style="max-width: 600px; margin: 20px auto; padding: 15px 25px; background: rgba(242, 92, 25, 0.15); border-left: 4px solid var(--couleur-dominante); border-radius: 8px; color: var(--titres);">
-            <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($_GET['error']); ?>
-        </div>
+    <div class="categorie-alert categorie-alert--error">
+        <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+        <?php echo htmlspecialchars((string) $_GET['error']); ?>
+    </div>
     <?php endif; ?>
-    <section class="section00">
-        <section class="produit_vedetes">
-            <div class="box1">
-                <h1><?php echo htmlspecialchars($categorie_nom); ?></h1>
-            </div>
 
-            <?php if (empty($produits)): ?>
-                <div style="text-align: center; padding: 40px; color: #666;">
-                    <i class="fas fa-box-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
-                    <p style="font-size: 16px;">Aucun produit publié pour le moment.</p>
-                    <a href="index.php"
-                        style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #918a44; color: white; text-decoration: none; border-radius: 5px; transition: background 0.3s ease;">
-                        <i class="fas fa-arrow-left"></i> Retour à l'accueil
+    <main class="categorie-page">
+        <header class="categorie-hero" style="background-image: url('<?php echo htmlspecialchars($categorie_image); ?>');">
+            <div class="categorie-hero__overlay">
+                <h1 class="categorie-hero__title"><?php echo htmlspecialchars($categorie_nom); ?></h1>
+                <?php if ($categorie_description !== ''): ?>
+                <p class="categorie-hero__desc"><?php echo htmlspecialchars($categorie_description); ?></p>
+                <?php endif; ?>
+                <p class="categorie-hero__count">
+                    <?php echo $nb_produits === 0
+                        ? 'Aucun produit pour le moment'
+                        : $nb_produits . ' produit' . ($nb_produits > 1 ? 's' : '') . ' disponible' . ($nb_produits > 1 ? 's' : ''); ?>
+                </p>
+            </div>
+        </header>
+
+        <section class="categorie-content">
+            <?php if ($nb_produits === 0): ?>
+            <div class="categorie-empty">
+                <i class="fa-solid fa-box-open categorie-empty__icon" aria-hidden="true"></i>
+                <h2>Aucun produit dans cette catégorie</h2>
+                <p>Revenez bientôt : de nouveaux articles seront ajoutés ici.</p>
+                <div class="categorie-empty__actions">
+                    <a href="<?php echo public_url('/produits.php'); ?>" class="home-btn-primary">
+                        Voir tous les produits
+                    </a>
+                    <a href="<?php echo public_url('/index.php'); ?>" class="categorie-empty__link">
+                        Retour à l'accueil
                     </a>
                 </div>
+            </div>
             <?php else: ?>
-                <div class="catalogue-products-section">
-                    <div class="catalogue-products-grid">
+            <div class="catalogue-products-section">
+                <div class="catalogue-products-grid">
                     <?php foreach ($produits as $produit): ?>
                         <?php render_product_card_home($produit); ?>
                     <?php endforeach; ?>
-                    </div>
                 </div>
+            </div>
             <?php endif; ?>
         </section>
-    </section>
+    </main>
 
-    <?php include('footer.php') ?>
-
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <script src="/js/owl.carousel.min.js"></script>
-    <script src="/js/owl.carousel.js"></script>
-    <script src="/js/owl.animate.js"></script>
-    <script src="/js/owl.autoplay.js"></script>
-
-    <script>
-        $(document).ready(function () {
-            AOS.init();
-        });
-    </script>
-
-    <script>
-        // ..
-        AOS.init();
-    </script>
+    <?php include __DIR__ . '/footer.php'; ?>
 
 </body>
 

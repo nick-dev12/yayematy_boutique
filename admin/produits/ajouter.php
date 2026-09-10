@@ -1,17 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page d'ajout de produit
  * Formulaire direct - stock géré via la colonne produits.stock (plus de lien stock_articles)
  */
-
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 require_once __DIR__ . '/../../controllers/controller_produits.php';
 $result = process_add_produit();
 
@@ -40,7 +32,7 @@ $categorie_id_prefill = isset($_GET['categorie_id']) ? (int) $_GET['categorie_id
     <title>Ajouter un produit - Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
 </head>
 
 <body>
@@ -132,73 +124,10 @@ $categorie_id_prefill = isset($_GET['categorie_id']) ? (int) $_GET['categorie_id
                 </div>
             </div>
 
-            <div class="form-add-block">
-                    <h3 class="form-add-section-title"><i class="fas fa-ruler"></i> Poids, couleurs et tailles
-                        (optionnel)</h3>
-                    <p class="form-help" style="margin-bottom: 15px;">Pour chaque poids ou taille, vous pouvez ajouter
-                        un montant optionnel (+ FCFA) qui s'additionne au prix de base lorsque le client choisit cette
-                        option.</p>
-                <div class="form-group-row">
-                    <div class="form-group">
-                            <label>Poids disponibles</label>
-                            <div class="options-add-block options-with-surcharge">
-                                <div class="options-add-row">
-                                    <input type="text" id="poids-input" placeholder="Ex: 500g, 1kg"
-                                        class="options-input">
-                                    <input type="number" id="poids-surcharge" placeholder="+ FCFA" min="0" step="1"
-                                        class="options-surcharge" title="Montant à ajouter au prix">
-                                    <button type="button" class="btn-add-option" id="btn-add-poids">
-                                        <i class="fas fa-plus"></i> Ajouter
-                                    </button>
-                                </div>
-                                <div id="poids-list" class="options-tags-list options-tags-with-surcharge"></div>
-                                <input type="hidden" name="poids" id="poids-hidden"
-                               value="<?php echo isset($_POST['poids']) ? htmlspecialchars($_POST['poids']) : ''; ?>">
-                    </div>
-                            <small class="form-help">Poids + montant optionnel (ex: 1kg + 300). Laissez vide pour
-                                0.</small>
-                        </div>
-                        <!-- <div class="form-group">
-                            <label for="unite">Unité par défaut</label>
-                        <select id="unite" name="unite">
-                                <option value="unité" <?php echo (!isset($_POST['unite']) || $_POST['unite'] == 'unité') ? 'selected' : ''; ?>>
-                                    Unité</option>
-                                <option value="kg" <?php echo (isset($_POST['unite']) && $_POST['unite'] == 'kg') ? 'selected' : ''; ?>>
-                                    Kilogramme</option>
-                                <option value="g" <?php echo (isset($_POST['unite']) && $_POST['unite'] == 'g') ? 'selected' : ''; ?>>
-                                    Gramme</option>
-                                <option value="L" <?php echo (isset($_POST['unite']) && $_POST['unite'] == 'L') ? 'selected' : ''; ?>>
-                                    Litre</option>
-                        </select>
-                        </div> -->
-                </div>
-                <div class="form-group-row">
-                    <div class="form-group">
-                        <label>Couleurs disponibles (optionnel)</label>
-                        <div class="couleurs-picker-block">
-                            <div class="couleurs-add-row">
-                                <input type="color" id="couleur-input" value="#F25C19" title="Choisir une couleur">
-                                <button type="button" class="btn-add-couleur" id="btn-add-couleur">
-                                    <i class="fas fa-plus"></i> Ajouter cette couleur
-                                </button>
-                            </div>
-                            <div id="couleurs-list" class="couleurs-swatches"></div>
-                                <input type="hidden" name="couleurs" id="couleurs-hidden"
-                                    value="<?php echo isset($_POST['couleurs']) ? htmlspecialchars($_POST['couleurs']) : ''; ?>">
-                            </div>
-                            <small class="form-help">Cliquez sur la pastille pour choisir une couleur, puis sur «
-                                Ajouter ». Vous pouvez ajouter plusieurs couleurs.</small>
-                        </div>
-
-                </div>
-            </div>
-
                 <div class="form-add-block">
                     <h3 class="form-add-section-title"><i class="fas fa-image"></i> Images du produit</h3>
                 <div class="form-group">
-                        <label>Images <span class="required">*</span> <small
-                                style="font-weight: normal; color: #666;">(1ère = principale, les autres pour la
-                                galerie)</small></label>
+                        <label>Images <span class="required">*</span></label>
                         <div class="file-input-wrapper file-input-single"
                             onclick="document.getElementById('images_produit').click()">
                             <input type="file" id="images_produit" name="images_produit[]" accept="image/*" multiple required
@@ -226,9 +155,6 @@ $categorie_id_prefill = isset($_GET['categorie_id']) ? (int) $_GET['categorie_id
                 <div class="form-add-block form-add-block-variantes">
                     <h3 class="form-add-section-title"><i class="fas fa-layer-group"></i> Variantes du produit
                         (optionnel)</h3>
-                    <p class="form-help" style="margin-bottom: 15px;">Ajoutez des variantes avec un nom, un prix et une
-                        image différents du produit de base. Les options couleur, poids et taille s'appliquent aussi aux
-                        variantes.</p>
                     <div id="variantes-container" class="variantes-container">
                         <div class="variante-item" data-index="0">
                             <div class="variante-row">

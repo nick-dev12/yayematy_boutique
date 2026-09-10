@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $token_valid) {
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <?php include __DIR__ . '/../includes/pwa_meta.php'; ?>
     <title>Réinitialiser le mot de passe - Yaye Maty</title>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -288,7 +288,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $token_valid) {
 
 <body>
     <header class="auth-header">
-        <a class="logo" href="/index.php">
+        <a class="logo" href="<?php echo public_url('/index.php'); ?>">
             <?php include __DIR__ . '/../includes/brand_logo.php'; ?>
         </a>
     </header>

@@ -25,13 +25,13 @@ $produits_visites = get_produits_visites_by_user($_SESSION['user_id'], 50);
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <?php include __DIR__ . '/../includes/pwa_meta.php'; ?>
     <title>Produits Visités - Yaye Maty</title>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/a_style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/catalogue-grid.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/responsive-site.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/a_style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-grid.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/responsive-site.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-dashboard.css'); ?>">
     <style>
         .produits-visites-page {
             max-width: 1400px;
@@ -112,7 +112,7 @@ $produits_visites = get_produits_visites_by_user($_SESSION['user_id'], 50);
                     <i class="fas fa-eye-slash"></i>
                     <h3>Aucun produit visité</h3>
                     <p>Vous n'avez pas encore consulté de produits. Vos consultations apparaîtront ici.</p>
-                    <a href="/produits.php" class="btn-primary">
+                    <a href="<?php echo public_url('/produits.php'); ?>" class="btn-primary">
                         <i class="fas fa-box"></i> Découvrir nos produits
                     </a>
                 </div>

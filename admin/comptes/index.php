@@ -96,9 +96,9 @@ $photo_profil_ready = admin_has_column('photo_profil');
     <title>Comptes d’accès — Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-users-cards.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-comptes-page.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-users-cards.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-comptes-page.css'); ?>">
 </head>
 <body class="page-comptes page-comptes-index">
     <?php include '../includes/nav.php'; ?>
@@ -108,7 +108,6 @@ $photo_profil_ready = admin_has_column('photo_profil');
         <div class="page-comptes-hero__text">
             <p class="page-comptes-eyebrow">Gestion des accès</p>
             <h1 id="page-comptes-title"><i class="fas fa-user-shield" aria-hidden="true"></i> Comptes d’accès administration</h1>
-            <p class="comptes-lead">Comptes internes pour l’espace admin (rôles, activité, activation). Les <strong>clients du site e-commerce</strong> sont gérés séparément.</p>
         </div>
         <div class="comptes-header-actions page-comptes-hero__actions">
             <?php if ($comptes_can_manage): ?>
@@ -160,10 +159,6 @@ $photo_profil_ready = admin_has_column('photo_profil');
 
     <section class="page-comptes-main" aria-labelledby="comptes-list-heading">
     <h2 id="comptes-list-heading" class="hub-section-title page-comptes-section-title"><i class="fas fa-users-gear" aria-hidden="true"></i> Utilisateurs de l’espace admin</h2>
-    <p class="section-subtitle section-subtitle-comptes">
-        Connexions à l’administration (rôles : <strong>administrateur</strong>, <strong>utilisateur</strong>, <strong>livreur</strong>). Distinct des
-        <strong>clients du site</strong> — voir <a href="../users/index.php">la liste des clients</a>.
-    </p>
 
     <?php if (empty($admins)): ?>
         <div class="empty-state page-comptes-empty">

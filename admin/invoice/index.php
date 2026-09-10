@@ -311,9 +311,9 @@ if ($bl_tables_ok && admin_can_bl_retours_b2b()) {
     <title>Invoice — Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-devis-compta-pages.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-invoice-onglets.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-devis-compta-pages.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-invoice-onglets.css'); ?>">
 </head>
 <body>
     <?php include '../includes/nav.php'; ?>
@@ -858,10 +858,10 @@ if ($bl_tables_ok && admin_can_bl_retours_b2b()) {
     include '../includes/footer.php';
     ?>
 
-    <script src="/js/admin-produit-search-ui.js<?php echo asset_version_query(); ?>"></script>
-    <script src="/js/admin-invoice-list-ui.js<?php echo asset_version_query(); ?>"></script>
-    <script src="/js/admin-contacts-import.js<?php echo asset_version_query(); ?>"></script>
-    <script src="/js/admin-client-search-sync.js<?php echo asset_version_query(); ?>"></script>
+    <script src="<?php echo asset_url('/js/admin-produit-search-ui.js'); ?>"></script>
+    <script src="<?php echo asset_url('/js/admin-invoice-list-ui.js'); ?>"></script>
+    <script src="<?php echo asset_url('/js/admin-contacts-import.js'); ?>"></script>
+    <script src="<?php echo asset_url('/js/admin-client-search-sync.js'); ?>"></script>
     <script>
     window.INVOICE_BL_EDIT_LIGNES = <?php echo $bl_edit_lignes_json; ?>;
     window.INVOICE_DEVIS_EDIT_LIGNES = <?php echo $devis_edit_lignes_json; ?>;

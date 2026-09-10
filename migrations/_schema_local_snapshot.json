@@ -16,7 +16,8 @@
         "date_creation",
         "derniere_connexion",
         "statut",
-        "role"
+        "role",
+        "photo_profil"
     ],
     "admin_password_reset": [
         "id",
@@ -158,6 +159,7 @@
         "adresse_livraison",
         "zone_livraison_id",
         "frais_livraison",
+        "mode_livraison",
         "telephone_livraison",
         "statut",
         "date_commande",
@@ -181,8 +183,8 @@
         "type_produit",
         "quantite",
         "date_souhaitee",
-        "zone_livraison_id",
         "prix",
+        "zone_livraison_id",
         "statut",
         "notes_admin",
         "date_creation",
@@ -486,13 +488,13 @@
         "couleur",
         "poids",
         "taille",
-        "date_ajout",
         "variante_id",
         "variante_nom",
         "variante_image",
         "surcout_poids",
         "surcout_taille",
-        "prix_unitaire"
+        "prix_unitaire",
+        "date_ajout"
     ],
     "parametres_types_client_bl": [
         "code_type",
@@ -513,11 +515,11 @@
         "images",
         "poids",
         "unite",
+        "couleurs",
+        "taille",
         "date_creation",
         "date_modification",
         "statut",
-        "couleurs",
-        "taille",
         "admin_createur_id",
         "admin_dernier_modificateur_id"
     ],
@@ -541,7 +543,6 @@
         "titre",
         "texte",
         "image_fond",
-        "statut",
         "date_modification"
     ],
     "slider": [
@@ -568,6 +569,7 @@
     "stock_mouvements": [
         "id",
         "type",
+        "stock_article_id",
         "produit_id",
         "quantite",
         "quantite_avant",
@@ -618,16 +620,18 @@
         "auth_provider",
         "date_creation",
         "statut",
+        "last_latitude",
+        "last_longitude",
+        "location_accuracy",
+        "location_label",
+        "location_updated_at",
         "accepte_conditions"
     ],
     "videos": [
         "id",
         "titre",
-        "description",
         "fichier_video",
         "image_preview",
-        "overlay_texte",
-        "ordre",
         "statut",
         "date_creation",
         "date_modification"

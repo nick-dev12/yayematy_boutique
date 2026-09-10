@@ -52,14 +52,20 @@ function firebase_auth_ensure_database()
 
 function firebase_auth_redirect_safe($url)
 {
+    if (!function_exists('redirect_to')) {
+        require_once __DIR__ . '/site_url.php';
+    }
+
     $url = trim((string) $url);
     if ($url === '' || strpos($url, '//') !== false) {
-        $url = '/index.php';
-    } elseif ($url[0] !== '/') {
+        redirect_to('/index.php');
+    }
+
+    if ($url[0] !== '/') {
         $url = '/' . $url;
     }
-    header('Location: ' . $url);
-    exit;
+
+    redirect_to($url);
 }
 
 function firebase_auth_json_response($success, $message, $redirect = '')

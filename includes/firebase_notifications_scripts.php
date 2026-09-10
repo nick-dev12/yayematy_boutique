@@ -5,6 +5,8 @@
  *   $enable_firebase_notifications (bool)
  *   $firebase_notify_type (string, optionnel : user|admin, défaut user)
  */
+require_once __DIR__ . '/firebase_config_loader.php';
+
 if (empty($enable_firebase_notifications)) {
     if (session_status() === PHP_SESSION_NONE) {
         @session_start();
@@ -24,10 +26,19 @@ if (empty($enable_firebase_notifications)) {
 if (empty($enable_firebase_notifications)) {
     return;
 }
+
+if (!firebase_config_is_available()) {
+    ?>
+<script>console.info('[FCM] Notifications désactivées — copiez config/firebase_config.example.php vers config/firebase_config.php');</script>
+    <?php
+    return;
+}
+
 $firebase_notify_type = isset($firebase_notify_type) && $firebase_notify_type === 'admin' ? 'admin' : 'user';
 require_once __DIR__ . '/asset_version.php';
 $firebase_js_path = __DIR__ . '/../js/firebase-notifications.js';
 $firebase_js_v = file_exists($firebase_js_path) ? (string) filemtime($firebase_js_path) : get_asset_version();
+$firebase_js_url = public_url('/js/firebase-notifications.js') . '?v=' . rawurlencode($firebase_js_v);
 ?>
 <script>console.log('[FCM] Chargement des scripts notifications…');</script>
 <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
@@ -55,13 +66,13 @@ $firebase_js_v = file_exists($firebase_js_path) ? (string) filemtime($firebase_j
             }
         }
     } else {
-        console.error('[FCM] Firebase ou FIREBASE_CONFIG manquant');
+        console.warn('[FCM] Firebase ou FIREBASE_CONFIG manquant');
     }
     window.FIREBASE_NOTIFY_TYPE = <?php echo json_encode($firebase_notify_type); ?>;
 </script>
-<script src="/js/firebase-notifications.js?v=<?php echo htmlspecialchars($firebase_js_v, ENT_QUOTES, 'UTF-8'); ?>"></script>
+<script src="<?php echo htmlspecialchars($firebase_js_url, ENT_QUOTES, 'UTF-8'); ?>"></script>
 <script>
     if (typeof window.FirebaseNotifications === 'undefined') {
-        console.error('[FCM] firebase-notifications.js introuvable ou en erreur — vérifiez l’onglet Réseau (F12)');
+        console.warn('[FCM] firebase-notifications.js introuvable ou en erreur — vérifiez l’onglet Réseau (F12)');
     }
 </script>

@@ -1,18 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page de modification de la configuration de la section4
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-// Vérifier si l'admin est connecté
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 // Récupérer la configuration actuelle
 require_once __DIR__ . '/../../models/model_section4.php';
 $config = get_section4_config();
@@ -55,7 +46,7 @@ if (isset($_SESSION['success_message'])) {
     <title>Configuration Section4 - Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
 </head>
 
 <body>
@@ -125,7 +116,7 @@ if (isset($_SESSION['success_message'])) {
                     <?php if (!empty($config['image_fond'])): ?>
                         <div class="current-image">
                             <strong>Image actuelle:</strong>
-                            <img src="/upload/section4/<?php echo htmlspecialchars($config['image_fond']); ?>"
+                            <img src="<?php echo upload_public_url('section4/' . htmlspecialchars($config['image_fond'], ENT_QUOTES, 'UTF-8')); ?>"
                                 alt="Image de fond actuelle"
                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                             <p style="display: none; color: var(--texte-fonce); margin-top: 10px;">

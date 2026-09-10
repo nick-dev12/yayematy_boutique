@@ -1,15 +1,8 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Iframe suivi GPS en arrière-plan (session admin livreur)
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id'])) {
-    http_response_code(401);
-    exit;
-}
-
 require_once __DIR__ . '/../../includes/admin_permissions.php';
 if (!admin_can_livreur_gps()) {
     http_response_code(403);
@@ -84,10 +77,10 @@ window.LIVREUR_BG_PAGE_CONFIG = {
     realtimeConfigured: <?php echo $realtime_configured ? 'true' : 'false'; ?>
 };
 </script>
-<script src="/js/livreur-bg-tracker.js<?php echo asset_version_query(); ?>"></script>
+<script src="<?php echo asset_url('/js/livreur-bg-tracker.js'); ?>"></script>
 <?php if ($realtime_configured): ?>
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script>
 <?php endif; ?>
-<script src="/js/livreur-bg-tracker-page.js<?php echo asset_version_query(); ?>"></script>
+<script src="<?php echo asset_url('/js/livreur-bg-tracker-page.js'); ?>"></script>
 </body>
 </html>

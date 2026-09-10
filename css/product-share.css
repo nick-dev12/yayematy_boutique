@@ -11,8 +11,9 @@
 
 .home-product-card > .pshare {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 1rem;
+  right: 1rem;
+  left: auto;
   z-index: 15;
 }
 
@@ -76,8 +77,9 @@
 
 @media (max-width: 640px) {
   .home-product-card > .pshare {
-    top: 6px;
-    left: 6px;
+    top: 0.8rem;
+    right: 0.8rem;
+    left: auto;
   }
 
   .dash-prod-card > .pshare {

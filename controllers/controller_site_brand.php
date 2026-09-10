@@ -89,20 +89,26 @@ function upload_site_brand_logo(array $file): array
     $filename = 'logo-' . date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.' . $ext;
     $dest = $upload_dir . $filename;
 
-    if (!move_uploaded_file($file['tmp_name'], $dest)) {
-        return ['success' => false, 'message' => 'Échec de l\'enregistrement du fichier'];
+    if ($mime === 'image/svg+xml') {
+        if (!move_uploaded_file($file['tmp_name'], $dest)) {
+            return ['success' => false, 'message' => 'Échec de l\'enregistrement du fichier'];
+        }
+        return [
+            'success' => true,
+            'path' => '/upload/site-brand/' . $filename,
+            'message' => '',
+        ];
     }
 
-    if ($ext !== 'svg' && file_exists(__DIR__ . '/../includes/image_optimizer.php')) {
-        require_once __DIR__ . '/../includes/image_optimizer.php';
-        if (function_exists('optimize_uploaded_image')) {
-            optimize_uploaded_image($dest);
-        }
+    require_once __DIR__ . '/../includes/image_optimizer.php';
+    $optimized = upload_store_optimized_image($file, $upload_dir, 'site-brand', 'logo-');
+    if (empty($optimized['success'])) {
+        return ['success' => false, 'message' => (string) ($optimized['message'] ?? 'Échec de la compression')];
     }
 
     return [
         'success' => true,
-        'path' => '/upload/site-brand/' . $filename,
+        'path' => '/upload/' . ltrim((string) $optimized['relative_path'], '/'),
         'message' => '',
     ];
 }

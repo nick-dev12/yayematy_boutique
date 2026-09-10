@@ -1,17 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page de suppression de zone de livraison
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 $zone_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 if ($zone_id <= 0) {
     header('Location: index.php');

@@ -1,11 +1,5 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
+require_once __DIR__ . '/../includes/admin_auth.php';
 require_once __DIR__ . '/../includes/require_access.php';
 
 

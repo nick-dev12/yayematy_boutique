@@ -1,15 +1,8 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Liste détaillée d’éléments d’activité pour un compte admin (traçabilité)
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 require_once __DIR__ . '/../includes/require_access.php';
 
 $role = $_SESSION['admin_role'] ?? '';
@@ -60,8 +53,8 @@ $page_title = $titre_liste . ' — ' . htmlspecialchars($admin_cible['prenom'] .
     <title><?php echo htmlspecialchars($page_title); ?> — Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-users-cards.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-users-cards.css'); ?>">
     <style>
         .liste-activite-wrap { max-width: 1100px; margin: 0 auto 40px; }
         .liste-activite-table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--glass-border, rgba(0,0,0,.08)); background: var(--glass-bg, #fff); box-shadow: var(--glass-shadow); }

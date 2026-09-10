@@ -15,6 +15,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_email'])) {
 require_once __DIR__ . '/../models/model_commandes.php';
 require_once __DIR__ . '/../models/model_commandes_personnalisees.php';
 require_once __DIR__ . '/../includes/site_brand.php';
+require_once __DIR__ . '/../includes/site_url.php';
 
 $success_message = '';
 $error_message = '';
@@ -94,8 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['recommander'])) {
                 }
 
                 if ($added_count > 0) {
-                    header('Location: /panier.php?recommande=1&count=' . $added_count);
-                    exit;
+                    redirect_to('/panier.php?recommande=1&count=' . $added_count);
                 }
                 $error_message = 'Aucun produit disponible à recommander.';
             } else {
@@ -154,11 +154,11 @@ function user_commande_statut_label($statut)
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <?php include __DIR__ . '/../includes/pwa_meta.php'; ?>
     <title>Mes Commandes — <?php echo htmlspecialchars(site_brand_name()); ?></title>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/user-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-mon-compte.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/user-mes-commandes.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-mon-compte.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/user-mes-commandes.css'); ?>">
 </head>
 
 <body class="user-page-mes-commandes">
@@ -185,7 +185,7 @@ function user_commande_statut_label($statut)
                 </div>
             </div>
             <div class="account-hero__actions">
-                <a href="/index.php" class="account-btn account-btn--primary">
+                <a href="<?php echo public_url('/index.php'); ?>" class="account-btn account-btn--primary">
                     <i class="fas fa-store" aria-hidden="true"></i>
                     Continuer mes achats
                 </a>
@@ -233,7 +233,7 @@ function user_commande_statut_label($statut)
                     <h2><i class="fa-solid fa-clock" aria-hidden="true"></i> Commandes actives</h2>
                     <p>Consultez le détail, confirmez la réception ou annulez si nécessaire.</p>
                 </div>
-                <a href="/produits.php" class="account-block__link">
+                <a href="<?php echo public_url('/produits.php'); ?>" class="account-block__link">
                     Nouvelle commande <i class="fas fa-arrow-right" aria-hidden="true"></i>
                 </a>
             </header>
@@ -243,7 +243,7 @@ function user_commande_statut_label($statut)
                 <span class="account-empty__icon" aria-hidden="true"><i class="fas fa-shopping-bag"></i></span>
                 <h3>Aucune commande active</h3>
                 <p>Vos commandes en cours apparaîtront ici dès validation.</p>
-                <a href="/produits.php" class="account-btn account-btn--primary">
+                <a href="<?php echo public_url('/produits.php'); ?>" class="account-btn account-btn--primary">
                     <i class="fas fa-shopping-cart" aria-hidden="true"></i>
                     Découvrir nos produits
                 </a>
@@ -338,7 +338,7 @@ function user_commande_statut_label($statut)
                     <h2><i class="fa-solid fa-palette" aria-hidden="true"></i> Commandes personnalisées</h2>
                     <p>Vos demandes sur mesure en cours de traitement.</p>
                 </div>
-                <a href="/commande-personnalisee.php" class="account-block__link">
+                <a href="<?php echo public_url('/commande-personnalisee.php'); ?>" class="account-block__link">
                     Nouvelle demande <i class="fas fa-plus" aria-hidden="true"></i>
                 </a>
             </header>
@@ -348,7 +348,7 @@ function user_commande_statut_label($statut)
                 <span class="account-empty__icon" aria-hidden="true"><i class="fas fa-palette"></i></span>
                 <h3>Aucune demande en cours</h3>
                 <p>Créez une commande personnalisée pour un produit unique.</p>
-                <a href="/commande-personnalisee.php" class="account-btn account-btn--primary">
+                <a href="<?php echo public_url('/commande-personnalisee.php'); ?>" class="account-btn account-btn--primary">
                     <i class="fas fa-palette" aria-hidden="true"></i>
                     Faire une demande
                 </a>

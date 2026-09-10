@@ -75,10 +75,10 @@ $seo_canonical = $base . '/commande-personnalisee.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php include __DIR__ . '/includes/pwa_meta.php'; ?>
     <?php include __DIR__ . '/includes/seo_meta.php'; ?>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/commande-personnalisee.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/commande-personnalisee.css'); ?>">
 </head>
 
 <body>
@@ -196,7 +196,7 @@ $seo_canonical = $base . '/commande-personnalisee.php';
         <a href="index.php" class="back-link"><i class="fas fa-arrow-left" aria-hidden="true"></i> Retour à l'accueil</a>
     </div>
 
-    <script src="/js/commande-personnalisee.js<?php echo asset_version_query(); ?>"></script>
+    <script src="<?php echo asset_url('/js/commande-personnalisee.js'); ?>"></script>
     <?php include __DIR__ . '/includes/floating_back_button.php'; ?>
 </body>
 

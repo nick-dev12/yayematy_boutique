@@ -1,15 +1,8 @@
 <?php
-require_once __DIR__ . '/../../../includes/session_user.php';
+require_once __DIR__ . '/../../includes/admin_auth.php';
 /**
  * Impression carte employé — même rendu et même structure DOM que la fiche détail (#adminContent … .er-detail-card--carte-rh .er-carte-rh).
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../../login.php');
-    exit;
-}
-
 require_once __DIR__ . '/../../includes/require_access.php';
 
 $role = $_SESSION['admin_role'] ?? '';
@@ -44,9 +37,9 @@ $titre = 'Carte employé — impression';
     <title><?php echo htmlspecialchars($titre); ?></title>
     <?php require_once __DIR__ . '/../../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-comptes-page.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/admin-employes-rh.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-comptes-page.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-employes-rh.css'); ?>">
 </head>
 <body class="page-comptes page-employes-rh page-employes-carte-impression">
     <div class="carte-impression-toolbar carte-impression-toolbar--no-print" role="toolbar" aria-label="Actions avant impression">

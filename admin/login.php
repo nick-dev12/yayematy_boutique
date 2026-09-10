@@ -7,13 +7,14 @@ require_once __DIR__ . '/../includes/session_user.php';
 
 session_start_persistent();
 
+require_once __DIR__ . '/../includes/site_url.php';
 require_once __DIR__ . '/../models/model_admin.php';
 
 // Si l'admin est déjà connecté, rediriger vers l'espace par défaut du rôle
 if (isset($_SESSION['admin_id']) && isset($_SESSION['admin_email'])) {
     require_once __DIR__ . '/../includes/admin_route_access.php';
     $target = admin_role_default_redirect_path($_SESSION['admin_role'] ?? 'admin');
-    header('Location: ' . $target);
+    header('Location: ' . admin_route_build_url($target));
     exit;
 }
 
@@ -39,7 +40,7 @@ if (isset($result['success']) && $result['success'] && $result['admin']) {
 
     require_once __DIR__ . '/../includes/admin_route_access.php';
     $target = admin_role_default_redirect_path($_SESSION['admin_role']);
-    header('Location: ' . $target);
+    header('Location: ' . admin_route_build_url($target));
     exit;
 }
 
@@ -59,7 +60,7 @@ if (isset($_SESSION['inscription_success'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion Administrateur - Yaye Maty</title>
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -351,8 +352,9 @@ if (isset($_SESSION['inscription_success'])) {
 </head>
 
 <body>
+    <?php include __DIR__ . '/includes/gtranslate_auth_bar.php'; ?>
     <header class="auth-header">
-        <a class="logo" href="/index.php">
+        <a class="logo" href="<?php echo public_url('/index.php'); ?>">
             <?php include __DIR__ . '/../includes/brand_logo.php'; ?>
         </a>
     </header>

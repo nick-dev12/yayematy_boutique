@@ -1,15 +1,9 @@
 <?php
-require_once __DIR__ . '/../includes/session_user.php';
+require_once __DIR__ . '/includes/admin_auth.php';
 /**
  * Script de migration : ajoute les colonnes couleurs et taille à la table produits
  * À exécuter une seule fois : /admin/run_migration_produits.php
  */
-session_start_persistent();
-if (!isset($_SESSION['admin_id'])) {
-    header('Location: login.php');
-    exit;
-}
-
 require_once __DIR__ . '/../conn/conn.php';
 
 $messages = [];
@@ -50,7 +44,7 @@ try {
     <title>Migration produits</title>
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
 </head>
 <body>
     <?php include 'includes/nav.php'; ?>

@@ -1,15 +1,24 @@
 /**
  * Page commande.php — checkout livraison / retrait
+ * Typographie alignée header / menu (base html 10px)
+ * Texte principal : 1.4rem · Secondaire : 1.1rem
  */
 
 body.commande-page {
   background: var(--color-bg-subtle, #fafafa);
 }
 
+body.commande-page .commande-hub {
+  min-height: 50vh;
+}
+
 .commande-hub {
   max-width: 1200px;
   margin: 0 auto;
   padding: clamp(16px, 3vw, 32px) clamp(14px, 3vw, 24px) calc(100px + env(safe-area-inset-bottom, 0px));
+  font-size: 1.4rem;
+  line-height: 1.45;
+  color: var(--color-noir, #1a1a1a);
 }
 
 .commande-hero {
@@ -23,9 +32,10 @@ body.commande-page {
 
 .commande-hero h1 {
   margin: 0 0 6px;
-  font-size: clamp(1.35rem, 4vw, 1.85rem);
+  font-size: clamp(1.75rem, 4vw, 2.2rem);
   font-weight: 800;
   color: var(--color-noir, #1a1a1a);
+  line-height: 1.2;
 }
 
 .commande-hero h1 span {
@@ -34,7 +44,7 @@ body.commande-page {
 
 .commande-hero p {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: 1.1rem;
   color: var(--color-gris, #8c8c8c);
 }
 
@@ -45,7 +55,7 @@ body.commande-page {
   border-radius: 999px;
   background: rgba(46, 125, 181, 0.1);
   color: var(--color-bleu, #2e7db5);
-  font-size: 0.8125rem;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 
@@ -55,7 +65,7 @@ body.commande-page {
   padding: 14px 16px;
   margin-bottom: 18px;
   border-radius: 14px;
-  font-size: 0.88rem;
+  font-size: 1.4rem;
 }
 
 .commande-flash--error {
@@ -80,7 +90,7 @@ body.commande-page {
 
 .commande-panel h2 {
   margin: 0 0 18px;
-  font-size: 1.05rem;
+  font-size: 1.3rem;
   font-weight: 800;
   color: var(--color-noir, #1a1a1a);
 }
@@ -111,14 +121,14 @@ body.commande-page {
 
 .commande-mode-tab i {
   display: block;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   margin-bottom: 6px;
   color: var(--color-gris, #8c8c8c);
 }
 
 .commande-mode-tab span {
   display: block;
-  font-size: 0.82rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--color-noir, #1a1a1a);
 }
@@ -140,7 +150,7 @@ body.commande-page {
 .commande-field label {
   display: block;
   margin-bottom: 8px;
-  font-size: 0.84rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--color-noir, #1a1a1a);
 }
@@ -157,7 +167,7 @@ body.commande-page {
   padding: 12px 14px;
   border: 2px solid rgba(var(--color-orange-rgb, 242, 92, 25), 0.16);
   border-radius: 12px;
-  font-size: 0.92rem;
+  font-size: 1.4rem;
   font-family: inherit;
   box-sizing: border-box;
   background: var(--color-blanc, #fff);
@@ -173,7 +183,7 @@ body.commande-page {
 .commande-field small {
   display: block;
   margin-top: 6px;
-  font-size: 0.78rem;
+  font-size: 1.1rem;
   color: var(--color-gris, #8c8c8c);
 }
 
@@ -190,7 +200,7 @@ body.commande-page {
   border-radius: 14px;
   background: rgba(var(--color-bleu-rgb, 46, 125, 181), 0.06);
   border: 1px solid rgba(var(--color-bleu-rgb, 46, 125, 181), 0.14);
-  font-size: 0.86rem;
+  font-size: 1.3rem;
   color: var(--color-noir, #1a1a1a);
 }
 
@@ -201,6 +211,11 @@ body.commande-page {
 
 .commande-map-block {
   margin-bottom: 14px;
+  min-height: 260px;
+}
+
+.commande-map-block.is-interactive #commande-map {
+  cursor: crosshair;
 }
 
 .commande-map-toolbar {
@@ -214,7 +229,7 @@ body.commande-page {
 
 .commande-map-label {
   margin: 0;
-  font-size: 0.84rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--color-noir, #1a1a1a);
 }
@@ -223,8 +238,9 @@ body.commande-page {
   display: block;
   font-weight: 500;
   color: var(--color-gris, #8c8c8c);
-  font-size: 0.78rem;
-  margin-top: 2px;
+  font-size: 1.1rem;
+  margin-top: 4px;
+  line-height: 1.4;
 }
 
 .commande-btn {
@@ -234,13 +250,14 @@ body.commande-page {
   gap: 8px;
   padding: 10px 14px;
   border-radius: 12px;
-  font-size: 0.82rem;
+  font-size: 1.3rem;
   font-weight: 700;
   font-family: inherit;
   border: none;
   cursor: pointer;
   text-decoration: none;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
 }
 
 .commande-btn--outline {
@@ -249,13 +266,34 @@ body.commande-page {
   border: 1px solid rgba(var(--color-bleu-rgb, 46, 125, 181), 0.16);
 }
 
+.commande-btn--outline.is-loading,
+.commande-btn--outline:disabled {
+  opacity: 0.88;
+  cursor: wait;
+}
+
+.commande-btn--outline.is-success {
+  background: rgba(15, 81, 50, 0.08);
+  border-color: rgba(15, 81, 50, 0.18);
+  color: #0f5132;
+}
+
+.commande-btn--outline.is-loading i.fa-spinner {
+  animation: commande-loc-spin 0.75s linear infinite;
+}
+
+@keyframes commande-loc-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .commande-btn--primary {
   width: 100%;
   margin-top: 8px;
   padding: 14px 18px;
   background: var(--color-orange, #f25c19);
   color: var(--color-blanc, #fff);
-  font-size: 0.92rem;
+  font-size: 1.4rem;
   box-shadow: 0 8px 20px rgba(var(--color-orange-rgb, 242, 92, 25), 0.28);
 }
 
@@ -267,25 +305,32 @@ body.commande-page {
 
 #commande-map {
   height: 260px;
+  min-height: 260px;
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+  background: rgba(140, 140, 140, 0.08);
   z-index: 1;
 }
 
 .commande-location-status {
   margin-top: 8px;
-  font-size: 0.78rem;
+  font-size: 1.1rem;
   color: var(--color-gris, #8c8c8c);
+  line-height: 1.45;
 }
 
 .commande-location-status.is-ok {
   color: #0f5132;
 }
 
+.commande-location-status.is-pending {
+  color: var(--color-bleu, #2e7db5);
+}
+
 .commande-summary {
   position: sticky;
-  top: 90px;
+  top: calc(80px + env(safe-area-inset-top, 0px));
 }
 
 .commande-summary-item {
@@ -293,24 +338,38 @@ body.commande-page {
   gap: 12px;
   padding: 12px 0;
   border-bottom: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
+  align-items: flex-start;
+  contain: layout;
+}
+
+.commande-summary-item__media {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(140, 140, 140, 0.08);
+  border: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
 }
 
 .commande-summary-item img {
+  display: block;
   width: 56px;
   height: 56px;
   object-fit: cover;
-  border-radius: 10px;
+  aspect-ratio: 1 / 1;
 }
 
 .commande-summary-item h4 {
   margin: 0 0 4px;
-  font-size: 0.82rem;
+  font-size: 1.3rem;
   font-weight: 700;
+  line-height: 1.35;
 }
 
 .commande-summary-item p {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 1.1rem;
   color: var(--color-gris, #8c8c8c);
 }
 
@@ -318,7 +377,7 @@ body.commande-page {
   display: flex;
   justify-content: space-between;
   padding: 10px 0;
-  font-size: 0.88rem;
+  font-size: 1.4rem;
   border-bottom: 1px solid var(--color-border-light, rgba(140, 140, 140, 0.12));
 }
 
@@ -328,7 +387,7 @@ body.commande-page {
   border-top: 2px solid rgba(var(--color-orange-rgb, 242, 92, 25), 0.2);
   border-bottom: none;
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 1.5rem;
 }
 
 .commande-summary-mode {
@@ -337,7 +396,7 @@ body.commande-page {
   gap: 6px;
   padding: 4px 10px;
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: 1.1rem;
   font-weight: 700;
   background: rgba(var(--color-orange-rgb, 242, 92, 25), 0.1);
   color: var(--color-orange, #f25c19);
@@ -347,10 +406,14 @@ body.commande-page {
   display: block;
   text-align: center;
   margin-top: 14px;
-  font-size: 0.84rem;
+  font-size: 1.3rem;
   font-weight: 600;
   color: var(--color-bleu, #2e7db5);
   text-decoration: none;
+}
+
+body.commande-page .input-wrapper--intl-tel {
+  min-height: 46px;
 }
 
 body.commande-page .input-wrapper--intl-tel > .iti {
@@ -384,7 +447,7 @@ body.commande-page .input-wrapper--intl-tel .iti__selected-country-primary {
 }
 
 body.commande-page .input-wrapper--intl-tel .iti__selected-dial-code {
-  font-size: 0.88rem;
+  font-size: 1.3rem;
   font-weight: 600;
   margin-left: 4px;
   white-space: nowrap;
@@ -407,7 +470,7 @@ body.commande-page .input-wrapper--intl-tel .iti__tel-input {
   min-height: 46px;
   padding: 12px 14px !important;
   padding-left: calc(var(--iti-selected-country-arrow-offset, 96px) + 12px) !important;
-  font-size: 0.92rem !important;
+  font-size: 1.4rem !important;
   box-sizing: border-box;
   border: none !important;
   background: transparent !important;
@@ -426,14 +489,54 @@ body.commande-page .input-wrapper--intl-tel .iti:focus-within {
   .commande-summary {
     position: static;
   }
+
+  .commande-map-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .commande-map-toolbar .commande-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .commande-summary {
+    display: none !important;
+  }
 }
 
 @media (max-width: 480px) {
   .commande-mode-tabs {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .commande-mode-tab {
+    padding: 10px 8px;
+    min-height: 68px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .commande-mode-tab i {
+    font-size: 1.25rem;
+    margin-bottom: 4px;
+  }
+
+  .commande-mode-tab span {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  .commande-map-block {
+    min-height: 220px;
   }
 
   #commande-map {
     height: 220px;
+    min-height: 220px;
   }
 }

@@ -104,6 +104,19 @@
   gap: 12px;
 }
 
+.cmd-prod-order-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 4px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(46, 125, 181, 0.08);
+  color: var(--color-bleu, #2e7db5);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
 .cmd-prod-item {
   display: grid;
   grid-template-columns: 72px 1fr auto;

@@ -1,18 +1,9 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Page de gestion des vidéos pour la section carrousel vidéo
  * Programmation procédurale uniquement
  */
-
-session_start_persistent();
-
-// Vérifier si l'admin est connecté
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 // Récupérer les vidéos
 require_once __DIR__ . '/../../models/model_videos.php';
 $videos = get_all_videos(null);
@@ -61,7 +52,7 @@ if (isset($_GET['edit']) && !empty($_GET['edit'])) {
     <title>Gestion des Vidéos - Administration</title>
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/admin-dashboard.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
     <style>
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-primary .btn-content { display: inline-flex; align-items: center; gap: 8px; }
@@ -111,8 +102,8 @@ if (isset($_GET['edit']) && !empty($_GET['edit'])) {
             <div class="video-card">
                 <div class="video-card-preview">
                     <?php 
-                    $video_path = '/upload/videos/' . htmlspecialchars($video['fichier_video']);
-                    $thumbnail_path = !empty($video['image_preview']) ? '/upload/videos/thumbnails/' . htmlspecialchars($video['image_preview']) : null;
+                    $video_path = upload_public_url('videos/' . htmlspecialchars($video['fichier_video'], ENT_QUOTES, 'UTF-8'));
+                    $thumbnail_path = !empty($video['image_preview']) ? upload_public_url('videos/thumbnails/' . htmlspecialchars($video['image_preview'], ENT_QUOTES, 'UTF-8')) : null;
                     // Détecter le type MIME en fonction de l'extension
                     $video_ext = strtolower(pathinfo($video['fichier_video'], PATHINFO_EXTENSION));
                     $mime_types = [
@@ -236,7 +227,7 @@ if (isset($_GET['edit']) && !empty($_GET['edit'])) {
                         <div class="video-preview-wrapper">
                             <video id="previewVideo" controls style="width: 100%; max-height: 400px;"
                                 <?php if ($video_to_edit && !empty($video_to_edit['fichier_video'])): ?>
-                                data-existing-video="/upload/videos/<?php echo htmlspecialchars($video_to_edit['fichier_video']); ?>"
+                                data-existing-video="<?php echo upload_public_url('videos/' . htmlspecialchars($video_to_edit['fichier_video'], ENT_QUOTES, 'UTF-8')); ?>"
                                 <?php endif; ?>>
                                 Votre navigateur ne supporte pas la lecture de vidéos.
                             </video>

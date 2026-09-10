@@ -8,6 +8,8 @@ require_once __DIR__ . '/models/model_panier.php';
 require_once __DIR__ . '/models/model_visites.php';
 require_once __DIR__ . '/models/model_variantes.php';
 require_once __DIR__ . '/controllers/controller_panier.php';
+require_once __DIR__ . '/includes/guest_checkout.php';
+require_once __DIR__ . '/includes/site_url.php';
 require_once __DIR__ . '/includes/render_product_card.php';
 require_once __DIR__ . '/includes/image_optimizer.php';
 
@@ -27,7 +29,16 @@ if (isset($_GET['added']) && ($_GET['added'] === 'success' || $_GET['added'] ===
     $message_type = 'success';
 }
 if (isset($_GET['error'])) {
-    $message = htmlspecialchars($_GET['error']);
+    $error_from_url = (string) $_GET['error'];
+    $needs_guest_info_from_url = !guest_checkout_is_connected()
+        && guest_checkout_message_needs_info($error_from_url);
+
+    if ($needs_guest_info_from_url && $produit_id > 0) {
+        header('Location: ' . public_url('/produit.php?id=' . $produit_id . '&guest_checkout=required'));
+        exit;
+    }
+
+    $message = htmlspecialchars($error_from_url);
     $message_type = 'error';
 }
 
@@ -37,10 +48,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     // Redirection vers le panier après ajout réussi
     if ($result['success']) {
-        header('Location: /panier.php?added=1');
+        redirect_to('/panier.php?added=1');
+    }
+
+    $error_message = (string) ($result['message'] ?? '');
+    $needs_guest_info = !guest_checkout_is_connected() && guest_checkout_message_needs_info($error_message);
+
+    if ($needs_guest_info && $produit_id > 0) {
+        header('Location: ' . public_url('/produit.php?id=' . $produit_id . '&guest_checkout=required'));
         exit;
     }
-    $message = $result['message'] ?? '';
+
+    $message = $error_message;
     $message_type = 'error';
 }
 
@@ -110,18 +129,24 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
         integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="/css/variables.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/style.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-    <link rel="stylesheet" href="/css/owl.carousel.min.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/owl.carousel.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/animate.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/animate.min.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/a_style.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/catalogue-grid.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/product-cards.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/catalogue-responsive.css<?php echo asset_version_query(); ?>">
-    <link rel="stylesheet" href="/css/responsive-site.css<?php echo asset_version_query(); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/owl.carousel.min.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/owl.carousel.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/animate.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/animate.min.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/a_style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-grid.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/product-cards.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-responsive.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/responsive-site.css'); ?>">
+    <?php
+    require_once __DIR__ . '/includes/guest_checkout_assets.php';
+    if (guest_checkout_should_load_assets()) {
+        guest_checkout_render_head_assets();
+    }
+    ?>
     <style>
         /* Styles pour la page produit - Palette gourmande */
         body {
@@ -529,6 +554,8 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
             border-radius: 12px;
             overflow: hidden;
             flex-shrink: 0;
+            height: 44px;
+            box-sizing: border-box;
         }
 
         .quantite-btn {
@@ -536,7 +563,8 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
             color: #ffffff;
             border: none;
             width: 38px;
-            height: 40px;
+            height: 100%;
+            min-height: 40px;
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s;
@@ -551,32 +579,13 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
 
         .quantite-input {
             width: 60px;
-            height: 38px;
+            height: 100%;
+            min-height: 40px;
             border: none;
             text-align: center;
             font-size: 16px;
             font-weight: 600;
             color: var(--titres);
-        }
-
-        .prix-total-section {
-            padding: 18px;
-            background: rgba(242, 92, 25, 0.85);
-            color: #ffffff;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .prix-total-label {
-            font-size: 13px;
-            margin-bottom: 5px;
-            opacity: 0.95;
-        }
-
-        .prix-total-value {
-            font-size: 24px;
-            font-weight: 700;
         }
 
         .produit-add-form {
@@ -586,21 +595,25 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
         }
 
         .btn-add-panier {
-            width: 100%;
-            padding: 14px 25px;
+            flex: 1;
+            min-width: 0;
+            height: 44px;
+            padding: 0 20px;
             background: var(--couleur-dominante);
             color: #ffffff;
             border: none;
-            border-radius: 25px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             box-shadow: 0 4px 15px rgba(242, 92, 25, 0.3);
+            box-sizing: border-box;
+            white-space: nowrap;
         }
 
         .btn-add-panier:hover {
@@ -949,37 +962,26 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
 
             .quantite-input-wrapper {
                 border-radius: 10px;
+                height: 44px;
             }
 
             .quantite-btn {
                 width: 44px;
-                height: 44px;
+                height: 100%;
                 font-size: 18px;
             }
 
             .quantite-input {
                 width: 50px;
-                height: 42px;
+                height: 100%;
                 font-size: 15px;
-            }
-
-            .prix-total-section {
-                padding: 14px 16px;
-                margin-bottom: 16px;
-            }
-
-            .prix-total-label {
-                font-size: 12px;
-            }
-
-            .prix-total-value {
-                font-size: 20px;
             }
 
             .btn-add-panier {
-                padding: 12px 20px;
-                font-size: 15px;
-                border-radius: 20px;
+                height: 44px;
+                padding: 0 16px;
+                font-size: 14px;
+                border-radius: 10px;
             }
 
             .produit-detail-container {
@@ -1073,13 +1075,10 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
                 width: 44px;
             }
 
-            .prix-total-value {
-                font-size: 18px;
-            }
-
             .btn-add-panier {
-                padding: 12px 16px;
-                font-size: 14px;
+                height: 44px;
+                padding: 0 12px;
+                font-size: 13px;
             }
 
             .produits-similaires h2 {
@@ -1288,13 +1287,13 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
     </style>
 </head>
 
-<body>
+<body class="page-produit">
 
     <?php include('nav_bar.php') ?>
 
     <div class="produit-detail-container">
         <?php if ($message): ?>
-            <div class="message <?php echo $message_type; ?>" id="message-alert">
+            <div class="message <?php echo htmlspecialchars($message_type); ?>" id="message-alert">
                 <span><?php echo htmlspecialchars($message); ?></span>
                 <button type="button" class="message-close" onclick="closeMessage()" aria-label="Fermer">
                     <i class="fas fa-times"></i>
@@ -1302,7 +1301,7 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
             </div>
         <?php endif; ?>
 
-        <div class="produit-detail-wrapper">
+        <div class="produit-detail-wrapper" id="produit-detail-wrapper">
             <!-- Section Image avec galerie -->
             <div class="produit-image-section">
                 <?php
@@ -1622,23 +1621,12 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
                                     min="1" max="<?php echo $produit['stock']; ?>" required>
                                 <button type="button" class="quantite-btn" id="increase-qty">+</button>
                             </div>
+                            <button type="submit" class="btn-add-panier" id="btn-add-panier">
+                                <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+                                Ajouter au panier
+                            </button>
                         </div>
                     </div>
-
-
-                    <!-- Prix total calculé -->
-                    <div class="prix-total-section">
-                        <div class="prix-total-label">Prix total:</div>
-                        <div class="prix-total-value" id="prix-total">
-                            <?php echo number_format($prix_affichage, 0, ',', ' '); ?> FCFA
-                        </div>
-                    </div>
-
-
-                    <button type="submit" class="btn-add-panier" id="btn-add-panier">
-                        <i class="fa-solid fa-bag-shopping"></i>
-                        Passer la commande
-                    </button>
                 </form>
 
                 <!-- Description (en bas) -->
@@ -1678,11 +1666,14 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
         const produitNomBase = <?php echo json_encode($produit['nom'], JSON_UNESCAPED_UNICODE); ?>;
         const produitImageFallback = <?php echo json_encode(upload_image_url_from_src($produit['image_principale'] ?? '', 'md'), JSON_UNESCAPED_UNICODE); ?>;
         const quantiteInput = document.getElementById('quantite');
-        const prixTotalElement = document.getElementById('prix-total');
         const prixUnitaireInput = document.getElementById('option-prix-unitaire');
         const decreaseBtn = document.getElementById('decrease-qty');
         const increaseBtn = document.getElementById('increase-qty');
         const maxStock = <?php echo json_encode((int) ($produit['stock'] ?? 0)); ?>;
+
+        function getQuantite() {
+            return quantiteInput ? Math.max(1, parseInt(quantiteInput.value, 10) || 1) : 1;
+        }
 
         function getPrixUnitaire() {
             var prix = prixBase;
@@ -1701,21 +1692,25 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
         }
 
         function updatePrixTotal() {
-            if (!quantiteInput || !prixTotalElement) return;
+            if (!quantiteInput) return;
             const prixUnitaire = getPrixUnitaire();
-            const quantite = parseInt(quantiteInput.value) || 1;
-            const prixTotal = prixUnitaire * quantite;
-            prixTotalElement.textContent = prixTotal.toLocaleString('fr-FR') + ' FCFA';
+            const quantite = getQuantite();
             if (prixUnitaireInput) prixUnitaireInput.value = prixUnitaire;
 
             var btnAdd = document.getElementById('btn-add-panier');
             if (btnAdd) btnAdd.disabled = (quantite > maxStock || quantite <= 0);
+
+            if (typeof updatePrixEtNomAffichage === 'function') {
+                updatePrixEtNomAffichage();
+            }
         }
 
         var produitNomBaseRef = produitNomBase;
 
         function updatePrixEtNomAffichage() {
             var prixUnitaire = getPrixUnitaire();
+            var quantite = getQuantite();
+            var prixAffiche = prixUnitaire * quantite;
             var selVariante = document.querySelector('.variante-option.selected, .variante-option input:checked');
             var el = selVariante && selVariante.classList ? selVariante : (selVariante ? selVariante.closest(
                 '.variante-option') : null);
@@ -1735,15 +1730,15 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
                 if (spH && spH.value) surcP = parseFloat(spH.value) || 0;
                 var stH = document.getElementById('option-surcout-taille');
                 if (stH && stH.value) surcT = parseFloat(stH.value) || 0;
-                var prixOriginalAvecSurc = prixOrig + surcP + surcT;
+                var prixOriginalAvecSurc = (prixOrig + surcP + surcT) * quantite;
 
                 if (prixOrig > 0 && pourcentage > 0) {
                     elPrix.innerHTML = '<span class="prix-original">' + prixOriginalAvecSurc.toLocaleString('fr-FR') +
                         ' FCFA</span> ' +
-                        '<span class="prix-promo">' + prixUnitaire.toLocaleString('fr-FR') + ' FCFA</span> ' +
+                        '<span class="prix-promo">' + prixAffiche.toLocaleString('fr-FR') + ' FCFA</span> ' +
                         '<span class="promo-badge">-' + pourcentage + '%</span>';
                 } else {
-                    elPrix.textContent = prixUnitaire.toLocaleString('fr-FR') + ' FCFA';
+                    elPrix.textContent = prixAffiche.toLocaleString('fr-FR') + ' FCFA';
                 }
             }
         }

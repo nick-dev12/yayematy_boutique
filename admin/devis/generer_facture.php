@@ -1,15 +1,8 @@
 <?php
-require_once __DIR__ . '/../../includes/session_user.php';
+require_once __DIR__ . '/../includes/admin_auth.php';
 /**
  * Génère une facture pour un devis
  */
-session_start_persistent();
-
-if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
-    header('Location: ../login.php');
-    exit;
-}
-
 $devis_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 if ($devis_id <= 0) {
     header('Location: index.php');

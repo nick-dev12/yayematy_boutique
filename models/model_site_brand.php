@@ -9,7 +9,7 @@ require_once __DIR__ . '/../includes/db_helpers.php';
 if (!function_exists('site_brand_default_logo_path')) {
     function site_brand_default_logo_path(): string
     {
-        return '/image/yaye_maty_logo.png';
+        return '/image/yaye_maty_logo.jpeg';
     }
 }
 

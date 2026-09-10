@@ -8,6 +8,7 @@ require_once __DIR__ . '/../includes/session_user.php';
 session_start_persistent();
 require_once __DIR__ . '/../includes/google_auth_coop.php';
 require_once __DIR__ . '/../includes/site_brand.php';
+require_once __DIR__ . '/../includes/site_url.php';
 
 // Si l'utilisateur est déjà connecté, rediriger vers le tableau de bord
 if (!empty($_SESSION['user_id']) && (int) $_SESSION['user_id'] > 0) {
@@ -49,6 +50,11 @@ $post_telephone = isset($_POST['telephone']) ? (string) $_POST['telephone'] : ''
 
 <body class="auth-page auth-connexion auth-inscription">
     <div class="auth-connexion-shell">
+        <a href="<?php echo public_url('/index.php'); ?>" class="auth-connexion-back" aria-label="Retour à l'accueil">
+            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+            <span>Retour</span>
+        </a>
+
         <div class="auth-connexion-brand">
             <a href="<?php echo public_url('/index.php'); ?>" aria-label="<?php echo htmlspecialchars(site_brand_name()); ?>">
                 <span class="auth-connexion-brand__mark">
@@ -62,7 +68,6 @@ $post_telephone = isset($_POST['telephone']) ? (string) $_POST['telephone'] : ''
 
         <header class="auth-connexion-intro">
             <h1>Créer un compte</h1>
-            <p>Rejoignez <?php echo htmlspecialchars(site_brand_name()); ?> et suivez vos commandes en un clin d’œil.</p>
         </header>
 
         <?php if (isset($result['message']) && !empty($result['message']) && empty($result['success'])): ?>
@@ -164,6 +169,7 @@ $post_telephone = isset($_POST['telephone']) ? (string) $_POST['telephone'] : ''
             $google_auth_redirect = '/index.php';
             $google_auth_position = 'bottom';
             $google_auth_label = 'Continuer avec Google';
+            $social_auth_show_apple = false;
             include __DIR__ . '/../includes/google_auth_button.php';
             ?>
         </div>

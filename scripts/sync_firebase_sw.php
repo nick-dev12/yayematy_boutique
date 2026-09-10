@@ -82,7 +82,7 @@ messaging.onBackgroundMessage(function (payload) {
         || '';
     var link = (payload.data && payload.data.link) ? payload.data.link : '/user/mes-commandes.php';
     var tag = (payload.data && payload.data.tag) ? payload.data.tag : ('sugar-paper-' + Date.now());
-    var icon = resolveNotificationUrl('/image/produit1.jpg');
+    var icon = resolveNotificationUrl('/image/yaye_maty_logo.jpeg');
 
     return notifyPageClients('Message arrière-plan reçu', { title: title, body: body, tag: tag })
         .then(function () {

@@ -43,6 +43,69 @@
         return msg;
     }
 
+    function isLocalDevHost() {
+        var host = (window.location.hostname || '').toLowerCase();
+        return host === 'localhost' || host === '127.0.0.1' || host.endsWith('.local');
+    }
+
+    function humanizeSocialAuthError(error, provider) {
+        provider = provider === 'apple' ? 'apple' : 'google';
+        var providerLabel = provider === 'apple' ? 'Apple' : 'Google';
+        var fallback = 'Impossible de se connecter avec ' + providerLabel + ' pour le moment. Réessayez ou utilisez votre email et mot de passe.';
+
+        if (!error) {
+            return fallback;
+        }
+
+        var code = '';
+        var message = '';
+
+        if (typeof error === 'string') {
+            message = error.trim();
+        } else {
+            code = (error.code || '').trim();
+            message = (error.message || '').trim();
+        }
+
+        var codeMatch = message.match(/\((auth\/[^)]+)\)/i);
+        if (!code && codeMatch) {
+            code = codeMatch[1];
+        }
+
+        var friendly = {
+            'auth/popup-closed-by-user': 'Connexion annulée.',
+            'auth/cancelled-popup-request': 'Connexion annulée.',
+            'auth/popup-blocked': 'La fenêtre de connexion a été bloquée. Autorisez les pop-ups pour ce site.',
+            'auth/network-request-failed': 'Connexion impossible. Vérifiez votre réseau et réessayez.',
+            'auth/account-exists-with-different-credential': 'Ce compte existe déjà avec une autre méthode de connexion.',
+            'auth/user-disabled': 'Ce compte a été désactivé.',
+            'auth/operation-not-allowed': 'Connexion ' + providerLabel + ' temporairement indisponible.',
+            'auth/unauthorized-domain': 'Connexion ' + providerLabel + ' indisponible sur ce site.'
+        };
+
+        if (code && friendly[code]) {
+            return friendly[code];
+        }
+
+        if (/popup.*closed|cancelled|annul/i.test(message)) {
+            return 'Connexion annulée.';
+        }
+
+        var looksTechnical = /^Firebase:/i.test(message)
+            || /\bauth\//i.test(message)
+            || /token|json|vps|composer|serveur|configuration firebase/i.test(message);
+
+        if (looksTechnical && !isLocalDevHost()) {
+            return fallback;
+        }
+
+        if (message && message.length <= 140 && !looksTechnical) {
+            return message;
+        }
+
+        return fallback;
+    }
+
     function setMessage(button, message, isError) {
         var wrap = button.closest('.social-auth');
         if (!wrap) return;
@@ -146,7 +209,7 @@
                 window.location.href = data.redirect;
             })
             .catch(function (error) {
-                setMessage(button, error && error.message ? error.message : 'Connexion annulée ou impossible.', true);
+                setMessage(button, humanizeSocialAuthError(error, provider), true);
                 disableSocialButtons(wrap, false);
                 button.innerHTML = originalHtml;
             });
@@ -475,7 +538,7 @@
             clearAppleRedirectPending();
             showAppleCompletionUi(
                 true,
-                error && error.message ? error.message : 'Connexion Apple impossible.'
+                humanizeSocialAuthError(error, 'apple')
             );
         }).finally(function () {
             appleCompletionInFlight = false;

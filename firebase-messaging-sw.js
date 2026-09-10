@@ -15,12 +15,12 @@ importScripts('https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/12.9.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-    apiKey: 'AIzaSyAOGTcYf7i-Jj6jj5KuTOJboFVagkbdBW4',
-    authDomain: 'sugar-paper.firebaseapp.com',
-    projectId: 'sugar-paper',
-    storageBucket: 'sugar-paper.firebasestorage.app',
-    messagingSenderId: '409713248489',
-    appId: '1:409713248489:web:6bff9f5584e52c05a04878'
+    apiKey: 'AIzaSyCvZJcyAz7j-EqcSwJKS1W4feFEEj4B-94',
+    authDomain: 'yaye-bc53c.firebaseapp.com',
+    projectId: 'yaye-bc53c',
+    storageBucket: 'yaye-bc53c.firebasestorage.app',
+    messagingSenderId: '626313802856',
+    appId: '1:626313802856:web:42ef2ec061c35164eab7dd'
 });
 
 var messaging = firebase.messaging();

@@ -304,7 +304,7 @@ try {
       PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
     $db->exec('INSERT INTO site_brand_config (id, logo_path, logo_alt, date_modification)
-        VALUES (1, \'/image/yaye_maty_logo.png\', \'YAYEMATY MARKET — Votre marché local\', NOW())
+        VALUES (1, \'/image/yaye_maty_logo.jpeg\', \'YAYEMATY MARKET — Votre marché local\', NOW())
         ON DUPLICATE KEY UPDATE
             logo_path = VALUES(logo_path),
             logo_alt = VALUES(logo_alt),

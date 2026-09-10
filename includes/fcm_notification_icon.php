@@ -10,7 +10,7 @@ if (!function_exists('fcm_notification_default_icon_path')) {
             require_once __DIR__ . '/site_brand.php';
         }
         $logo = trim((string) site_brand_logo());
-        return $logo !== '' ? $logo : '/image/yaye_maty_logo.png';
+        return $logo !== '' ? $logo : '/image/yaye_maty_logo.jpeg';
     }
 }
 

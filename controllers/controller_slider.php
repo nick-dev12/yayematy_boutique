@@ -59,8 +59,6 @@ function process_add_slide() {
     
     // Récupération des données
     $titre = isset($_POST['titre']) ? trim($_POST['titre']) : '';
-    $paragraphe = isset($_POST['paragraphe']) ? trim($_POST['paragraphe']) : '';
-    $bouton_texte = isset($_POST['bouton_texte']) ? trim($_POST['bouton_texte']) : '';
     $bouton_lien = isset($_POST['bouton_lien']) ? trim($_POST['bouton_lien']) : '';
     $ordre = isset($_POST['ordre']) ? intval($_POST['ordre']) : 0;
     $statut = isset($_POST['statut']) ? $_POST['statut'] : 'actif';
@@ -70,8 +68,8 @@ function process_add_slide() {
         $errors[] = 'Le titre est obligatoire.';
     }
 
-    $paragraphe = $paragraphe !== '' ? $paragraphe : null;
-    $bouton_texte = $bouton_texte !== '' ? $bouton_texte : null;
+    $paragraphe = null;
+    $bouton_texte = null;
     $bouton_lien = $bouton_lien !== '' ? $bouton_lien : null;
     
     // Upload de l'image
@@ -132,8 +130,6 @@ function process_update_slide($slide_id) {
     
     // Récupération des données
     $titre = isset($_POST['titre']) ? trim($_POST['titre']) : '';
-    $paragraphe = isset($_POST['paragraphe']) ? trim($_POST['paragraphe']) : '';
-    $bouton_texte = isset($_POST['bouton_texte']) ? trim($_POST['bouton_texte']) : '';
     $bouton_lien = isset($_POST['bouton_lien']) ? trim($_POST['bouton_lien']) : '';
     $ordre = isset($_POST['ordre']) ? intval($_POST['ordre']) : 0;
     $statut = isset($_POST['statut']) ? $_POST['statut'] : 'actif';
@@ -143,8 +139,8 @@ function process_update_slide($slide_id) {
         $errors[] = 'Le titre est obligatoire.';
     }
 
-    $paragraphe = $paragraphe !== '' ? $paragraphe : null;
-    $bouton_texte = $bouton_texte !== '' ? $bouton_texte : null;
+    $paragraphe = $current_slide['paragraphe'] ?? null;
+    $bouton_texte = $current_slide['bouton_texte'] ?? null;
     $bouton_lien = $bouton_lien !== '' ? $bouton_lien : null;
     
     // Upload de l'image (si nouvelle image fournie)
@@ -171,7 +167,7 @@ function process_update_slide($slide_id) {
     if (empty($errors)) {
         if (update_slide($slide_id, $titre, $paragraphe, $image, $bouton_texte, $bouton_lien, $ordre, $statut)) {
             $success = true;
-            $message = 'Slide modifié avec succès.';
+            $message = 'Slide modifié avec succès. La page d\'accueil a été mise à jour.';
         } else {
             $errors[] = 'Une erreur est survenue lors de la modification du slide.';
         }

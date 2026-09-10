@@ -134,14 +134,27 @@ $seo_canonical = $base . '/';
     <section class="home-hero">
         <?php if (!empty($slides)): ?>
         <div class="home-hero-slider slider-area owl-carousel">
-            <?php foreach ($slides as $slide_index => $slide): ?>
-            <div class="slider-item">
-                <img src="<?php echo htmlspecialchars(upload_image_url('slider/' . ($slide['image'] ?? ''), 'md')); ?>"
+            <?php foreach ($slides as $slide_index => $slide):
+                $slide_link = trim((string) ($slide['bouton_lien'] ?? ''));
+                if ($slide_link !== '' && !preg_match('#^https?://#i', $slide_link)) {
+                    $slide_link = public_url('/' . ltrim($slide_link, '/'));
+                }
+                $has_overlay = !empty($slide['paragraphe']) || !empty($slide['bouton_texte']);
+                $img_src = upload_image_url('slider/' . ($slide['image'] ?? ''), 'md');
+            ?>
+            <div class="slider-item<?php echo ($slide_link !== '' && !$has_overlay) ? ' slider-item--linked' : ''; ?>">
+                <?php if ($slide_link !== '' && !$has_overlay): ?>
+                <a href="<?php echo htmlspecialchars($slide_link); ?>" class="slider-item-link" aria-label="<?php echo htmlspecialchars($slide['titre'] ?? 'Voir'); ?>">
+                <?php endif; ?>
+                <img src="<?php echo htmlspecialchars($img_src); ?>"
                     alt="<?php echo htmlspecialchars($slide['titre'] ?? 'Slide'); ?>"
                     <?php echo $slide_index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'; ?>
                     decoding="async"
                     onerror="this.src='<?php echo public_url('/image/produit1.jpg'); ?>'">
-                <?php if (!empty($slide['titre']) || !empty($slide['paragraphe']) || !empty($slide['bouton_texte'])): ?>
+                <?php if ($slide_link !== '' && !$has_overlay): ?>
+                </a>
+                <?php endif; ?>
+                <?php if ($has_overlay): ?>
                 <div class="home-hero-slide-overlay">
                     <div class="home-hero-slide-content">
                         <?php if (!empty($slide['titre'])): ?>
@@ -151,7 +164,7 @@ $seo_canonical = $base . '/';
                         <p><?php echo htmlspecialchars($slide['paragraphe']); ?></p>
                         <?php endif; ?>
                         <?php if (!empty($slide['bouton_texte'])): ?>
-                        <a href="<?php echo htmlspecialchars(!empty($slide['bouton_lien']) ? $slide['bouton_lien'] : public_url('/produits.php')); ?>"
+                        <a href="<?php echo htmlspecialchars($slide_link !== '' ? $slide_link : public_url('/produits.php')); ?>"
                             class="home-btn-primary">
                             <?php echo htmlspecialchars($slide['bouton_texte']); ?>
                         </a>
@@ -401,28 +414,36 @@ $seo_canonical = $base . '/';
     <script defer>
     document.documentElement.classList.remove('aos-not-ready');
 
-    document.addEventListener('DOMContentLoaded', function () {
+    function initHomeHeroSlider() {
         if (typeof jQuery === 'undefined' || typeof jQuery.fn.owlCarousel === 'undefined') {
             return;
         }
         var $heroSlider = jQuery('.home-hero-slider');
-        if ($heroSlider.length && $heroSlider.find('.slider-item').length > 0) {
-            $heroSlider.owlCarousel({
-                items: 1,
-                loop: $heroSlider.find('.slider-item').length > 1,
-                dots: true,
-                autoplay: true,
-                autoplayTimeout: 6000,
-                autoplayHoverPause: true,
-                smartSpeed: 700,
-                nav: true,
-                navText: [
-                    '<i class="fa-solid fa-chevron-left"></i>',
-                    '<i class="fa-solid fa-chevron-right"></i>'
-                ]
-            });
+        if (!$heroSlider.length || $heroSlider.find('.slider-item').length === 0) {
+            return;
         }
-    });
+        if ($heroSlider.hasClass('owl-loaded')) {
+            return;
+        }
+        var slideCount = $heroSlider.find('.slider-item').length;
+        $heroSlider.owlCarousel({
+            items: 1,
+            loop: slideCount > 1,
+            dots: slideCount > 1,
+            autoplay: slideCount > 1,
+            autoplayTimeout: 6000,
+            autoplayHoverPause: true,
+            smartSpeed: 700,
+            nav: slideCount > 1,
+            navText: [
+                '<i class="fa-solid fa-chevron-left" aria-hidden="true"></i>',
+                '<i class="fa-solid fa-chevron-right" aria-hidden="true"></i>'
+            ]
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initHomeHeroSlider);
+    window.addEventListener('load', initHomeHeroSlider);
     </script>
 
 </body>

@@ -103,6 +103,17 @@
   overflow: hidden;
   box-shadow: var(--shadow-lg);
   background: var(--color-blanc);
+  display: block !important;
+  opacity: 1 !important;
+}
+
+/* Visible même avant l'init Owl (évite display:none / opacity:0) */
+.home-hero-slider.owl-carousel:not(.owl-loaded) > .slider-item:not(:first-child) {
+  display: none;
+}
+
+.home-hero-slider.owl-carousel.owl-loading {
+  opacity: 1 !important;
 }
 
 .home-hero-slider.owl-carousel .owl-stage-outer,
@@ -130,11 +141,23 @@
   height: 100%;
   max-height: 32.5rem;
   min-height: 19.5rem;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   display: block;
   background: var(--color-blanc);
   transform: none !important;
+}
+
+.home-hero-slider .slider-item-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  line-height: 0;
+}
+
+.home-hero-slider .slider-item-link img {
+  width: 100%;
+  height: 100%;
 }
 
 .home-hero-slide-overlay {
@@ -275,7 +298,7 @@
 
 .page-accueil .home-hero .home-hero-slider .slider-item img {
   width: 100% !important;
-  object-fit: contain !important;
+  object-fit: cover !important;
   object-position: center;
   transform: none !important;
 }

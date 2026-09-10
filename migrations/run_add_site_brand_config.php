@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `site_brand_config` (
 try {
     $stmt = $db->query('SELECT COUNT(*) FROM site_brand_config WHERE id = 1');
     if ((int) $stmt->fetchColumn() === 0) {
-        $db->exec("INSERT INTO site_brand_config (id, logo_path, logo_alt) VALUES (1, '/image/yaye_maty_logo.jpeg', 'YAYEMATY MARKET — Votre marché local')");
+        $db->exec("INSERT INTO site_brand_config (id, logo_path, logo_alt) VALUES (1, '/image/yaye_maty_logo.png', 'YAYEMATY MARKET — Votre marché local')");
         echo "+ ligne par défaut site_brand_config\n";
     } else {
         echo "— site_brand_config id=1 déjà présent\n";

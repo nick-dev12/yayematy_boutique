@@ -70,6 +70,14 @@ if (isset($result['success']) && $result['success']) {
             min-height: 100px;
         }
 
+        .form-hint {
+            display: block;
+            margin-top: 0.375rem;
+            color: #8c8c8c;
+            font-size: 0.75rem;
+            line-height: 1.4;
+        }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -157,50 +165,25 @@ if (isset($result['success']) && $result['success']) {
             </div>
 
             <div class="form-group">
-                <label for="paragraphe">Paragraphe (optionnel)</label>
-                <textarea id="paragraphe" name="paragraphe" rows="4"
-                          placeholder="Texte descriptif du slide"><?php echo isset($_POST['paragraphe']) ? htmlspecialchars($_POST['paragraphe']) : ''; ?></textarea>
-            </div>
-
-            <div class="form-group">
                 <label for="image">Image *</label>
                 <input type="file" id="image" name="image" accept="image/*" required>
-                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
-                    Formats acceptés: JPEG, JPG, PNG, GIF, WEBP, AVIF (Max: 50MB - Images 4K acceptées)
-                </small>
-            </div>
-
-            <div class="form-group">
-                <label for="bouton_texte">Texte du bouton (optionnel)</label>
-                <input type="text" id="bouton_texte" name="bouton_texte"
-                       value="<?php echo isset($_POST['bouton_texte']) ? htmlspecialchars($_POST['bouton_texte']) : ''; ?>"
-                       placeholder="Ex: Commencer dès maintenant">
+                <small class="form-hint">JPEG, PNG, WEBP… · max. 50 Mo</small>
             </div>
 
             <div class="form-group">
                 <label for="bouton_lien">Lien du bouton (optionnel)</label>
-                <input type="url" id="bouton_lien" name="bouton_lien"
+                <input type="text" id="bouton_lien" name="bouton_lien"
                        value="<?php echo isset($_POST['bouton_lien']) ? htmlspecialchars($_POST['bouton_lien']) : ''; ?>"
                        placeholder="Ex: /produits.php">
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="ordre">Ordre d'affichage</label>
-                    <input type="number" id="ordre" name="ordre" min="0" value="<?php echo isset($_POST['ordre']) ? intval($_POST['ordre']) : 0; ?>">
-                    <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
-                        Plus le nombre est petit, plus le slide apparaîtra en premier
-                    </small>
-                </div>
-
-                <div class="form-group">
-                    <label for="statut">Statut</label>
-                    <select id="statut" name="statut">
-                        <option value="actif" <?php echo (!isset($_POST['statut']) || $_POST['statut'] == 'actif') ? 'selected' : ''; ?>>Actif</option>
-                        <option value="inactif" <?php echo (isset($_POST['statut']) && $_POST['statut'] == 'inactif') ? 'selected' : ''; ?>>Inactif</option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <label for="ordre">Ordre d'affichage</label>
+                <input type="number" id="ordre" name="ordre" min="0" value="<?php echo isset($_POST['ordre']) ? intval($_POST['ordre']) : 0; ?>">
+                <small class="form-hint">Plus le nombre est petit, plus le slide apparaît en premier</small>
             </div>
+
+            <input type="hidden" name="statut" value="actif">
 
             <div class="form-actions">
                 <button type="submit" class="btn-primary">

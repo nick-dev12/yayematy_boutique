@@ -4,6 +4,22 @@
 
 @import url("admin-hub-layout.css");
 
+/* Filtres catalogue — tablette */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .page-produits-index .prod-catalog-filters {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .page-produits-index .prod-catalog-filters__fields {
+    grid-template-columns: minmax(0, 1fr) minmax(9.5rem, 11.5rem);
+  }
+
+  .page-produits-index .prod-catalog-filters__actions {
+    justify-content: flex-end;
+  }
+}
+
 .prod-catalog-grid {
   margin-top: 4px;
 }

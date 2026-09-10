@@ -23,6 +23,7 @@ if (isset($_SESSION['success_message'])) {
 // Récupérer tous les slides
 require_once __DIR__ . '/../../models/model_slider.php';
 require_once __DIR__ . '/../../includes/image_optimizer.php';
+require_once __DIR__ . '/../../includes/site_url.php';
 $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inactifs)
 ?>
 <!DOCTYPE html>
@@ -44,6 +45,9 @@ $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inacti
     <div class="content-header">
         <h1><i class="fas fa-images"></i> Gestion du Slider</h1>
         <div class="header-actions">
+            <a href="<?php echo htmlspecialchars(public_url('/index.php')); ?>" class="btn-back" target="_blank" rel="noopener">
+                <i class="fas fa-external-link-alt"></i> Voir l'accueil
+            </a>
             <a href="ajouter.php" class="btn-primary">
                 <i class="fas fa-plus"></i> Nouveau Slide
             </a>
@@ -73,7 +77,7 @@ $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inacti
         <div class="slides-grid">
             <?php foreach ($slides as $slide): ?>
             <div class="slide-card">
-                <img src="<?php echo htmlspecialchars(upload_image_url('slider/' . ($slide['image'] ?? ''), 'original')); ?>"
+                <img src="<?php echo htmlspecialchars(upload_image_url('slider/' . ($slide['image'] ?? ''), 'md')); ?>"
                     alt="<?php echo htmlspecialchars($slide['titre']); ?>" class="slide-image"
                     onerror="this.src='<?php echo htmlspecialchars(public_url('/image/produit1.jpg'), ENT_QUOTES, 'UTF-8'); ?>'">
                 <div class="slide-body">

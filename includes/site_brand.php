@@ -43,7 +43,7 @@ if (!function_exists('site_brand_logo')) {
             }
         }
 
-        $path = '/image/yaye_maty_logo.jpeg';
+        $path = '/image/yaye_maty_logo.png';
         if (function_exists('get_site_brand_logo_path')) {
             $path = get_site_brand_logo_path();
         }

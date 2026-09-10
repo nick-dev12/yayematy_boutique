@@ -8,6 +8,17 @@ require_once __DIR__ . '/../conn/conn.php';
 require_once __DIR__ . '/../includes/db_helpers.php';
 
 /**
+ * Vide le cache des slides affichés sur la page d'accueil.
+ */
+function slider_bust_home_cache(): void
+{
+    if (!function_exists('cache_forget')) {
+        require_once __DIR__ . '/../includes/simple_cache.php';
+    }
+    cache_forget('home_slides_actif');
+}
+
+/**
  * Récupère tous les slides actifs
  * @param string|null $statut Filtrer par statut ('actif', 'inactif' ou null pour tous)
  * @return array Tableau des slides (vide si aucun ou en cas d'erreur)
@@ -93,6 +104,7 @@ function add_slide($titre, $paragraphe, $image, $bouton_texte = null, $bouton_li
         ]);
 
         if ($result) {
+            slider_bust_home_cache();
             return $db->lastInsertId();
         }
 
@@ -126,7 +138,7 @@ function update_slide($id, $titre, $paragraphe, $image, $bouton_texte = null, $b
             WHERE id = :id
         ");
 
-        return $stmt->execute([
+        $ok = $stmt->execute([
             'id' => $id,
             'titre' => $titre,
             'paragraphe' => $paragraphe,
@@ -136,6 +148,10 @@ function update_slide($id, $titre, $paragraphe, $image, $bouton_texte = null, $b
             'ordre' => $ordre,
             'statut' => $statut,
         ]);
+        if ($ok) {
+            slider_bust_home_cache();
+        }
+        return $ok;
     } catch (PDOException $e) {
         return false;
     }
@@ -153,7 +169,11 @@ function delete_slide($id)
 
     try {
         $stmt = $db->prepare('DELETE FROM slider WHERE id = :id');
-        return $stmt->execute(['id' => $id]);
+        $ok = $stmt->execute(['id' => $id]);
+        if ($ok) {
+            slider_bust_home_cache();
+        }
+        return $ok;
     } catch (PDOException $e) {
         return false;
     }

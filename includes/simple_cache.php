@@ -30,3 +30,15 @@ if (!function_exists('cache_remember')) {
         return $data;
     }
 }
+
+if (!function_exists('cache_forget')) {
+    function cache_forget(string $key): void
+    {
+        $dir = dirname(__DIR__) . '/storage/cache';
+        $safe_key = preg_replace('/[^a-z0-9_-]/i', '_', $key);
+        $file = $dir . '/' . $safe_key . '.json';
+        if (is_file($file)) {
+            @unlink($file);
+        }
+    }
+}

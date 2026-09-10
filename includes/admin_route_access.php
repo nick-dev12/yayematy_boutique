@@ -121,9 +121,9 @@ if (!function_exists('admin_route_relative_path')) {
             if ($p === 'parametres/bulletin_paie.php') {
                 return in_array($r, ['admin', 'rh', 'informaticien', 'developpeur'], true);
             }
-            // Paramètres + sous-pages : informaticien / développeur (rôle admin exclu)
+            // Paramètres + sous-pages : admin principal + informaticien / développeur
             if ($p === 'parametres.php' || strpos($p, 'parametres/') === 0) {
-                return $acces_sans_restriction;
+                return in_array($r, ['admin', 'informaticien', 'developpeur'], true);
             }
             // Rôle admin : accès complet (comptes, utilisateurs, commandes, etc.)
             return true;

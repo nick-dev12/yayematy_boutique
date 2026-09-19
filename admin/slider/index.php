@@ -25,6 +25,9 @@ require_once __DIR__ . '/../../models/model_slider.php';
 require_once __DIR__ . '/../../includes/image_optimizer.php';
 require_once __DIR__ . '/../../includes/site_url.php';
 $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inactifs)
+$slides_actifs = get_all_slides('actif');
+$slides_actifs = is_array($slides_actifs) ? $slides_actifs : [];
+$slider_preview_slides = $slides_actifs;
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -37,6 +40,7 @@ $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inacti
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/owl.carousel.min.css'); ?>">
 </head>
 
 <body>
@@ -60,7 +64,17 @@ $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inacti
     </div>
     <?php endif; ?>
 
-    <section class="produits-section">
+    <section class="produits-section page-admin-slider">
+        <?php if (!empty($slider_preview_slides)): ?>
+        <div class="section-title">
+            <h2><i class="fas fa-play-circle"></i> Aperçu accueil (slides actifs)</h2>
+        </div>
+        <?php
+        $slider_preview_class = 'admin-slider-preview--hero';
+        include __DIR__ . '/../includes/slider_preview_carousel.php';
+        ?>
+        <?php endif; ?>
+
         <div class="section-title">
             <h2><i class="fas fa-images"></i> Slides du Carrousel (<?php echo count($slides); ?>)</h2>
         </div>
@@ -74,7 +88,7 @@ $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inacti
             </a>
         </div>
         <?php else: ?>
-        <div class="slides-grid">
+        <div class="slides-grid slides-grid--carousel">
             <?php foreach ($slides as $slide): ?>
             <div class="slide-card">
                 <img src="<?php echo htmlspecialchars(upload_image_url('slider/' . ($slide['image'] ?? ''), 'md')); ?>"
@@ -110,4 +124,5 @@ $slides = get_all_slides(null); // Récupérer tous les slides (actifs et inacti
         <?php endif; ?>
     </section>
 
+    <?php include __DIR__ . '/../includes/slider_carousel_scripts.php'; ?>
     <?php include '../includes/footer.php'; ?>

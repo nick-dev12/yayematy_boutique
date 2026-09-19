@@ -4,6 +4,71 @@
 
 @import url("admin-hub-layout.css");
 
+.page-produits-index .prod-catalog-hero__inner {
+  grid-template-columns: 1fr;
+}
+
+.page-produits-index .prod-catalog-hero__content--produits .prod-catalog-hero__title-row,
+.page-categorie-produits .prod-catalog-hero__content--produits .prod-catalog-hero__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.page-categorie-produits .prod-catalog-hero__back {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  justify-content: center;
+  border-radius: 0.625rem;
+}
+
+.page-produits-index .prod-catalog-hero__content--produits .prod-catalog-hero__title-row .prod-catalog-hero__title,
+.page-categorie-produits .prod-catalog-hero__content--produits .prod-catalog-hero__title-row .prod-catalog-hero__title {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.page-produits-index .prod-catalog-hero__content--produits .prod-catalog-hero__actions--top,
+.page-categorie-produits .prod-catalog-hero__content--produits .prod-catalog-hero__actions--top {
+  margin-top: 0;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .page-produits-index .prod-catalog-hero__content--produits .prod-catalog-hero__title-row,
+  .page-categorie-produits .prod-catalog-hero__content--produits .prod-catalog-hero__title-row {
+    flex-wrap: wrap;
+  }
+
+  .page-produits-index .prod-catalog-hero__content--produits .prod-catalog-hero__actions--top,
+  .page-categorie-produits .prod-catalog-hero__content--produits .prod-catalog-hero__actions--top {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .page-produits-index .prod-catalog-hero__content--produits .prod-catalog-hero__actions--top .btn-primary,
+  .page-categorie-produits .prod-catalog-hero__content--produits .prod-catalog-hero__actions--top .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.page-produits-index .prod-catalog-stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 768px) {
+  .page-produits-index .prod-catalog-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* Filtres catalogue — tablette */
 @media (min-width: 769px) and (max-width: 1100px) {
   .page-produits-index .prod-catalog-filters {

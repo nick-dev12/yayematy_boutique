@@ -92,8 +92,8 @@ if ($prix_original) {
 // Récupérer les variantes du produit
 $variantes = get_variantes_by_produit($produit_id);
 
-// Récupérer les produits similaires (même catégorie)
-$produits_similaires = get_produits_by_categorie($produit['categorie_id']);
+// Récupérer les produits similaires (même catégorie, cache)
+$produits_similaires = get_produits_by_categorie_cached((int) $produit['categorie_id']);
 // Exclure le produit actuel
 $produits_similaires = array_filter($produits_similaires, function ($p) use ($produit_id) {
     return $p['id'] != $produit_id;
@@ -103,6 +103,19 @@ $produits_similaires = array_slice($produits_similaires, 0, 4); // Limiter à 4 
 // Inclusion du fichier de connexion à la BDD (pour les autres fonctionnalités si nécessaire)
 if (file_exists(__DIR__ . '/controllers/controller_commerce_users.php')) {
     require_once __DIR__ . '/controllers/controller_commerce_users.php';
+}
+
+// Description fiche produit : extrait (mots) + « Voir plus »
+$produit_description_word_limit = 50;
+$produit_description_truncated = false;
+$produit_description_excerpt = '';
+if (!empty($produit['description'])) {
+    $plain_desc = preg_replace('/\s+/u', ' ', trim(strip_tags((string) $produit['description'])));
+    $desc_words = preg_split('/\s+/u', $plain_desc, -1, PREG_SPLIT_NO_EMPTY);
+    if (is_array($desc_words) && count($desc_words) > $produit_description_word_limit) {
+        $produit_description_truncated = true;
+        $produit_description_excerpt = implode(' ', array_slice($desc_words, 0, $produit_description_word_limit));
+    }
 }
 
 // Meta SEO
@@ -115,6 +128,8 @@ $seo_canonical = $base . '/produit.php?id=' . (int) $produit['id'];
 $seo_og_type = 'product';
 $img = !empty($produit['image_principale']) ? $produit['image_principale'] : '';
 $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.png';
+$produit_lcp_preload = upload_image_url_from_src($produit['image_principale'] ?? '', 'md');
+require_once __DIR__ . '/includes/asset_version.php';
 ?>
 
 <!DOCTYPE html>
@@ -125,17 +140,14 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php include __DIR__ . '/includes/pwa_meta.php'; ?>
     <?php include __DIR__ . '/includes/seo_meta.php'; ?>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+    <?php if ($produit_lcp_preload !== ''): ?>
+    <link rel="preload" as="image" href="<?php echo htmlspecialchars($produit_lcp_preload, ENT_QUOTES, 'UTF-8'); ?>">
+    <?php endif; ?>
+    <?php
+    require_once __DIR__ . '/includes/head_public_assets.php';
+    render_public_head_assets();
+    ?>
     <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-    <link rel="stylesheet" href="<?php echo asset_url('/css/owl.carousel.min.css'); ?>">
-    <link rel="stylesheet" href="<?php echo asset_url('/css/owl.carousel.css'); ?>">
-    <link rel="stylesheet" href="<?php echo asset_url('/css/animate.css'); ?>">
-    <link rel="stylesheet" href="<?php echo asset_url('/css/animate.min.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/a_style.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-grid.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/product-cards.css'); ?>">
@@ -501,6 +513,98 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
             font-weight: 500;
         }
 
+        .option-group--poids .option-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            margin-bottom: 0.625rem;
+        }
+
+        .option-group--poids .option-label i {
+            color: var(--color-bleu, #2E7DB5);
+            font-size: 1rem;
+        }
+
+        .poids-options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(7.25rem, 1fr));
+            gap: 0.625rem;
+            width: 100%;
+        }
+
+        .poids-option {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            min-height: 5.25rem;
+            padding: 0.75rem 0.5rem;
+            border: 2px solid rgba(140, 140, 140, 0.35);
+            border-radius: 0.75rem;
+            background: var(--color-blanc, #fff);
+            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .poids-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .poids-option__icon {
+            font-size: 1.125rem;
+            line-height: 1;
+            color: var(--color-bleu, #2E7DB5);
+        }
+
+        .poids-option__value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--color-noir, #1A1A1A);
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        .poids-option--base .poids-option__value {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .poids-option__meta {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--color-gris, #8C8C8C);
+            line-height: 1.2;
+        }
+
+        .poids-option__meta--plus {
+            color: var(--color-orange, #F25C19);
+        }
+
+        .poids-option:hover {
+            border-color: rgba(242, 92, 25, 0.45);
+        }
+
+        .poids-option.selected,
+        .poids-option:has(input:checked) {
+            border-color: var(--couleur-dominante);
+            background: rgba(242, 92, 25, 0.06);
+            box-shadow: 0 0.125rem 0.625rem rgba(242, 92, 25, 0.12);
+        }
+
+        .poids-option--static {
+            cursor: default;
+            border-color: var(--couleur-dominante);
+            background: rgba(242, 92, 25, 0.06);
+            box-shadow: 0 0.125rem 0.625rem rgba(242, 92, 25, 0.12);
+        }
+
         .produit-description {
             margin-bottom: 24px;
             padding: 24px;
@@ -524,6 +628,25 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
         .produit-description p {
             margin: 0;
             color: #333;
+        }
+
+        .produit-description-toggle {
+            display: inline-block;
+            margin-top: 0.75rem;
+            padding: 0;
+            border: none;
+            background: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-bleu, #2E7DB5);
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 0.15em;
+        }
+
+        .produit-description-toggle:hover,
+        .produit-description-toggle:focus-visible {
+            color: var(--couleur-dominante);
         }
 
         .quantite-section {
@@ -925,6 +1048,15 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
                 gap: 8px;
             }
 
+            .poids-options-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .poids-option {
+                min-height: 4.75rem;
+                padding: 0.625rem 0.375rem;
+            }
+
             .option-label {
                 font-size: 12px;
                 margin-bottom: 6px;
@@ -1320,7 +1452,8 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
                     <?php require __DIR__ . '/includes/partials/product_share_button.php'; ?>
                     <img src="<?php echo htmlspecialchars($main_image_src); ?>"
                         alt="<?php echo htmlspecialchars($produit['nom']); ?>" class="produit-image-main"
-                        id="produit-image-main" onerror="this.src='/image/produit1.jpg'">
+                        id="produit-image-main" fetchpriority="high" decoding="async"
+                        onerror="this.src='/image/produit1.jpg'">
                 </div>
                 <?php if (count($galerie_images) > 1): ?>
                     <div class="produit-gallery-thumbs">
@@ -1334,7 +1467,8 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
                                     data-index="<?php echo $idx; ?>"
                                     data-src="<?php echo htmlspecialchars(upload_image_url_from_src($img_path, 'md')); ?>">
                                     <img src="<?php echo htmlspecialchars($thumb_src); ?>"
-                                        alt="Vue <?php echo $idx + 1; ?>" onerror="this.src='/image/produit1.jpg'">
+                                        alt="Vue <?php echo $idx + 1; ?>" loading="lazy" decoding="async"
+                                        onerror="this.src='/image/produit1.jpg'">
                                 </button>
                             <?php endforeach; ?>
                         </div>
@@ -1411,9 +1545,21 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
                 <?php if (!empty($produit['description'])): ?>
                     <div class="produit-description produit-section-bg">
                         <h3>Description</h3>
-                        <p>
-                            <?php echo nl2br(htmlspecialchars($produit['description'])); ?>
-                        </p>
+                        <?php if ($produit_description_truncated): ?>
+                            <p class="produit-description-excerpt">
+                                <?php echo htmlspecialchars($produit_description_excerpt); ?>…
+                            </p>
+                            <p class="produit-description-full" hidden>
+                                <?php echo nl2br(htmlspecialchars($produit['description'])); ?>
+                            </p>
+                            <button type="button" class="produit-description-toggle" aria-expanded="false">
+                                Voir plus
+                            </button>
+                        <?php else: ?>
+                            <p>
+                                <?php echo nl2br(htmlspecialchars($produit['description'])); ?>
+                            </p>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
 
@@ -1499,8 +1645,6 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
 
                     <?php if ($has_selectable_options): ?>
                         <div class="produit-options-section produit-section-bg">
-                            <div class="quantite-label" style="margin-bottom: 10px;"><i class="fas fa-palette"></i>
-                                Choisissez vos options</div>
                             <?php if (!empty($couleurs_options)): ?>
                                 <div class="option-group">
                                     <label class="option-label">Couleur</label>
@@ -1541,36 +1685,56 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
                                 </div>
                             <?php endif; ?>
                             <?php if (!empty($poids_options) && count($poids_options) > 1): ?>
-                                <div class="option-group">
-                                    <label class="option-label">Poids</label>
+                                <div class="option-group option-group--poids">
+                                    <span class="option-label"><i class="fas fa-weight-hanging" aria-hidden="true"></i> Poids</span>
                                     <input type="hidden" name="option_surcout_poids" id="option-surcout-poids" value="0">
-                                    <span class="options-list-select poids-options-list">
-                                        <label class="option-swatch-select selected" data-value="" data-surcout="0">
+                                    <div class="poids-options-grid poids-options-list" role="radiogroup" aria-label="Choisir un poids">
+                                        <label class="poids-option poids-option--base selected" data-value="" data-surcout="0">
                                             <input type="radio" name="option_poids" value="" checked>
-                                            <span class="option-swatch-text">Prix de base
-                                                (<?php echo number_format($prix_affichage, 0, ',', ' '); ?> FCFA)</span>
+                                            <span class="poids-option__icon" aria-hidden="true"><i class="fas fa-tag"></i></span>
+                                            <span class="poids-option__value">Standard</span>
+                                            <span class="poids-option__meta"><?php echo number_format($prix_affichage, 0, ',', ' '); ?> FCFA</span>
                                         </label>
                                         <?php foreach ($poids_options as $opt): ?>
-                                            <label class="option-swatch-select"
+                                            <?php
+                                            $surc_poids = (float) ($opt['s'] ?? 0);
+                                            $meta_poids = $surc_poids > 0
+                                                ? '+' . number_format($surc_poids, 0, ',', ' ') . ' FCFA'
+                                                : 'Inclus';
+                                            ?>
+                                            <label class="poids-option"
                                                 data-value="<?php echo htmlspecialchars($opt['v']); ?>"
-                                                data-surcout="<?php echo (float) ($opt['s'] ?? 0); ?>">
+                                                data-surcout="<?php echo $surc_poids; ?>">
                                                 <input type="radio" name="option_poids"
                                                     value="<?php echo htmlspecialchars($opt['v']); ?>">
-                                                <span
-                                                    class="option-swatch-text"><?php echo htmlspecialchars($opt['v']); ?><?php echo ($opt['s'] ?? 0) > 0 ? ' (+' . number_format($opt['s'], 0, ',', ' ') . ' FCFA)' : ''; ?></span>
+                                                <span class="poids-option__icon" aria-hidden="true"><i class="fas fa-weight-hanging"></i></span>
+                                                <span class="poids-option__value"><?php echo htmlspecialchars($opt['v']); ?></span>
+                                                <span class="poids-option__meta<?php echo $surc_poids > 0 ? ' poids-option__meta--plus' : ''; ?>"><?php echo $meta_poids; ?></span>
                                             </label>
                                         <?php endforeach; ?>
-                                    </span>
+                                    </div>
                                 </div>
                             <?php elseif (!empty($poids_options)): ?>
-                                <div class="option-group">
-                                    <label class="option-label">Poids</label>
+                                <?php
+                                $opt_poids_unique = $poids_options[0];
+                                $surc_poids_unique = (float) ($opt_poids_unique['s'] ?? 0);
+                                $meta_poids_unique = $surc_poids_unique > 0
+                                    ? '+' . number_format($surc_poids_unique, 0, ',', ' ') . ' FCFA'
+                                    : 'Inclus dans le prix';
+                                ?>
+                                <div class="option-group option-group--poids">
+                                    <span class="option-label"><i class="fas fa-weight-hanging" aria-hidden="true"></i> Poids</span>
                                     <input type="hidden" name="option_poids"
-                                        value="<?php echo htmlspecialchars($poids_options[0]['v']); ?>">
+                                        value="<?php echo htmlspecialchars($opt_poids_unique['v']); ?>">
                                     <input type="hidden" name="option_surcout_poids" id="option-surcout-poids"
-                                        value="<?php echo (float) ($poids_options[0]['s'] ?? 0); ?>">
-                                    <span
-                                        class="option-value-display"><?php echo htmlspecialchars($poids_options[0]['v']); ?><?php echo ($poids_options[0]['s'] ?? 0) > 0 ? ' (+' . number_format($poids_options[0]['s'], 0, ',', ' ') . ' FCFA)' : ''; ?></span>
+                                        value="<?php echo $surc_poids_unique; ?>">
+                                    <div class="poids-options-grid poids-options-grid--single">
+                                        <div class="poids-option poids-option--static" aria-current="true">
+                                            <span class="poids-option__icon" aria-hidden="true"><i class="fas fa-weight-hanging"></i></span>
+                                            <span class="poids-option__value"><?php echo htmlspecialchars($opt_poids_unique['v']); ?></span>
+                                            <span class="poids-option__meta<?php echo $surc_poids_unique > 0 ? ' poids-option__meta--plus' : ''; ?>"><?php echo $meta_poids_unique; ?></span>
+                                        </div>
+                                    </div>
                                 </div>
                             <?php endif; ?>
                             <?php if (!empty($taille_options) && count($taille_options) > 1): ?>
@@ -1658,7 +1822,6 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
 
     <?php include('footer.php') ?>
 
-    <script src="https://unpkg.com/aos@next/dist/aos.js" defer></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
         // Calcul automatique du prix total (variante + surcoûts)
@@ -1821,9 +1984,9 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
         })();
 
         function setupOptionSwatchListeners() {
-            document.querySelectorAll('.poids-options-list .option-swatch-select').forEach(function (lbl) {
+            document.querySelectorAll('.poids-options-list .poids-option').forEach(function (lbl) {
                 lbl.addEventListener('click', function () {
-                    lbl.closest('.poids-options-list').querySelectorAll('.option-swatch-select').forEach(
+                    lbl.closest('.poids-options-list').querySelectorAll('.poids-option').forEach(
                         function (x) {
                             x.classList.remove('selected');
                         });
@@ -1849,9 +2012,15 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
             });
             document.querySelectorAll('input[name="option_poids"]').forEach(function (rad) {
                 rad.addEventListener('change', function () {
-                    var lbl = this.closest('.option-swatch-select');
+                    var lbl = this.closest('.poids-option');
                     var surc = document.getElementById('option-surcout-poids');
                     if (surc && lbl) surc.value = lbl.dataset.surcout || 0;
+                    if (lbl) {
+                        lbl.closest('.poids-options-list')?.querySelectorAll('.poids-option').forEach(function (x) {
+                            x.classList.remove('selected');
+                        });
+                        lbl.classList.add('selected');
+                    }
                     updatePrixTotal();
                     if (typeof updatePrixEtNomAffichage === 'function') updatePrixEtNomAffichage();
                 });
@@ -1940,6 +2109,28 @@ $seo_image = $img ? $base . '/' . ltrim($img, '/') : $base . '/icons/icon-512.pn
         if (quantiteInput) {
             updatePrixTotal();
         }
+
+        document.querySelectorAll('.produit-description-toggle').forEach(function (btn) {
+            var block = btn.closest('.produit-description');
+            if (!block) return;
+            var excerpt = block.querySelector('.produit-description-excerpt');
+            var full = block.querySelector('.produit-description-full');
+            if (!excerpt || !full) return;
+            btn.addEventListener('click', function () {
+                var expanded = btn.getAttribute('aria-expanded') === 'true';
+                if (expanded) {
+                    full.hidden = true;
+                    excerpt.hidden = false;
+                    btn.textContent = 'Voir plus';
+                    btn.setAttribute('aria-expanded', 'false');
+                } else {
+                    excerpt.hidden = true;
+                    full.hidden = false;
+                    btn.textContent = 'Voir moins';
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
 
         // Gestion du message de succès/erreur
         function closeMessage() {

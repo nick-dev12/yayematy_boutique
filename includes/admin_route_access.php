@@ -222,6 +222,8 @@ if (!function_exists('admin_route_relative_path')) {
                     || $p === 'categories/produits.php'
                     || $p === 'categories/modifier.php'
                     || $p === 'categories/ajouter.php'
+                    || $p === 'categories/sous_categories.php'
+                    || $p === 'categories/ajouter_sous_categorie.php'
                     || $p === 'categories/supprimer.php';
 
             case 'livreur':

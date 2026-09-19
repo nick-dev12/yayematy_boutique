@@ -19,8 +19,34 @@ if (isset($result['success']) && $result['success']) {
 }
 
 require_once __DIR__ . '/../../models/model_categories.php';
-$categories = get_all_categories();
+$parent_categories = get_parent_categories();
+$parent_categories = is_array($parent_categories) ? $parent_categories : [];
+$subcategories_by_parent = [];
+foreach ($parent_categories as $parent_cat) {
+    $pid = (int) ($parent_cat['id'] ?? 0);
+    if ($pid > 0) {
+        $subcategories_by_parent[$pid] = get_subcategories_by_parent_id($pid);
+    }
+}
+
 $categorie_id_prefill = isset($_GET['categorie_id']) ? (int) $_GET['categorie_id'] : 0;
+$prefill_parent_id = 0;
+$prefill_sub_id = 0;
+$posted_categorie_id = isset($_POST['categorie_id']) ? (int) $_POST['categorie_id'] : 0;
+$effective_categorie_id = $posted_categorie_id > 0 ? $posted_categorie_id : $categorie_id_prefill;
+
+if ($effective_categorie_id > 0) {
+    $prefill_cat = get_categorie_by_id($effective_categorie_id);
+    if ($prefill_cat) {
+        $raw_parent = (int) ($prefill_cat['parent_id'] ?? 0);
+        if ($raw_parent > 0) {
+            $prefill_parent_id = $raw_parent;
+            $prefill_sub_id = (int) $prefill_cat['id'];
+        } else {
+            $prefill_parent_id = (int) $prefill_cat['id'];
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -33,6 +59,8 @@ $categorie_id_prefill = isset($_GET['categorie_id']) ? (int) $_GET['categorie_id
     <?php require_once __DIR__ . '/../../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-produit-variantes.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/admin-produit-gallery.css'); ?>">
 </head>
 
 <body>
@@ -77,27 +105,40 @@ $categorie_id_prefill = isset($_GET['categorie_id']) ? (int) $_GET['categorie_id
                             rows="4"><?php echo isset($_POST['description']) ? htmlspecialchars($_POST['description']) : ''; ?></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label for="categorie_id">Catégorie <span class="required">*</span></label>
-                    <select id="categorie_id" name="categorie_id" required>
-                        <option value="">Sélectionner une catégorie</option>
-                        <?php if ($categories && count($categories) > 0): ?>
-                            <?php foreach ($categories as $c): ?>
-                                <option value="<?php echo $c['id']; ?>" <?php echo ((isset($_POST['categorie_id']) && $_POST['categorie_id'] == $c['id']) || ($categorie_id_prefill > 0 && $c['id'] == $categorie_id_prefill)) ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($c['nom']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <option value="" disabled>Aucune catégorie disponible</option>
+                <div class="form-group-row form-group-row--categories" id="categorie-pickers-row">
+                    <div class="form-group">
+                        <label for="categorie_parent_id">Catégorie <span class="required">*</span></label>
+                        <select id="categorie_parent_id" required>
+                            <option value="">Sélectionner une catégorie</option>
+                            <?php if (!empty($parent_categories)): ?>
+                                <?php foreach ($parent_categories as $c): ?>
+                                    <option value="<?php echo (int) $c['id']; ?>"
+                                        <?php echo $prefill_parent_id === (int) $c['id'] ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($c['nom']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <option value="" disabled>Aucune catégorie disponible</option>
+                            <?php endif; ?>
+                        </select>
+                        <?php if (empty($parent_categories)): ?>
+                            <small class="form-help form-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Aucune catégorie disponible. <a href="../categories/ajouter.php" class="link-accent">Créer une catégorie</a>
+                            </small>
                         <?php endif; ?>
-                    </select>
-                    <?php if (!$categories || count($categories) == 0): ?>
-                        <small class="form-help form-warning">
-                            <i class="fas fa-exclamation-triangle"></i> 
-                            Aucune catégorie disponible. <a href="../categories/ajouter.php" class="link-accent">Créer une catégorie</a>
-                        </small>
-                    <?php endif; ?>
+                    </div>
+
+                    <div class="form-group form-group--sous-categorie" id="sous-categorie-group" hidden>
+                        <label for="sous_categorie_id">Sous-catégorie <span class="required">*</span></label>
+                        <select id="sous_categorie_id">
+                            <option value="">Sélectionner une sous-catégorie</option>
+                        </select>
+                    </div>
                 </div>
+
+                <input type="hidden" name="categorie_id" id="categorie_id"
+                    value="<?php echo $effective_categorie_id > 0 ? (int) $effective_categorie_id : ''; ?>">
             </div>
 
             <div class="form-add-block">
@@ -125,59 +166,40 @@ $categorie_id_prefill = isset($_GET['categorie_id']) ? (int) $_GET['categorie_id
             </div>
 
                 <div class="form-add-block">
-                    <h3 class="form-add-section-title"><i class="fas fa-image"></i> Images du produit</h3>
-                <div class="form-group">
-                        <label>Images <span class="required">*</span></label>
-                        <div class="file-input-wrapper file-input-single"
-                            onclick="document.getElementById('images_produit').click()">
-                            <input type="file" id="images_produit" name="images_produit[]" accept="image/*" multiple required
-                                class="file-input" style="display: none;">
-                        <label class="file-input-label" style="cursor: pointer; margin: 0;">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <span>Cliquer pour ajouter des images</span>
-                            <small>Une ou plusieurs à la fois — JPG, PNG, GIF, WEBP</small>
-                        </label>
+                    <div class="form-group form-group--product-gallery">
+                        <div class="product-gallery-panel">
+                            <div class="product-gallery-panel__head">
+                                <h3 class="product-gallery-panel__title"><i class="fas fa-images" aria-hidden="true"></i> Images du produit <span class="required">*</span></h3>
+                                <p class="product-gallery-panel__hint">Ajoutez une ou plusieurs photos. La première sera l'image principale.</p>
+                            </div>
+                            <label class="product-gallery-upload" for="images_produit">
+                                <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+                                <span>Cliquer pour ajouter des images</span>
+                                <small>JPG, PNG, GIF, WEBP — plusieurs fichiers possibles</small>
+                            </label>
+                            <input type="file" id="images_produit" name="images_produit[]" accept="image/*" multiple required hidden>
+                            <div id="preview-images" class="image-preview-accumulator"></div>
+                            <p class="product-gallery-panel__formats">Au moins une image est obligatoire.</p>
+                        </div>
                     </div>
-                    <div id="preview-images" class="image-preview-accumulator"></div>
-                </div>
 
-                <div class="form-group">
-                    <label for="statut">Statut du produit</label>
-                    <select id="statut" name="statut">
+                    <div class="form-add-block form-add-block-variantes form-group--product-variantes">
+                        <label><i class="fas fa-layer-group"></i> Variantes du produit (optionnel)</label>
+                        <div id="variantes-container" class="variantes-container" aria-live="polite"></div>
+                        <button type="button" id="btn-add-variante" class="btn-add-variante"><i class="fas fa-plus"></i>
+                            Ajouter une variante</button>
+                        <?php include __DIR__ . '/partials/variante_add_modal.php'; ?>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="statut">Statut du produit</label>
+                        <select id="statut" name="statut">
                             <option value="actif" <?php echo (!isset($_POST['statut']) || $_POST['statut'] == 'actif') ? 'selected' : ''; ?>>
                                 Actif (visible en boutique)</option>
                             <option value="inactif" <?php echo (isset($_POST['statut']) && $_POST['statut'] == 'inactif') ? 'selected' : ''; ?>>
                                 Inactif (masqué)</option>
-                    </select>
-                </div>
-            </div>
-
-                <div class="form-add-block form-add-block-variantes">
-                    <h3 class="form-add-section-title"><i class="fas fa-layer-group"></i> Variantes du produit
-                        (optionnel)</h3>
-                    <div id="variantes-container" class="variantes-container">
-                        <div class="variante-item" data-index="0">
-                            <div class="variante-row">
-                                <input type="text" name="variantes_nom[]" placeholder="Nom (ex: Format familial)"
-                                    class="variante-nom">
-                                <input type="number" name="variantes_prix[]" placeholder="Prix FCFA" min="0" step="0.01"
-                                    class="variante-prix">
-                                <input type="number" name="variantes_prix_promo[]" placeholder="Prix promo" min="0"
-                                    step="0.01" class="variante-prix-promo">
-                                <div class="variante-image-wrap">
-                                    <div class="variante-image-area">
-                                        <input type="file" name="variantes_image[]" accept="image/*"
-                                            class="variante-image-input">
-                                        <span class="variante-image-label"><i class="fas fa-image"></i> Image</span>
-                                        <img class="variante-preview-img" src="" alt="" style="display: none;">
-                                    </div>
-                                </div>
-                                <button type="button" class="btn-remove-variante" title="Supprimer">&times;</button>
-                            </div>
-                        </div>
+                        </select>
                     </div>
-                    <button type="button" id="btn-add-variante" class="btn-add-variante"><i class="fas fa-plus"></i>
-                        Ajouter une variante</button>
                 </div>
 
             <div class="form-add-actions">
@@ -498,129 +520,39 @@ $categorie_id_prefill = isset($_GET['categorie_id']) ? (int) $_GET['categorie_id
         }
 
         .form-add-block-variantes {
-            margin-top: 24px;
-            padding-top: 24px;
-            border-top: 2px solid #eee;
+            margin-top: 0;
+            padding-top: 1.25rem;
+            border-top: 1px solid rgba(140, 140, 140, 0.2);
         }
 
-        .variantes-container {
-            margin-bottom: 15px;
+        .form-add-block-variantes > label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--color-noir, #1a1a1a);
         }
 
-        .variante-item {
-            margin-bottom: 12px;
-            padding: 16px;
-            background: #f9f9f9;
-            border-radius: 10px;
-            border: 1px solid #e8e8e8;
-        }
-
-        .variante-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .variante-nom {
-            flex: 1;
-            min-width: 180px;
-            padding: 10px 14px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .variante-prix,
-        .variante-prix-promo {
-            width: 110px;
-            padding: 10px 14px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .variante-image-wrap {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .variante-image-area {
-            position: relative;
-            min-width: 100px;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 2px dashed #ddd;
-            border-radius: 8px;
-            background: #fff;
-            cursor: pointer;
-            overflow: hidden;
-        }
-
-        .variante-image-area:hover {
-            border-color: #918a44;
-            background: #fafaf8;
-        }
-
-        .variante-image-input {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-            z-index: 1;
-        }
-
-        .variante-image-label {
-            padding: 8px 14px;
-            color: #918a44;
-            font-size: 13px;
-        }
-
-        .variante-preview-img {
-            max-width: 90px;
-            max-height: 70px;
-            object-fit: cover;
-            border-radius: 6px;
-            margin: 4px;
+        .form-add-block-variantes > label i {
+            color: var(--color-orange, #f25c19);
+            margin-right: 0.375rem;
         }
 
         .btn-remove-variante {
-            width: 34px;
-            height: 34px;
+            width: 2.125rem;
+            height: 2.125rem;
             flex-shrink: 0;
             border: none;
-            background: #c26638;
-            color: #fff;
-            border-radius: 8px;
+            background: var(--color-orange, #f25c19);
+            color: var(--color-blanc, #fff);
+            border-radius: 0.5rem;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 1.125rem;
             line-height: 1;
         }
 
         .btn-remove-variante:hover {
-            background: #a55a30;
-        }
-
-        .btn-add-variante {
-            padding: 12px 20px;
-            background: #918a44;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-add-variante:hover {
-            background: #7a7340;
+            filter: brightness(0.92);
         }
     </style>
     <script>
@@ -853,67 +785,114 @@ $categorie_id_prefill = isset($_GET['categorie_id']) ? (int) $_GET['categorie_id
                 'btn-add-taille');
         })();
         (function () {
-            var container = document.getElementById('variantes-container');
-            var btnAdd = document.getElementById('btn-add-variante');
-            var idx = 1;
+            var subsByParent = <?php echo json_encode(array_map(function ($subs) {
+                return array_values(array_map(function ($s) {
+                    return ['id' => (int) ($s['id'] ?? 0), 'nom' => (string) ($s['nom'] ?? '')];
+                }, is_array($subs) ? $subs : []));
+            }, $subcategories_by_parent), JSON_UNESCAPED_UNICODE); ?>;
 
-            function getVarianteRowHtml() {
-                return '<div class="variante-row">' +
-                    '<input type="text" name="variantes_nom[]" placeholder="Nom (ex: Format familial)" class="variante-nom">' +
-                    '<input type="number" name="variantes_prix[]" placeholder="Prix FCFA" min="0" step="0.01" class="variante-prix">' +
-                    '<input type="number" name="variantes_prix_promo[]" placeholder="Prix promo" min="0" step="0.01" class="variante-prix-promo">' +
-                    '<div class="variante-image-wrap">' +
-                    '<div class="variante-image-area">' +
-                    '<input type="file" name="variantes_image[]" accept="image/*" class="variante-image-input">' +
-                    '<span class="variante-image-label"><i class="fas fa-image"></i> Image</span>' +
-                    '<img class="variante-preview-img" src="" alt="" style="display: none;">' +
-                    '</div></div>' +
-                    '<button type="button" class="btn-remove-variante" title="Supprimer">&times;</button></div>';
+            var parentSelect = document.getElementById('categorie_parent_id');
+            var subGroup = document.getElementById('sous-categorie-group');
+            var subSelect = document.getElementById('sous_categorie_id');
+            var hiddenCategorie = document.getElementById('categorie_id');
+            var form = document.querySelector('form.form-add');
+            var prefillSubId = <?php echo (int) $prefill_sub_id; ?>;
+
+            if (!parentSelect || !hiddenCategorie || !subGroup || !subSelect) {
+                return;
             }
 
-            function previewVarianteImage(input) {
-                var wrap = input.closest('.variante-image-wrap');
-                if (!wrap) return;
-                var img = wrap.querySelector('.variante-preview-img');
-                var label = wrap.querySelector('.variante-image-label');
-                if (!img || !label) return;
-                if (input.files && input.files[0]) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        img.src = e.target.result;
-                        img.style.display = 'block';
-                        label.style.display = 'none';
-                    };
-                    reader.readAsDataURL(input.files[0]);
+            function populateSubcategories(parentId, selectedSubId) {
+                var subs = subsByParent[parentId] || subsByParent[String(parentId)] || [];
+                subSelect.innerHTML = '<option value="">Sélectionner une sous-catégorie</option>';
+                subs.forEach(function (sc) {
+                    if (!sc || !sc.id) {
+                        return;
+                    }
+                    var opt = document.createElement('option');
+                    opt.value = String(sc.id);
+                    opt.textContent = sc.nom;
+                    if (selectedSubId && Number(sc.id) === Number(selectedSubId)) {
+                        opt.selected = true;
+                    }
+                    subSelect.appendChild(opt);
+                });
+            }
+
+            function syncCategorieValue() {
+                var parentId = parentSelect.value;
+                if (!parentId) {
+                    hiddenCategorie.value = '';
+                    return;
+                }
+                var subs = subsByParent[parentId] || subsByParent[String(parentId)] || [];
+                if (subs.length > 0) {
+                    hiddenCategorie.value = subSelect.value || '';
                 } else {
-                    img.src = '';
-                    img.style.display = 'none';
-                    label.style.display = '';
+                    hiddenCategorie.value = parentId;
                 }
             }
-            if (container) {
-                container.addEventListener('change', function (e) {
-                    if (e.target.classList.contains('variante-image-input')) {
-                        previewVarianteImage(e.target);
+
+            function onParentChange() {
+                var parentId = parentSelect.value;
+                if (!parentId) {
+                    subGroup.hidden = true;
+                    subSelect.value = '';
+                    hiddenCategorie.value = '';
+                    return;
+                }
+                var subs = subsByParent[parentId] || subsByParent[String(parentId)] || [];
+                if (subs.length > 0) {
+                    populateSubcategories(parentId, 0);
+                    subGroup.hidden = false;
+                    hiddenCategorie.value = '';
+                } else {
+                    subGroup.hidden = true;
+                    subSelect.value = '';
+                    hiddenCategorie.value = parentId;
+                }
+            }
+
+            parentSelect.addEventListener('change', onParentChange);
+            subSelect.addEventListener('change', syncCategorieValue);
+
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    syncCategorieValue();
+                    var parentId = parentSelect.value;
+                    if (!parentId) {
+                        e.preventDefault();
+                        parentSelect.focus();
+                        return;
+                    }
+                    var subs = subsByParent[parentId] || subsByParent[String(parentId)] || [];
+                    if (subs.length > 0 && !subSelect.value) {
+                        e.preventDefault();
+                        subGroup.hidden = false;
+                        subSelect.focus();
+                        return;
                     }
                 });
             }
-            if (btnAdd && container) {
-                btnAdd.addEventListener('click', function () {
-                    var div = document.createElement('div');
-                    div.className = 'variante-item';
-                    div.dataset.index = idx++;
-                    div.innerHTML = getVarianteRowHtml();
-                    container.appendChild(div);
-                    div.querySelector('.btn-remove-variante').addEventListener('click', function () {
-                        div.remove();
-                    });
-                });
-                container.addEventListener('click', function (e) {
-                    var b = e.target.closest('.btn-remove-variante');
-                    if (b && container.children.length > 1) b.closest('.variante-item').remove();
-                });
+
+            if (parentSelect.value) {
+                var subs = subsByParent[parentSelect.value] || subsByParent[String(parentSelect.value)] || [];
+                if (subs.length > 0) {
+                    populateSubcategories(parentSelect.value, prefillSubId);
+                    subGroup.hidden = false;
+                    syncCategorieValue();
+                } else {
+                    syncCategorieValue();
+                }
             }
         })();
+    </script>
+    <script src="<?php echo asset_url('/js/admin-produit-variantes.js'); ?>"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof initProduitVariantes === 'function') {
+                initProduitVariantes();
+            }
+        });
     </script>
     <?php include '../includes/footer.php'; ?>

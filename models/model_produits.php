@@ -49,6 +49,42 @@ function get_all_produits($statut = null)
 }
 
 /**
+ * Liste produits par catégorie (cache fichier, TTL court).
+ */
+function get_produits_by_categorie_cached(int $categorie_id, int $ttl = 300)
+{
+    if ($categorie_id <= 0) {
+        return [];
+    }
+    if (!function_exists('cache_remember')) {
+        require_once __DIR__ . '/../includes/simple_cache.php';
+    }
+    return cache_remember('categorie_produits_' . $categorie_id, $ttl, function () use ($categorie_id) {
+        $rows = get_produits_by_categorie($categorie_id);
+        return is_array($rows) ? $rows : [];
+    });
+}
+
+/**
+ * Invalide les caches catalogue / accueil après modification produit.
+ */
+function produits_invalidate_public_cache($categorie_id = null, $old_categorie_id = null): void
+{
+    if (!function_exists('cache_forget')) {
+        require_once __DIR__ . '/../includes/simple_cache.php';
+    }
+    cache_forget('home_produits_36');
+    cache_forget('home_bestsellers_5');
+    cache_forget('catalogue_produits_page1_20');
+    cache_forget('catalogue_produits_count');
+    foreach ([(int) $categorie_id, (int) $old_categorie_id] as $cid) {
+        if ($cid > 0) {
+            cache_forget('categorie_produits_' . $cid);
+        }
+    }
+}
+
+/**
  * Récupère les produits d'une catégorie spécifique
  * @param int $categorie_id L'ID de la catégorie
  * @return array|false Tableau des produits ou False en cas d'erreur
@@ -642,7 +678,9 @@ function create_produit($data)
         }
 
         if ($result) {
-            return $db->lastInsertId();
+            $new_id = (int) $db->lastInsertId();
+            produits_invalidate_public_cache($data['categorie_id'] ?? null);
+            return $new_id;
         }
 
         return false;
@@ -684,14 +722,28 @@ function update_produit($id, $data)
             $params['taille'] = $data['taille'] ?? null;
         }
         try {
+            $old_cat = null;
+            $prev = $db->prepare('SELECT categorie_id FROM produits WHERE id = :id LIMIT 1');
+            if ($prev->execute(['id' => $id])) {
+                $row = $prev->fetch(PDO::FETCH_ASSOC);
+                $old_cat = $row ? (int) ($row['categorie_id'] ?? 0) : null;
+            }
             $stmt = $db->prepare("UPDATE produits SET $sets WHERE id = :id");
-            return $stmt->execute($params);
+            $ok = $stmt->execute($params);
+            if ($ok) {
+                produits_invalidate_public_cache($data['categorie_id'] ?? null, $old_cat);
+            }
+            return $ok;
         } catch (PDOException $e) {
             if ($with_extras && (strpos($e->getMessage(), 'couleurs') !== false || strpos($e->getMessage(), 'taille') !== false)) {
                 $sets = "nom = :nom, description = :description, prix = :prix, prix_promotion = :prix_promotion, stock = :stock, categorie_id = :categorie_id, image_principale = :image_principale, images = :images, poids = :poids, unite = :unite, statut = :statut, date_modification = NOW()";
                 unset($params['couleurs'], $params['taille']);
                 $stmt = $db->prepare("UPDATE produits SET $sets WHERE id = :id");
-                return $stmt->execute($params);
+                $ok = $stmt->execute($params);
+                if ($ok) {
+                    produits_invalidate_public_cache($data['categorie_id'] ?? null);
+                }
+                return $ok;
             }
             throw $e;
         }
@@ -710,8 +762,18 @@ function delete_produit($id)
     global $db;
 
     try {
+        $cat_id = null;
+        $prev = $db->prepare('SELECT categorie_id FROM produits WHERE id = :id LIMIT 1');
+        if ($prev->execute(['id' => $id])) {
+            $row = $prev->fetch(PDO::FETCH_ASSOC);
+            $cat_id = $row ? (int) ($row['categorie_id'] ?? 0) : null;
+        }
         $stmt = $db->prepare("DELETE FROM produits WHERE id = :id");
-        return $stmt->execute(['id' => $id]);
+        $ok = $stmt->execute(['id' => $id]);
+        if ($ok) {
+            produits_invalidate_public_cache($cat_id);
+        }
+        return $ok;
     } catch (PDOException $e) {
         return false;
     }

@@ -8,7 +8,6 @@ require_once __DIR__ . '/includes/admin_auth.php';
 
 require_once __DIR__ . '/../includes/admin_permissions.php';
 
-require_once __DIR__ . '/../includes/site_brand.php';
 require_once __DIR__ . '/../includes/firebase_config_loader.php';
 require_once __DIR__ . '/includes/dashboard_data.php';
 
@@ -80,11 +79,12 @@ if ($admin_display === '') {
         <header class="dash-hero">
             <div class="dash-hero__inner">
                 <div class="dash-hero__content">
-                    <p class="dash-hero__eyebrow">
-                        <i class="fa-solid fa-circle" aria-hidden="true"></i>
-                        <?php echo htmlspecialchars(site_brand_name_market()); ?>
-                    </p>
-                    <h1 class="dash-hero__title">Bonjour, <span><?php echo htmlspecialchars($admin_display); ?></span></h1>
+                    <div class="dash-hero__title-row">
+                        <h1 class="dash-hero__title">Bonjour, <span><?php echo htmlspecialchars($admin_display); ?></span></h1>
+                        <div class="dash-hero__title-actions">
+                            <?php include __DIR__ . '/includes/btn_retour_site.php'; ?>
+                        </div>
+                    </div>
                     <div class="dash-hero__actions">
                         <a href="produits/ajouter.php" class="btn-primary">
                             <i class="fas fa-plus"></i> Nouveau produit
@@ -92,16 +92,11 @@ if ($admin_display === '') {
                         <a href="commandes/index.php" class="dash-btn-outline">
                             <i class="fas fa-shopping-bag"></i> Commandes
                         </a>
-                        <?php include __DIR__ . '/includes/btn_retour_site.php'; ?>
                         <button type="button" id="btn-install-pwa" class="dash-btn-outline"
                             title="Installer l'application" style="display: none;">
                             <i class="fas fa-download"></i> App
                         </button>
                     </div>
-                </div>
-                <div class="dash-hero__meta">
-                    <span class="dash-hero__clock" id="dashClock"><?php echo date('H:i'); ?></span>
-                    <span class="dash-hero__date"><?php echo dash_date_fr(); ?></span>
                 </div>
             </div>
         </header>
@@ -263,14 +258,6 @@ if ($admin_display === '') {
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var clockEl = document.getElementById('dashClock');
-            if (clockEl) {
-                setInterval(function () {
-                    var now = new Date();
-                    clockEl.textContent = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-                }, 30000);
-            }
-
             var installBtn = document.getElementById('btn-install-pwa');
             var deferredPrompt;
 

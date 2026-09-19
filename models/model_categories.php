@@ -8,11 +8,150 @@ require_once __DIR__ . '/../conn/conn.php';
 require_once __DIR__ . '/../includes/db_helpers.php';
 
 /**
+ * Vide le cache des sous-catégories affichées sur categorie.php.
+ */
+function categories_flush_subcategories_cache(?int $parent_id = null): void
+{
+    if (!function_exists('cache_forget')) {
+        require_once __DIR__ . '/../includes/simple_cache.php';
+    }
+    if ($parent_id !== null && $parent_id > 0) {
+        cache_forget('subcats_parent_' . $parent_id);
+        return;
+    }
+    $parents = get_parent_categories();
+    foreach ($parents as $p) {
+        $pid = (int) ($p['id'] ?? 0);
+        if ($pid > 0) {
+            cache_forget('subcats_parent_' . $pid);
+        }
+    }
+}
+
+/**
  * @return PDO|null
  */
 function categories_db()
 {
     return app_db();
+}
+
+/**
+ * Indique si la colonne parent_id existe (sous-catégories).
+ */
+function categories_has_parent_id_column()
+{
+    static $cached = null;
+    if ($cached !== null) {
+        return $cached;
+    }
+
+    $db = categories_db();
+    if (!$db) {
+        $cached = false;
+        return false;
+    }
+
+    try {
+        $stmt = $db->query("SHOW COLUMNS FROM categories LIKE 'parent_id'");
+        $cached = (bool) $stmt->fetch(PDO::FETCH_ASSOC);
+        return $cached;
+    } catch (PDOException $e) {
+        $cached = false;
+        return false;
+    }
+}
+
+/**
+ * Catégories principales (sans parent) — pour rattacher une sous-catégorie.
+ *
+ * @return array<int, array>
+ */
+/**
+ * Sous-catégories avec nom du parent et nombre de produits.
+ *
+ * @return array<int, array>
+ */
+function get_all_subcategories_with_count()
+{
+    $db = categories_db();
+    if (!$db || !categories_has_parent_id_column()) {
+        return [];
+    }
+
+    try {
+        $stmt = $db->prepare("
+            SELECT c.*, parent.nom AS parent_nom, COUNT(p.id) AS nb_produits
+            FROM categories c
+            INNER JOIN categories parent ON parent.id = c.parent_id
+            LEFT JOIN produits p ON p.categorie_id = c.id AND p.statut = 'actif'
+            WHERE c.parent_id IS NOT NULL AND c.parent_id > 0
+            GROUP BY c.id
+            ORDER BY parent.nom ASC, c.nom ASC
+        ");
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows ?: [];
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+function get_parent_categories()
+{
+    $db = categories_db();
+    if (!$db) {
+        return [];
+    }
+
+    try {
+        if (categories_has_parent_id_column()) {
+            $stmt = $db->prepare('
+                SELECT * FROM categories
+                WHERE parent_id IS NULL OR parent_id = 0
+                ORDER BY nom ASC
+            ');
+        } else {
+            $stmt = $db->prepare('SELECT * FROM categories ORDER BY nom ASC');
+        }
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows ?: [];
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+/**
+ * Sous-catégories d'une catégorie parente.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function get_subcategories_by_parent_id($parent_id)
+{
+    $parent_id = (int) $parent_id;
+    if ($parent_id <= 0 || !categories_has_parent_id_column()) {
+        return [];
+    }
+
+    $db = categories_db();
+    if (!$db) {
+        return [];
+    }
+
+    try {
+        $stmt = $db->prepare('
+            SELECT id, nom, image, parent_id
+            FROM categories
+            WHERE parent_id = :parent_id
+            ORDER BY nom ASC
+        ');
+        $stmt->execute(['parent_id' => $parent_id]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $rows ?: [];
+    } catch (PDOException $e) {
+        return [];
+    }
 }
 
 /**
@@ -90,27 +229,53 @@ function get_categorie_by_nom($nom)
  * @param string|null $image Le chemin de l'image
  * @return int|false L'ID de la catégorie créée ou False en cas d'erreur
  */
-function create_categorie($nom, $description = null, $image = null)
+function create_categorie($nom, $description = null, $image = null, $parent_id = null)
 {
     $db = categories_db();
     if (!$db) {
         return false;
     }
 
-    try {
-        $stmt = $db->prepare("
-            INSERT INTO categories (nom, description, image, date_creation) 
-            VALUES (:nom, :description, :image, NOW())
-        ");
+    $parent_id = $parent_id !== null && $parent_id !== '' ? (int) $parent_id : null;
+    if ($parent_id !== null && $parent_id <= 0) {
+        $parent_id = null;
+    }
 
-        $result = $stmt->execute([
-            'nom' => $nom,
-            'description' => $description,
-            'image' => $image,
-        ]);
+    try {
+        if (categories_has_parent_id_column()) {
+            if ($parent_id !== null) {
+                $check = $db->prepare('SELECT id FROM categories WHERE id = :id LIMIT 1');
+                $check->execute(['id' => $parent_id]);
+                if (!$check->fetch(PDO::FETCH_ASSOC)) {
+                    return false;
+                }
+            }
+            $stmt = $db->prepare('
+                INSERT INTO categories (parent_id, nom, description, image, date_creation)
+                VALUES (:parent_id, :nom, :description, :image, NOW())
+            ');
+            $result = $stmt->execute([
+                'parent_id' => $parent_id,
+                'nom' => $nom,
+                'description' => $description,
+                'image' => $image,
+            ]);
+        } else {
+            $stmt = $db->prepare("
+                INSERT INTO categories (nom, description, image, date_creation) 
+                VALUES (:nom, :description, :image, NOW())
+            ");
+            $result = $stmt->execute([
+                'nom' => $nom,
+                'description' => $description,
+                'image' => $image,
+            ]);
+        }
 
         if ($result) {
-            return $db->lastInsertId();
+            $new_id = (int) $db->lastInsertId();
+            categories_flush_subcategories_cache($parent_id);
+            return $new_id;
         }
 
         return false;
@@ -143,12 +308,18 @@ function update_categorie($id, $nom, $description = null, $image = null)
             WHERE id = :id
         ");
 
-        return $stmt->execute([
+        $ok = $stmt->execute([
             'id' => $id,
             'nom' => $nom,
             'description' => $description,
             'image' => $image,
         ]);
+        if ($ok) {
+            $cat = get_categorie_by_id((int) $id);
+            $pid = (int) ($cat['parent_id'] ?? 0);
+            categories_flush_subcategories_cache($pid > 0 ? $pid : (int) $id);
+        }
+        return $ok;
     } catch (PDOException $e) {
         return false;
     }
@@ -167,8 +338,14 @@ function delete_categorie($id)
     }
 
     try {
+        $cat = get_categorie_by_id((int) $id);
         $stmt = $db->prepare('DELETE FROM categories WHERE id = :id');
-        return $stmt->execute(['id' => $id]);
+        $ok = $stmt->execute(['id' => $id]);
+        if ($ok) {
+            $pid = (int) ($cat['parent_id'] ?? 0);
+            categories_flush_subcategories_cache($pid > 0 ? $pid : null);
+        }
+        return $ok;
     } catch (PDOException $e) {
         return false;
     }
@@ -209,13 +386,24 @@ function get_all_categories_with_count()
     }
 
     try {
-        $stmt = $db->prepare("
-            SELECT c.*, COUNT(p.id) as nb_produits
-            FROM categories c
-            LEFT JOIN produits p ON c.id = p.categorie_id AND p.statut = 'actif'
-            GROUP BY c.id
-            ORDER BY c.nom ASC
-        ");
+        if (categories_has_parent_id_column()) {
+            $stmt = $db->prepare("
+                SELECT c.*, COUNT(p.id) as nb_produits, parent.nom AS parent_nom
+                FROM categories c
+                LEFT JOIN categories parent ON parent.id = c.parent_id
+                LEFT JOIN produits p ON c.id = p.categorie_id AND p.statut = 'actif'
+                GROUP BY c.id
+                ORDER BY COALESCE(c.parent_id, c.id), c.parent_id IS NOT NULL, c.nom ASC
+            ");
+        } else {
+            $stmt = $db->prepare("
+                SELECT c.*, COUNT(p.id) as nb_produits
+                FROM categories c
+                LEFT JOIN produits p ON c.id = p.categorie_id AND p.statut = 'actif'
+                GROUP BY c.id
+                ORDER BY c.nom ASC
+            ");
+        }
         $stmt->execute();
         $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

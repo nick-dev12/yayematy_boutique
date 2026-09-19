@@ -40,7 +40,6 @@ $firebase_js_path = __DIR__ . '/../js/firebase-notifications.js';
 $firebase_js_v = file_exists($firebase_js_path) ? (string) filemtime($firebase_js_path) : get_asset_version();
 $firebase_js_url = public_url('/js/firebase-notifications.js') . '?v=' . rawurlencode($firebase_js_v);
 ?>
-<script>console.log('[FCM] Chargement des scripts notifications…');</script>
 <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-messaging-compat.js"></script>
 <?php require_once __DIR__ . '/firebase_init.php'; ?>
@@ -59,7 +58,6 @@ $firebase_js_url = public_url('/js/firebase-notifications.js') . '?v=' . rawurle
                 _fcmAppConfig.measurementId = window.FIREBASE_CONFIG.measurementId;
             }
             firebase.initializeApp(_fcmAppConfig);
-            console.log('[FCM] Firebase initialisé (projet:', _fcmAppConfig.projectId + ')');
         } catch (e) {
             if (!String(e.message || e).includes('already exists')) {
                 console.error('[FCM] Firebase init:', e);

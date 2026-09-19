@@ -40,6 +40,20 @@ function image_optimizer_webp_available() {
 }
 
 /**
+ * Libère une image GD sans appeler imagedestroy() (déprécié en PHP 8.5, sans effet depuis 8.0).
+ *
+ * @param \GdImage|false|null $image
+ */
+function image_optimizer_destroy_gd($image) {
+    if ($image === false || $image === null) {
+        return;
+    }
+    if (PHP_VERSION_ID < 80500 && function_exists('imagedestroy')) {
+        imagedestroy($image);
+    }
+}
+
+/**
  * @return string
  */
 function image_optimizer_detect_mime($path) {
@@ -50,7 +64,6 @@ function image_optimizer_detect_mime($path) {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         if ($finfo) {
             $mime = (string) finfo_file($finfo, $path);
-            finfo_close($finfo);
             if ($mime !== '') {
                 return $mime;
             }
@@ -148,7 +161,7 @@ function image_optimizer_save_jpeg($img, $dest_path, $quality = IMAGE_OPTIMIZER_
     }
     imagecopy($flat, $img, 0, 0, 0, 0, imagesx($img), imagesy($img));
     $ok = imagejpeg($flat, $dest_path, max(1, min(100, (int) $quality)));
-    imagedestroy($flat);
+    image_optimizer_destroy_gd($flat);
     return $ok;
 }
 
@@ -216,9 +229,9 @@ function image_optimizer_process_tmp_compressed($tmp_path, $dest_dir, $relative_
         if (image_optimizer_save_by_format($resized, $variant_path, $format)) {
             $saved[] = $variant_file;
         }
-        imagedestroy($resized);
+        image_optimizer_destroy_gd($resized);
     }
-    imagedestroy($src);
+    image_optimizer_destroy_gd($src);
 
     if (empty($saved)) {
         return ['success' => false, 'message' => 'Échec de la compression image.'];
@@ -363,9 +376,9 @@ function image_optimizer_process_tmp($tmp_path, $dest_dir, $relative_subdir, $na
         if (image_optimizer_save_webp($resized, $variant_path)) {
             $saved[] = $variant_file;
         }
-        imagedestroy($resized);
+        image_optimizer_destroy_gd($resized);
     }
-    imagedestroy($src);
+    image_optimizer_destroy_gd($src);
 
     if (empty($saved)) {
         return ['success' => false, 'message' => 'Échec de la compression WebP.'];

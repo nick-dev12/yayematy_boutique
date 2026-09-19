@@ -12,7 +12,6 @@ if ($categorie_id <= 0) {
 
 require_once __DIR__ . '/../../models/model_categories.php';
 require_once __DIR__ . '/../../models/model_produits.php';
-require_once __DIR__ . '/../../includes/site_brand.php';
 require_once __DIR__ . '/../includes/render_dash_product_card.php';
 
 $categorie = get_categorie_by_id($categorie_id);
@@ -61,20 +60,18 @@ $card_options = [
 
         <header class="prod-catalog-hero">
             <div class="prod-catalog-hero__inner">
-                <div class="prod-catalog-hero__content">
-                    <p class="prod-catalog-hero__eyebrow">
-                        <i class="fa-solid fa-folder" aria-hidden="true"></i>
-                        Catégorie · <?php echo htmlspecialchars(site_brand_name_market()); ?>
-                    </p>
-                    <h1 class="prod-catalog-hero__title"><?php echo htmlspecialchars($categorie['nom']); ?></h1>
-                    <p class="prod-catalog-hero__subtitle"><?php echo htmlspecialchars($categorie['description'] ?? 'Produits de cette catégorie'); ?></p>
-                    <div class="prod-catalog-hero__actions">
-                        <a href="../stock/index.php" class="dash-btn-outline">
-                            <i class="fas fa-arrow-left"></i> Retour stock
+                <div class="prod-catalog-hero__content prod-catalog-hero__content--produits">
+                    <div class="prod-catalog-hero__title-row">
+                        <a href="../produits/index.php" class="prod-catalog-hero__back btn-back" title="Retour aux produits"
+                            aria-label="Retour aux produits">
+                            <i class="fas fa-arrow-left" aria-hidden="true"></i>
                         </a>
-                        <a href="../produits/ajouter.php?categorie_id=<?php echo (int) $categorie_id; ?>" class="btn-primary">
-                            <i class="fas fa-plus"></i> Ajouter un produit
-                        </a>
+                        <h1 class="prod-catalog-hero__title"><?php echo htmlspecialchars($categorie['nom']); ?></h1>
+                        <div class="prod-catalog-hero__actions prod-catalog-hero__actions--top">
+                            <a href="../produits/ajouter.php?categorie_id=<?php echo (int) $categorie_id; ?>" class="btn-primary">
+                                <i class="fas fa-plus"></i> Ajouter un produit
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div class="prod-catalog-hero__meta">

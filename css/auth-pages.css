@@ -336,16 +336,19 @@ body.user-page-profil .input-wrapper--intl-tel .iti__tel-input:focus {
     font-size: 0.78rem;
     margin-bottom: 12px;
   }
-    margin-bottom: 14px;
-  }
 
   .auth-page .checkbox-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
     margin-bottom: 14px;
-    gap: 8px;
+    gap: 0.5rem;
   }
 
   .auth-page .checkbox-group label {
-    font-size: 0.8rem;
+    font-size: 0.875rem;
+    line-height: 1.25;
   }
 
   .login-mode-tabs {

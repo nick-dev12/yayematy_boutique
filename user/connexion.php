@@ -92,11 +92,6 @@ $post_email = isset($_POST['email']) ? (string) $_POST['email'] : '';
 
 <body class="auth-page auth-connexion auth-page--<?php echo $active_login_mode === 'phone' ? 'phone' : 'email'; ?>">
     <div class="auth-connexion-shell">
-        <a href="<?php echo public_url('/index.php'); ?>" class="auth-connexion-back" aria-label="Retour à l'accueil">
-            <i class="fas fa-arrow-left" aria-hidden="true"></i>
-            <span>Retour</span>
-        </a>
-
         <div class="auth-connexion-brand">
             <a href="<?php echo public_url('/index.php'); ?>" aria-label="<?php echo htmlspecialchars(site_brand_name()); ?>">
                 <span class="auth-connexion-brand__mark">
@@ -110,6 +105,14 @@ $post_email = isset($_POST['email']) ? (string) $_POST['email'] : '';
 
         <header class="auth-connexion-intro">
             <h1>Connexion</h1>
+            <?php
+            $google_auth_type = 'auto';
+            $google_auth_redirect = $redirect_url;
+            $google_auth_position = 'top';
+            $google_auth_layout = 'icons';
+            $google_auth_label = 'Continuer avec Google';
+            include __DIR__ . '/../includes/google_auth_button.php';
+            ?>
         </header>
 
         <?php if (!empty($inscription_success)): ?>
@@ -248,16 +251,11 @@ $post_email = isset($_POST['email']) ? (string) $_POST['email'] : '';
             </form>
         </div>
 
-        <div class="auth-connexion-actions">
-            <?php
-            $google_auth_type = 'auto';
-            $google_auth_redirect = $redirect_url;
-            $google_auth_position = 'bottom';
-            $google_auth_label = 'Continuer avec Google';
-            $social_auth_show_apple = false;
-            include __DIR__ . '/../includes/google_auth_button.php';
-            ?>
+        <div class="auth-connexion-divider" role="separator">
+            <span>Pas encore de compte ?</span>
+        </div>
 
+        <div class="auth-connexion-actions">
             <a href="inscription.php" class="auth-connexion-btn auth-connexion-btn--secondary">Créer un compte</a>
         </div>
 
@@ -322,7 +320,6 @@ $post_email = isset($_POST['email']) ? (string) $_POST['email'] : '';
     <?php include __DIR__ . '/../includes/auth_intl_tel_scripts.php'; ?>
     <script src="<?php echo asset_url('/js/auth-geo-capture.js'); ?>"></script>
     <?php include __DIR__ . '/../includes/google_auth_scripts.php'; ?>
-    <?php include __DIR__ . '/../includes/social_floating.php'; ?>
 </body>
 
 </html>

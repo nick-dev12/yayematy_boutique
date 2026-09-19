@@ -93,6 +93,68 @@ function process_add_categorie() {
 }
 
 /**
+ * Traite l'ajout d'une sous-catégorie rattachée à une catégorie parente.
+ *
+ * @return array{success:bool,message:string}
+ */
+function process_add_sous_categorie()
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        return ['success' => false, 'message' => ''];
+    }
+
+    if (!categories_has_parent_id_column()) {
+        return [
+            'success' => false,
+            'message' => 'Les sous-catégories ne sont pas activées sur la base de données. Exécutez la migration parent_id.',
+        ];
+    }
+
+    $errors = [];
+    $nom = isset($_POST['nom']) ? trim((string) $_POST['nom']) : '';
+    $description = isset($_POST['description']) ? trim((string) $_POST['description']) : '';
+    $parent_id = isset($_POST['parent_id']) ? (int) $_POST['parent_id'] : 0;
+
+    if ($parent_id <= 0) {
+        $errors[] = 'Veuillez sélectionner la catégorie parente.';
+    } else {
+        $parent = get_categorie_by_id($parent_id);
+        if (!$parent) {
+            $errors[] = 'Catégorie parente introuvable.';
+        } elseif (categories_has_parent_id_column() && !empty($parent['parent_id'])) {
+            $errors[] = 'Choisissez une catégorie principale (pas une sous-catégorie).';
+        }
+    }
+
+    if ($nom === '') {
+        $errors[] = 'Le nom de la sous-catégorie est obligatoire.';
+    } elseif (strlen($nom) < 2) {
+        $errors[] = 'Le nom doit contenir au moins 2 caractères.';
+    } elseif (get_categorie_by_nom($nom)) {
+        $errors[] = 'Une catégorie avec ce nom existe déjà.';
+    }
+
+    $image = null;
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $image = upload_categorie_image($_FILES);
+        if (!$image) {
+            $errors[] = 'Erreur lors de l\'upload de l\'image.';
+        }
+    }
+
+    if (!empty($errors)) {
+        return ['success' => false, 'message' => implode('<br>', $errors)];
+    }
+
+    $id = create_categorie($nom, $description, $image, $parent_id);
+    if ($id) {
+        return ['success' => true, 'message' => 'Sous-catégorie ajoutée avec succès !'];
+    }
+
+    return ['success' => false, 'message' => 'Une erreur est survenue lors de l\'ajout de la sous-catégorie.'];
+}
+
+/**
  * Traite la modification d'une catégorie
  * @param int $categorie_id L'ID de la catégorie à modifier
  * @return array Tableau avec 'success' (bool) et 'message' (string)

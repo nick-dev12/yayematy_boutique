@@ -18,7 +18,6 @@ if (isset($_SESSION['success_message'])) {
 }
 
 require_once __DIR__ . '/../../models/model_categories.php';
-require_once __DIR__ . '/../../includes/site_brand.php';
 
 $categories = get_all_categories_with_count();
 $categories = is_array($categories) ? $categories : [];
@@ -49,26 +48,23 @@ $nb_produits = array_sum(array_map(function ($c) {
 
         <header class="prod-catalog-hero">
             <div class="prod-catalog-hero__inner">
-                <div class="prod-catalog-hero__content">
-                    <p class="prod-catalog-hero__eyebrow">
-                        <i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i>
-                        Stock · <?php echo htmlspecialchars(site_brand_name_market()); ?>
-                    </p>
-                    <h1 class="prod-catalog-hero__title">Gestion du <span>stock</span></h1>
-                    <p class="prod-catalog-hero__subtitle">Parcourez vos catégories et ajustez les quantités produit par produit.</p>
-                    <div class="prod-catalog-hero__actions">
-                        <a href="mouvements.php" class="dash-btn-outline">
-                            <i class="fas fa-history"></i> Historique mouvements
-                        </a>
+                <div class="prod-catalog-hero__content prod-catalog-hero__content--stock">
+                    <div class="prod-catalog-hero__title-row">
+                        <h1 class="prod-catalog-hero__title">Gestion du <span>stock</span></h1>
+                        <div class="prod-catalog-hero__actions prod-catalog-hero__actions--top">
+                            <a href="mouvements.php" class="dash-btn-outline">
+                                <i class="fas fa-history"></i> Historique mouvements
+                            </a>
+                        </div>
+                    </div>
+                    <div class="prod-catalog-hero__actions prod-catalog-hero__actions--catalog">
                         <a href="../categories/ajouter.php" class="btn-primary">
                             <i class="fas fa-plus"></i> Nouvelle catégorie
                         </a>
-                        <?php include __DIR__ . '/../includes/btn_retour_site.php'; ?>
+                        <a href="../categories/sous_categories.php" class="dash-btn-outline">
+                            <i class="fas fa-sitemap"></i> Sous-catégories
+                        </a>
                     </div>
-                </div>
-                <div class="prod-catalog-hero__meta">
-                    <span class="prod-catalog-hero__count"><?php echo (int) $nb_categories; ?></span>
-                    <span class="prod-catalog-hero__count-label">catégorie<?php echo $nb_categories > 1 ? 's' : ''; ?></span>
                 </div>
             </div>
         </header>
@@ -79,7 +75,7 @@ $nb_produits = array_sum(array_map(function ($c) {
         </div>
         <?php endif; ?>
 
-        <section class="prod-catalog-stats prod-catalog-stats--3" aria-label="Statistiques stock">
+        <section class="prod-catalog-stats" aria-label="Statistiques stock">
             <article class="prod-stat prod-stat--total">
                 <span class="prod-stat__icon"><i class="fa-solid fa-folder"></i></span>
                 <div>
@@ -92,13 +88,6 @@ $nb_produits = array_sum(array_map(function ($c) {
                 <div>
                     <p class="prod-stat__label">Produits actifs</p>
                     <p class="prod-stat__value"><?php echo (int) $nb_produits; ?></p>
-                </div>
-            </article>
-            <article class="prod-stat prod-stat--bleu">
-                <span class="prod-stat__icon"><i class="fa-solid fa-layer-group"></i></span>
-                <div>
-                    <p class="prod-stat__label">Catalogue</p>
-                    <p class="prod-stat__value prod-stat__value--sm"><a href="../produits/index.php" class="prod-stat__link"><i class="fa-solid fa-arrow-up-right-from-square"></i> Voir produits</a></p>
                 </div>
             </article>
         </section>
@@ -137,6 +126,9 @@ $nb_produits = array_sum(array_map(function ($c) {
                     </a>
                     <div class="dash-cat-card__body">
                         <h3 class="dash-cat-card__name"><?php echo htmlspecialchars($categorie['nom']); ?></h3>
+                        <?php if (!empty($categorie['parent_nom'])): ?>
+                        <p class="dash-cat-card__parent"><i class="fas fa-level-up-alt" aria-hidden="true"></i> Sous-catégorie de <?php echo htmlspecialchars($categorie['parent_nom']); ?></p>
+                        <?php endif; ?>
                         <p class="dash-cat-card__desc"><?php echo htmlspecialchars($categorie['description'] ?? 'Aucune description'); ?></p>
                         <div class="dash-cat-card__actions">
                             <a href="../categories/produits.php?id=<?php echo (int) $categorie['id']; ?>" class="dash-cat-card__btn dash-cat-card__btn--view">

@@ -77,15 +77,21 @@ $seo_canonical = $base . '/';
 
     $produits_nos = [];
     if (file_exists(__DIR__ . '/models/model_produits.php')) {
-        require_once __DIR__ . '/models/model_produits.php';
-        $produits_nos = get_all_produits_paginated(0, 36);
+        $produits_nos = cache_remember('home_produits_36', 300, function () {
+            require_once __DIR__ . '/models/model_produits.php';
+            $rows = get_all_produits_paginated(0, 36);
+            return is_array($rows) ? $rows : [];
+        });
     }
     $produits_nouveaux = array_slice($produits_nos, 0, 10);
 
     $produits_bestsellers = [];
     if (file_exists(__DIR__ . '/models/model_visites.php')) {
-        require_once __DIR__ . '/models/model_visites.php';
-        $produits_bestsellers = array_slice(get_produits_plus_visites(5), 0, 5);
+        $produits_bestsellers = cache_remember('home_bestsellers_5', 300, function () {
+            require_once __DIR__ . '/models/model_visites.php';
+            $rows = get_produits_plus_visites(5);
+            return is_array($rows) ? array_slice($rows, 0, 5) : [];
+        });
     }
 
     $produits_vedette = array_slice($produits_nos, 0, 6);
@@ -410,40 +416,50 @@ $seo_canonical = $base . '/';
     <?php include('footer.php') ?>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
-    <script src="<?php echo asset_url('/js/owl.carousel.min.js'); ?>" defer></script>
+    <script src="<?php echo asset_url('/js/owl.carousel.js'); ?>" defer></script>
+    <script src="<?php echo asset_url('/js/owl.autoplay.js'); ?>" defer></script>
+    <script src="<?php echo asset_url('/js/owl.navigation.js'); ?>" defer></script>
     <script defer>
     document.documentElement.classList.remove('aos-not-ready');
 
-    function initHomeHeroSlider() {
-        if (typeof jQuery === 'undefined' || typeof jQuery.fn.owlCarousel === 'undefined') {
-            return;
-        }
-        var $heroSlider = jQuery('.home-hero-slider');
-        if (!$heroSlider.length || $heroSlider.find('.slider-item').length === 0) {
-            return;
-        }
-        if ($heroSlider.hasClass('owl-loaded')) {
-            return;
-        }
-        var slideCount = $heroSlider.find('.slider-item').length;
-        $heroSlider.owlCarousel({
-            items: 1,
-            loop: slideCount > 1,
-            dots: slideCount > 1,
-            autoplay: slideCount > 1,
-            autoplayTimeout: 6000,
-            autoplayHoverPause: true,
-            smartSpeed: 700,
-            nav: slideCount > 1,
-            navText: [
-                '<i class="fa-solid fa-chevron-left" aria-hidden="true"></i>',
-                '<i class="fa-solid fa-chevron-right" aria-hidden="true"></i>'
-            ]
-        });
-    }
+    (function () {
+        var initAttempts = 0;
 
-    document.addEventListener('DOMContentLoaded', initHomeHeroSlider);
-    window.addEventListener('load', initHomeHeroSlider);
+        function initHomeHeroSlider() {
+            initAttempts += 1;
+            if (typeof jQuery === 'undefined' || typeof jQuery.fn.owlCarousel === 'undefined') {
+                if (initAttempts < 40) {
+                    window.setTimeout(initHomeHeroSlider, 50);
+                }
+                return;
+            }
+            var $heroSlider = jQuery('.home-hero-slider');
+            if (!$heroSlider.length || $heroSlider.find('.slider-item').length === 0) {
+                return;
+            }
+            if ($heroSlider.hasClass('owl-loaded')) {
+                return;
+            }
+            var slideCount = $heroSlider.find('.slider-item').length;
+            var multi = slideCount > 1;
+            $heroSlider.owlCarousel({
+                items: 1,
+                loop: multi,
+                dots: multi,
+                autoplay: multi,
+                autoplayTimeout: 6000,
+                autoplayHoverPause: true,
+                smartSpeed: 700,
+                nav: multi,
+                navText: [
+                    '<i class="fa-solid fa-chevron-left" aria-hidden="true"></i>',
+                    '<i class="fa-solid fa-chevron-right" aria-hidden="true"></i>'
+                ]
+            });
+        }
+
+        window.addEventListener('load', initHomeHeroSlider);
+    })();
     </script>
 
 </body>

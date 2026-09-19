@@ -4,6 +4,7 @@ session_start_persistent();
 
 // Inclusion des modèles
 require_once __DIR__ . '/models/model_produits.php';
+require_once __DIR__ . '/includes/simple_cache.php';
 
 // Récupérer les produits (recherche + filtres ou tous)
 $produits_tous = [];
@@ -20,8 +21,12 @@ if (file_exists(__DIR__ . '/models/model_produits.php')) {
         $produits_tous = search_produits_with_filters($recherche_actuelle, $prix_min, $prix_max, $categorie_id, $tri, 0, 20);
         $total_produits = count_search_produits_with_filters($recherche_actuelle, $prix_min, $prix_max, $categorie_id);
     } else {
-        $produits_tous = get_all_produits_paginated(0, 20);
-        $total_produits = count_all_produits_actifs();
+        $produits_tous = cache_remember('catalogue_produits_page1_20', 300, function () {
+            return get_all_produits_paginated(0, 20) ?: [];
+        });
+        $total_produits = (int) cache_remember('catalogue_produits_count', 300, function () {
+            return count_all_produits_actifs();
+        });
     }
 }
 
@@ -56,7 +61,6 @@ $seo_canonical = $base . '/produits.php';
     <link rel="stylesheet" href="<?php echo asset_url('/css/product-cards.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-responsive.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/responsive-site.css'); ?>">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <style>
         .produits-page-header {
             background: var(--couleur-dominante);
@@ -227,10 +231,7 @@ $seo_canonical = $base . '/produits.php';
 
     <?php include('footer.php'); ?>
 
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
-        AOS.init();
-
         let offsetActuel = 20; // On a déjà affiché les 20 premiers
         const limit = 20;
         const totalProduits = <?php echo $total_produits; ?>;

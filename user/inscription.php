@@ -50,11 +50,6 @@ $post_telephone = isset($_POST['telephone']) ? (string) $_POST['telephone'] : ''
 
 <body class="auth-page auth-connexion auth-inscription">
     <div class="auth-connexion-shell">
-        <a href="<?php echo public_url('/index.php'); ?>" class="auth-connexion-back" aria-label="Retour à l'accueil">
-            <i class="fas fa-arrow-left" aria-hidden="true"></i>
-            <span>Retour</span>
-        </a>
-
         <div class="auth-connexion-brand">
             <a href="<?php echo public_url('/index.php'); ?>" aria-label="<?php echo htmlspecialchars(site_brand_name()); ?>">
                 <span class="auth-connexion-brand__mark">
@@ -68,6 +63,14 @@ $post_telephone = isset($_POST['telephone']) ? (string) $_POST['telephone'] : ''
 
         <header class="auth-connexion-intro">
             <h1>Créer un compte</h1>
+            <?php
+            $google_auth_type = 'client';
+            $google_auth_redirect = public_url('/index.php');
+            $google_auth_position = 'top';
+            $google_auth_layout = 'icons';
+            $google_auth_label = 'Continuer avec Google';
+            include __DIR__ . '/../includes/google_auth_button.php';
+            ?>
         </header>
 
         <?php if (isset($result['message']) && !empty($result['message']) && empty($result['success'])): ?>
@@ -163,15 +166,6 @@ $post_telephone = isset($_POST['telephone']) ? (string) $_POST['telephone'] : ''
 
         <div class="auth-connexion-actions">
             <a href="connexion.php" class="auth-connexion-btn auth-connexion-btn--secondary">Se connecter</a>
-
-            <?php
-            $google_auth_type = 'client';
-            $google_auth_redirect = '/index.php';
-            $google_auth_position = 'bottom';
-            $google_auth_label = 'Continuer avec Google';
-            $social_auth_show_apple = false;
-            include __DIR__ . '/../includes/google_auth_button.php';
-            ?>
         </div>
 
         <p class="auth-connexion-legal">
@@ -214,7 +208,6 @@ $post_telephone = isset($_POST['telephone']) ? (string) $_POST['telephone'] : ''
     <?php include __DIR__ . '/../includes/auth_intl_tel_scripts.php'; ?>
     <script src="<?php echo asset_url('/js/auth-geo-capture.js'); ?>"></script>
     <?php include __DIR__ . '/../includes/google_auth_scripts.php'; ?>
-    <?php include __DIR__ . '/../includes/social_floating.php'; ?>
 </body>
 
 </html>

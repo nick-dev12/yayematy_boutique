@@ -21,6 +21,10 @@ if (!$categorie) {
     exit;
 }
 
+$is_sous_categorie = categories_has_parent_id_column()
+    && !empty($categorie['parent_id']);
+$list_return_url = $is_sous_categorie ? 'sous_categories.php' : 'index.php';
+
 // Traiter la suppression
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
     require_once __DIR__ . '/../../controllers/controller_categories.php';
@@ -28,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
     
     if ($result['success']) {
         $_SESSION['success_message'] = $result['message'];
-        header('Location: index.php');
+        header('Location: ' . $list_return_url);
         exit;
     } else {
         $error_message = $result['message'];
@@ -121,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
     
     <div class="content-header">
         <h1><i class="fas fa-trash"></i> Supprimer une Catégorie</h1>
-        <a href="index.php" class="btn-back">
+        <a href="<?php echo htmlspecialchars($list_return_url); ?>" class="btn-back">
             <i class="fas fa-arrow-left"></i> Retour
         </a>
     </div>
@@ -152,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
             <button type="submit" class="btn-danger">
                 <i class="fas fa-trash"></i> Confirmer la suppression
             </button>
-            <a href="index.php" class="btn-cancel">
+            <a href="<?php echo htmlspecialchars($list_return_url); ?>" class="btn-cancel">
                 <i class="fas fa-times"></i> Annuler
             </a>
         </form>

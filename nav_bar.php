@@ -67,7 +67,10 @@ if (!defined('PUBLIC_HEAD_ASSETS_LOADED')) {
 
     <div class="nav-search-cluster">
         <div class="nav-search-wrapper">
-            <form class="nav-search-form" action="<?php echo public_url('/produits.php'); ?>" method="get" id="nav-search-form">
+            <form class="nav-search-form" action="<?php echo public_url('/produits.php'); ?>" method="get" id="nav-search-form"
+                data-search-api="<?php echo htmlspecialchars(public_url('/api/get_produits.php'), ENT_QUOTES, 'UTF-8'); ?>"
+                data-produit-base="<?php echo htmlspecialchars(public_url('/produit.php'), ENT_QUOTES, 'UTF-8'); ?>"
+                data-fallback-image="<?php echo htmlspecialchars(public_url('/image/produit1.jpg'), ENT_QUOTES, 'UTF-8'); ?>">
                 <select name="categorie" id="nav-categorie" class="nav-search-category" aria-label="Catégorie">
                     <option value="">Toutes catégories</option>
                     <?php foreach ($categories_menu as $categorie): ?>
@@ -90,6 +93,7 @@ if (!defined('PUBLIC_HEAD_ASSETS_LOADED')) {
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
             </form>
+            <div id="nav-search-suggestions" class="nav-search-suggestions" role="listbox" aria-label="Suggestions de produits" hidden></div>
         </div>
         <div class="nav-lang-switcher" title="Langue">
             <?php
@@ -243,6 +247,7 @@ if (!defined('PUBLIC_HEAD_ASSETS_LOADED')) {
     </nav>
 </section>
 
+<script src="<?php echo asset_url('/js/nav-search.js'); ?>" defer></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var toggle = document.getElementById('navMenuToggle');

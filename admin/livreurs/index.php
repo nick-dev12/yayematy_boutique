@@ -15,7 +15,6 @@ admin_route_enforce();
 
 require_once __DIR__ . '/../../includes/admin_permissions.php';
 require_once __DIR__ . '/../../includes/admin_ui_flags.php';
-require_once __DIR__ . '/../../includes/site_brand.php';
 require_once __DIR__ . '/../../models/model_livreur_tracking.php';
 
 if (!admin_can_livreur_gps()) {
@@ -115,31 +114,19 @@ $page_title = $is_livreur ? 'Livraisons du jour' : 'Livreurs GPS';
 
     <header class="prod-catalog-hero">
         <div class="prod-catalog-hero__inner">
-            <div class="prod-catalog-hero__content">
-                <p class="prod-catalog-hero__eyebrow">
-                    <i class="fa-solid fa-motorcycle" aria-hidden="true"></i>
-                    Livraisons · <?php echo htmlspecialchars(site_brand_name_market()); ?>
-                </p>
-                <h1 class="prod-catalog-hero__title">
-                    <?php echo $is_livreur ? 'Livraisons <span>du jour</span>' : 'Livreurs <span>GPS</span>'; ?>
-                </h1>
-                <p class="prod-catalog-hero__subtitle">
-                    <?php echo $is_livreur
-                        ? 'Prenez une commande et suivez votre trajet en temps réel.'
-                        : 'Supervisez les livraisons et le suivi GPS de vos livreurs.'; ?>
-                </p>
-                <div class="prod-catalog-hero__actions">
+            <div class="prod-catalog-hero__content prod-catalog-hero__content--livreurs">
+                <div class="prod-catalog-hero__title-row">
+                    <h1 class="prod-catalog-hero__title">
+                        <?php echo $is_livreur ? 'Livraisons <span>du jour</span>' : 'Livreurs <span>GPS</span>'; ?>
+                    </h1>
                     <?php if ($is_admin && admin_ui_show_livreurs_map()): ?>
-                    <a href="carte.php" class="dash-btn-outline">
-                        <i class="fas fa-map-location-dot"></i> Carte live
-                    </a>
+                    <div class="prod-catalog-hero__actions prod-catalog-hero__actions--top">
+                        <a href="carte.php" class="dash-btn-outline">
+                            <i class="fas fa-map-location-dot"></i> Carte live
+                        </a>
+                    </div>
                     <?php endif; ?>
-                    <?php include __DIR__ . '/../includes/btn_retour_site.php'; ?>
                 </div>
-            </div>
-            <div class="prod-catalog-hero__meta">
-                <span class="prod-catalog-hero__count"><?php echo (int) $stats['actives']; ?></span>
-                <span class="prod-catalog-hero__count-label">active<?php echo $stats['actives'] > 1 ? 's' : ''; ?></span>
             </div>
         </div>
     </header>
@@ -193,11 +180,6 @@ $page_title = $is_livreur ? 'Livraisons du jour' : 'Livreurs GPS';
         <header class="prod-catalog-main__head">
             <div class="prod-catalog-main__head-text">
                 <h2><i class="fa-solid fa-shopping-bag"></i> Commandes à livrer</h2>
-                <p class="prod-catalog-main__filter-hint">
-                    <?php echo $is_livreur
-                        ? 'Commandes du jour disponibles ou déjà prises en charge.'
-                        : 'Filtrez par période et recherchez un client ou un numéro de commande.'; ?>
-                </p>
             </div>
         </header>
 

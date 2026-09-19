@@ -6,9 +6,26 @@
 require_once __DIR__ . '/guest_checkout.php';
 require_once __DIR__ . '/asset_version.php';
 
+function guest_checkout_page_needs_assets(): bool
+{
+    $script = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+    $catalog_pages = [
+        'index.php',
+        'produits.php',
+        'categorie.php',
+        'produit.php',
+        'promo.php',
+        'nouveautes.php',
+        'panier.php',
+        'commande.php',
+    ];
+
+    return in_array($script, $catalog_pages, true);
+}
+
 function guest_checkout_should_load_assets(): bool
 {
-    return !guest_checkout_is_connected();
+    return !guest_checkout_is_connected() && guest_checkout_page_needs_assets();
 }
 
 function guest_checkout_render_config_script(): void

@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/asset_version.php';
 require_once __DIR__ . '/includes/image_optimizer.php';
 require_once __DIR__ . '/models/model_categories.php';
 require_once __DIR__ . '/models/model_produits.php';
+require_once __DIR__ . '/includes/simple_cache.php';
 
 $categorie_id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $categorie = null;
@@ -23,12 +24,27 @@ if (!$categorie || !is_array($categorie) || empty($categorie['nom'])) {
 $categorie_nom = (string) $categorie['nom'];
 $categorie_description = trim((string) ($categorie['description'] ?? ''));
 
-$produits = get_produits_by_categorie($categorie_id);
-if ($produits === false) {
-    $produits = [];
-}
+$produits = get_produits_by_categorie_cached($categorie_id);
 
 $nb_produits = count($produits);
+
+$parent_categorie_id = $categorie_id;
+$is_subcategory_view = false;
+if (categories_has_parent_id_column()) {
+    $raw_parent = (int) ($categorie['parent_id'] ?? 0);
+    if ($raw_parent > 0) {
+        $parent_categorie_id = $raw_parent;
+        $is_subcategory_view = true;
+    }
+}
+$sous_categories = [];
+if (categories_has_parent_id_column()) {
+    $cache_key = 'subcats_parent_' . $parent_categorie_id;
+    $sous_categories = cache_remember($cache_key, 300, function () use ($parent_categorie_id) {
+        return get_subcategories_by_parent_id($parent_categorie_id);
+    });
+    $sous_categories = is_array($sous_categories) ? $sous_categories : [];
+}
 
 $categorie_image = '';
 if (!empty($categorie['image'])) {
@@ -59,16 +75,16 @@ $seo_canonical = rtrim($base, '/') . '/categorie.php?id=' . (int) $categorie_id;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php include __DIR__ . '/includes/pwa_meta.php'; ?>
     <?php include __DIR__ . '/includes/seo_meta.php'; ?>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="<?php echo asset_url('/css/variables.css'); ?>">
+    <link rel="preload" as="image" href="<?php echo htmlspecialchars($categorie_image); ?>">
+    <?php
+    require_once __DIR__ . '/includes/head_public_assets.php';
+    render_public_head_assets();
+    ?>
+    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-grid.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/product-cards.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-responsive.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/responsive-site.css'); ?>">
-    <link rel="stylesheet" href="<?php echo asset_url('/css/style.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/a_style.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/categorie-page.css'); ?>">
 </head>
@@ -107,6 +123,8 @@ $seo_canonical = rtrim($base, '/') . '/categorie.php?id=' . (int) $categorie_id;
                 </p>
             </div>
         </header>
+
+        <?php include __DIR__ . '/includes/partials/categorie_subcat_nav.php'; ?>
 
         <section class="categorie-content">
             <?php if ($nb_produits === 0): ?>

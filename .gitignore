@@ -1,8 +1,13 @@
 # Fichiers sensibles - NE JAMAIS committer
 # Clés privées Firebase (service account)
 sugar-paper-*.json
+yaye-bc53c-*.json
 *-firebase-adminsdk-*.json
 *firebase*credentials*.json
+
+# État runtime optimiseur images
+storage/image_optimizer_auto.lock
+storage/image_optimizer_auto.state
 
 # Clé privée Apple Sign In
 AuthKey_*.p8

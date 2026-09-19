@@ -815,7 +815,6 @@ function employe_photo_mime_detect($tmp_name) {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         if ($finfo) {
             $mime = finfo_file($finfo, $tmp_name);
-            finfo_close($finfo);
             return is_string($mime) ? $mime : '';
         }
     }

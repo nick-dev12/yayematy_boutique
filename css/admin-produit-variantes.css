@@ -1,0 +1,241 @@
+/* Modale variantes — admin produits ajouter / modifier */
+
+.variantes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.variantes-container:empty {
+  margin-bottom: 0;
+}
+
+.variante-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--color-blanc, #fff);
+  border: 1px solid rgba(140, 140, 140, 0.35);
+  border-radius: 0.625rem;
+}
+
+.variante-summary__thumb {
+  width: 2.75rem;
+  height: 2.75rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+
+.variante-summary__thumb--empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(46, 125, 181, 0.08);
+  color: var(--color-bleu, #2e7db5);
+  font-size: 1rem;
+}
+
+.variante-summary__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.variante-summary__nom {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.variante-summary__prix {
+  font-size: 0.8125rem;
+  color: var(--color-gris, #8c8c8c);
+}
+
+.variante-summary__remove {
+  flex-shrink: 0;
+}
+
+.btn-add-variante {
+  padding: 0.75rem 1.25rem;
+  background: var(--color-orange, #f25c19);
+  color: var(--color-blanc, #fff);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-add-variante:hover {
+  filter: brightness(0.95);
+}
+
+.variante-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.variante-modal.is-open {
+  display: flex;
+}
+
+body.variante-modal-open {
+  overflow: hidden;
+}
+
+.variante-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: rgba(26, 26, 26, 0.45);
+  cursor: pointer;
+}
+
+.variante-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 28rem;
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: var(--color-blanc, #fff);
+  border-radius: 0.75rem;
+  box-shadow: 0 1rem 3rem rgba(26, 26, 26, 0.18);
+  border: 1px solid rgba(140, 140, 140, 0.2);
+}
+
+.variante-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: rgba(242, 92, 25, 0.08);
+  border-bottom: 1px solid rgba(140, 140, 140, 0.15);
+}
+
+.variante-modal__head h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-noir, #1a1a1a);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.variante-modal__head h2 i {
+  color: var(--color-orange, #f25c19);
+}
+
+.variante-modal__close {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--color-blanc, #fff);
+  cursor: pointer;
+}
+
+.variante-modal__close:hover {
+  background: rgba(242, 92, 25, 0.12);
+}
+
+.variante-modal__body {
+  padding: 1.25rem;
+}
+
+.variante-row--modal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.variante-modal__row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.variante-modal .variante-field label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+  color: var(--color-noir, #1a1a1a);
+}
+
+.variante-modal .variante-field input[type="text"],
+.variante-modal .variante-field input[type="number"] {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 2px solid rgba(140, 140, 140, 0.35);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.variante-modal .variante-image-area {
+  position: relative;
+  min-height: 6.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(140, 140, 140, 0.45);
+  border-radius: 0.5rem;
+  background: rgba(46, 125, 181, 0.04);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.variante-modal .variante-image-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.variante-modal .variante-image-label {
+  font-size: 0.875rem;
+  color: var(--color-bleu, #2e7db5);
+}
+
+.variante-modal .variante-preview-img {
+  max-width: 100%;
+  max-height: 8rem;
+  object-fit: contain;
+}
+
+.variante-modal__foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(140, 140, 140, 0.15);
+}
+
+@media (max-width: 767px) {
+  .variante-modal__row-2 {
+    grid-template-columns: 1fr;
+  }
+}

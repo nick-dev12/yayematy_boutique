@@ -557,7 +557,6 @@ function admin_photo_profil_process_upload($admin_id, $file)
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         if ($finfo) {
             $mime = (string) finfo_file($finfo, $tmp);
-            finfo_close($finfo);
         }
     }
     if ($mime === '' && function_exists('mime_content_type')) {

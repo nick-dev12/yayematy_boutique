@@ -78,6 +78,36 @@ function process_unified_login() {
 }
 
 /**
+ * Connexion admin via téléphone : email interne {9 chiffres}@yayematy.sn
+ */
+function users_try_admin_phone_login($telephone, $password)
+{
+    $digits = users_normalize_phone_digits($telephone);
+    if ($digits === '' || $password === '') {
+        return null;
+    }
+
+    $local = $digits;
+    if (strlen($digits) === 12 && str_starts_with($digits, '221')) {
+        $local = substr($digits, 3);
+    }
+    if (strlen($local) !== 9) {
+        return null;
+    }
+
+    $admin = get_admin_by_email($local . '@yayematy.sn');
+    if (!$admin || ($admin['statut'] ?? '') !== 'actif') {
+        return null;
+    }
+    if (!password_verify($password, $admin['password'])) {
+        return null;
+    }
+
+    update_admin_last_login($admin['id']);
+    return $admin;
+}
+
+/**
  * Connexion par téléphone + mot de passe (ou code PIN à 6 chiffres).
  */
 function process_unified_phone_login() {
@@ -91,6 +121,17 @@ function process_unified_phone_login() {
     }
     if ($pin === '') {
         return ['success' => false, 'message' => 'Le mot de passe est obligatoire.', 'type' => null, 'admin' => null, 'user' => null];
+    }
+
+    $admin = users_try_admin_phone_login($tel, $pin);
+    if ($admin) {
+        return [
+            'success' => true,
+            'message' => 'Connexion réussie !',
+            'type' => 'admin',
+            'admin' => $admin,
+            'user' => null,
+        ];
     }
 
     $user = get_user_by_telephone($tel);

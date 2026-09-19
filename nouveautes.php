@@ -38,7 +38,6 @@ $seo_canonical = $base . '/nouveautes.php';
     <link rel="stylesheet" href="<?php echo asset_url('/css/a_style.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/catalogue-grid.css'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('/css/responsive-site.css'); ?>">
-    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
     <style>
         .page-header {
             background: var(--couleur-dominante);
@@ -190,8 +189,6 @@ $seo_canonical = $base . '/nouveautes.php';
     </div>
 
     <?php include('footer.php'); ?>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <script>AOS.init();</script>
 </body>
 
 </html>

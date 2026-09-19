@@ -8,7 +8,6 @@ require_once __DIR__ . '/../includes/admin_auth.php';
 // Récupérer toutes les commandes
 require_once __DIR__ . '/../../models/model_commandes_admin.php';
 require_once __DIR__ . '/../../models/model_zones_livraison.php';
-require_once __DIR__ . '/../../includes/site_brand.php';
 $toutes_commandes = get_all_commandes();
 $zones_livraison = get_all_zones_livraison('actif');
 
@@ -54,25 +53,17 @@ $montant_total_a_traiter = array_sum(array_column($commandes, 'montant_total'));
 
         <header class="prod-catalog-hero">
             <div class="prod-catalog-hero__inner">
-                <div class="prod-catalog-hero__content">
-                    <p class="prod-catalog-hero__eyebrow">
-                        <i class="fa-solid fa-shopping-bag" aria-hidden="true"></i>
-                        Commandes · <?php echo htmlspecialchars(site_brand_name_market()); ?>
-                    </p>
-                    <h1 class="prod-catalog-hero__title">Commandes <span>à traiter</span></h1>
-                    <p class="prod-catalog-hero__subtitle">Validez, expédiez et suivez les commandes en cours.</p>
-                    <div class="prod-catalog-hero__actions">
+                <div class="prod-catalog-hero__content prod-catalog-hero__content--commandes">
+                    <div class="prod-catalog-hero__title-row">
+                        <h1 class="prod-catalog-hero__title">Commandes <span>à traiter</span></h1>
                         <?php if (($_SESSION['admin_role'] ?? '') === 'admin'): ?>
-                        <a href="historique-ventes.php" class="dash-btn-outline">
-                            <i class="fas fa-chart-line"></i> Historique & comptabilité
-                        </a>
+                        <div class="prod-catalog-hero__actions prod-catalog-hero__actions--top">
+                            <a href="historique-ventes.php" class="dash-btn-outline">
+                                <i class="fas fa-chart-line"></i> Historique & comptabilité
+                            </a>
+                        </div>
                         <?php endif; ?>
-                        <?php include __DIR__ . '/../includes/btn_retour_site.php'; ?>
                     </div>
-                </div>
-                <div class="prod-catalog-hero__meta">
-                    <span class="prod-catalog-hero__count"><?php echo count($commandes_groupes); ?></span>
-                    <span class="prod-catalog-hero__count-label">lot<?php echo count($commandes_groupes) > 1 ? 's' : ''; ?> client</span>
                 </div>
             </div>
         </header>

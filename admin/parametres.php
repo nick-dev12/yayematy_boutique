@@ -5,6 +5,11 @@ require_once __DIR__ . '/includes/admin_auth.php';
  * Programmation procédurale uniquement
  */
 require_once __DIR__ . '/../includes/admin_ui_flags.php';
+require_once __DIR__ . '/../../models/model_slider.php';
+require_once __DIR__ . '/../../includes/image_optimizer.php';
+
+$slider_preview_slides = get_all_slides('actif');
+$slider_preview_slides = is_array($slider_preview_slides) ? $slider_preview_slides : [];
 
 // Vérifier si l'admin est connecté
 if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_email'])) {
@@ -30,6 +35,7 @@ if (isset($_SESSION['success_message'])) {
     <?php require_once __DIR__ . '/../includes/asset_version.php'; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo asset_url('/css/admin-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset_url('/css/owl.carousel.min.css'); ?>">
 </head>
 
 <body>
@@ -105,6 +111,14 @@ if (isset($_SESSION['success_message'])) {
                     Gérez le slider d'images en haut de la page d'accueil : ajoutez, modifiez ou supprimez les slides
                     avec leurs titres, textes et boutons d'action.
                 </p>
+                <?php if (!empty($slider_preview_slides)): ?>
+                <?php
+                $slider_preview_class = 'admin-slider-preview--param';
+                include __DIR__ . '/includes/slider_preview_carousel.php';
+                ?>
+                <?php else: ?>
+                <p class="parametre-description parametre-description--muted">Aucun slide actif pour le moment.</p>
+                <?php endif; ?>
                 <a href="slider/index.php" class="parametre-link">
                     <i class="fas fa-edit"></i> Gérer le slider
                 </a>
@@ -152,6 +166,9 @@ if (isset($_SESSION['success_message'])) {
         </div>
     </section>
 
+    <?php if (!empty($slider_preview_slides)): ?>
+    <?php include __DIR__ . '/includes/slider_carousel_scripts.php'; ?>
+    <?php endif; ?>
     <?php include 'includes/footer.php'; ?>
 </body>
 

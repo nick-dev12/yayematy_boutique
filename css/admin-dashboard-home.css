@@ -32,10 +32,30 @@
 .dash-hero__inner {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 20px;
+  display: block;
+}
+
+.dash-hero__title-row {
+  display: flex;
   align-items: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.dash-hero__title-row .dash-hero__title {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dash-hero__title-actions {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.dash-hero__title-actions .btn-site-home {
+  margin: 0;
 }
 
 .dash-hero__eyebrow {
@@ -58,7 +78,6 @@
   font-size: clamp(1.45rem, 3.5vw, 2.15rem);
   font-weight: 800;
   line-height: 1.15;
-  margin: 0 0 8px;
   letter-spacing: -0.02em;
 }
 
@@ -1078,16 +1097,18 @@
     padding: clamp(16px, 4vw, 22px);
   }
 
-  .dash-hero__inner {
-    grid-template-columns: 1fr;
+  .dash-hero__title-row {
+    flex-wrap: wrap;
   }
 
-  .dash-hero__meta {
-    align-items: flex-start;
-    text-align: left;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 12px;
+  .dash-hero__title-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dash-hero__title-actions .btn-site-home {
+    width: 100%;
+    justify-content: center;
   }
 
   .dash-hero__actions {

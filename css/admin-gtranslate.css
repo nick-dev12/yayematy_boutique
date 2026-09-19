@@ -211,6 +211,47 @@
   object-fit: cover;
 }
 
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt_options a[data-gt-lang="zh-TW"]::before,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt_options a[data-gt-lang="zh-TW"]::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  background: url("../image/flags/cn.svg") center / contain no-repeat;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher .gt_options a[data-gt-lang="zh-TW"] img,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher .gt_options a[data-gt-lang="zh-TW"] img {
+  display: none !important;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-selected,
+.admin-sidebar .nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-current-lang,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-selected,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-current-lang {
+  position: relative;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-selected::before,
+.admin-sidebar .nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-current-lang::before,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-selected::before,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-current-lang::before {
+  content: "";
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  background: url("../image/flags/cn.svg") center / contain no-repeat;
+}
+
+.admin-sidebar .nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-selected img,
+.admin-sidebar .nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-current-lang img,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-selected img,
+.admin-login-lang.nav-lang-switcher .gt_float_switcher.gt-flag-china .gt-current-lang img {
+  display: none !important;
+}
+
 .admin-login-lang.nav-lang-switcher {
   position: absolute;
   top: 1rem;

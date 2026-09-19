@@ -855,6 +855,93 @@ body::before {
   margin-top: 20px;
 }
 
+.slides-grid--carousel {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.5rem;
+  margin-top: 20px;
+}
+
+.slides-grid--carousel .slide-card {
+  flex: 0 0 min(22rem, 85vw);
+  max-width: min(22rem, 85vw);
+  scroll-snap-align: start;
+}
+
+.admin-slider-preview {
+  position: relative;
+  margin: 0 0 1.25rem;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  background: var(--color-blanc, #fff);
+}
+
+.admin-slider-preview--param {
+  margin-top: 0.75rem;
+}
+
+.admin-slider-preview__slide {
+  position: relative;
+}
+
+.admin-slider-preview__slide img {
+  width: 100%;
+  height: clamp(10rem, 28vw, 13.75rem);
+  object-fit: cover;
+  display: block;
+}
+
+.admin-slider-preview--hero .admin-slider-preview__slide img {
+  height: clamp(12rem, 32vw, 18rem);
+}
+
+.admin-slider-preview__caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(transparent, rgba(26, 26, 26, 0.75));
+  color: var(--color-blanc, #fff);
+  font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.parametre-description--muted {
+  opacity: 0.85;
+  font-size: 0.875rem;
+}
+
+.admin-slider-preview.owl-carousel .owl-nav button,
+.admin-slider-preview .owl-nav button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-noir, #1a1a1a);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.admin-slider-preview .owl-nav .owl-prev {
+  left: 0.5rem;
+}
+
+.admin-slider-preview .owl-nav .owl-next {
+  right: 0.5rem;
+}
+
 .slide-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -1100,6 +1187,23 @@ body::before {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+}
+
+.form-group-row--categories {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.form-group-row--categories:has(#sous-categorie-group[hidden]) {
+  grid-template-columns: 1fr;
+}
+
+.form-group-row--categories .form-group {
+  margin-bottom: 0;
+}
+
+.form-group-row--categories select {
+  width: 100%;
 }
 
 .file-input-wrapper {

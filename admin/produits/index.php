@@ -20,7 +20,6 @@ if (isset($_SESSION['success_message'])) {
 
 require_once __DIR__ . '/../../models/model_produits.php';
 require_once __DIR__ . '/../../models/model_categories.php';
-require_once __DIR__ . '/../../includes/site_brand.php';
 require_once __DIR__ . '/../includes/render_dash_product_card.php';
 
 $produits_brut = get_all_produits();
@@ -101,32 +100,17 @@ $card_options = [
 
         <header class="prod-catalog-hero">
             <div class="prod-catalog-hero__inner">
-                <div class="prod-catalog-hero__content">
-                    <p class="prod-catalog-hero__eyebrow">
-                        <i class="fa-solid fa-box" aria-hidden="true"></i>
-                        Catalogue · <?php echo htmlspecialchars(site_brand_name_market()); ?>
-                    </p>
-                    <h1 class="prod-catalog-hero__title">
-                        Gestion des <span>produits</span>
-                    </h1>
-                    <div class="prod-catalog-hero__actions">
-                        <a href="ajouter.php" class="btn-primary">
-                            <i class="fas fa-plus"></i> Publier un produit
-                        </a>
-                        <a href="../stock/index.php" class="dash-btn-outline">
-                            <i class="fas fa-boxes-stacked"></i> Stock
-                        </a>
-                        <?php include __DIR__ . '/../includes/btn_retour_site.php'; ?>
+                <div class="prod-catalog-hero__content prod-catalog-hero__content--produits">
+                    <div class="prod-catalog-hero__title-row">
+                        <h1 class="prod-catalog-hero__title">
+                            Gestion des <span>produits</span>
+                        </h1>
+                        <div class="prod-catalog-hero__actions prod-catalog-hero__actions--top">
+                            <a href="ajouter.php" class="btn-primary">
+                                <i class="fas fa-plus"></i> Publier un produit
+                            </a>
+                        </div>
                     </div>
-                </div>
-                <div class="prod-catalog-hero__meta">
-                    <span class="prod-catalog-hero__count"><?php echo (int) $nb_affiches; ?></span>
-                    <span class="prod-catalog-hero__count-label">
-                        produit<?php echo $nb_affiches > 1 ? 's' : ''; ?>
-                        <?php if ($nb_affiches !== $nb_total): ?>
-                        affiché<?php echo $nb_affiches > 1 ? 's' : ''; ?>
-                        <?php endif; ?>
-                    </span>
                 </div>
             </div>
         </header>

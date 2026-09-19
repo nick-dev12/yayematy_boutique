@@ -12,6 +12,64 @@ if (!function_exists('session_persistent_lifetime')) {
     }
 }
 
+if (!function_exists('session_project_save_path')) {
+    function session_project_save_path(): string
+    {
+        return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'sessions';
+    }
+}
+
+if (!function_exists('session_save_path_is_usable')) {
+    function session_save_path_is_usable(string $path): bool
+    {
+        $path = trim($path);
+        if ($path === '') {
+            return false;
+        }
+        if (preg_match('/^\\d+;(.+)$/', $path, $matches)) {
+            $path = $matches[1];
+        }
+        if (stripos($path, 'webuzo-data') !== false) {
+            return false;
+        }
+
+        return is_dir($path) && is_writable($path);
+    }
+}
+
+/**
+ * Hébergement mutualisé : le php.ini / .user.ini peut encore pointer vers un chemin VPS (Webuzo).
+ */
+if (!function_exists('session_ensure_save_path')) {
+    function session_ensure_save_path(): void
+    {
+        if (session_status() !== PHP_SESSION_NONE) {
+            return;
+        }
+
+        $configured = (string) ini_get('session.save_path');
+        if (session_save_path_is_usable($configured)) {
+            return;
+        }
+
+        $local = session_project_save_path();
+        if (!is_dir($local)) {
+            @mkdir($local, 0700, true);
+        }
+        if (!is_dir($local)) {
+            return;
+        }
+        if (!is_writable($local)) {
+            @chmod($local, 0700);
+        }
+        if (!is_writable($local)) {
+            return;
+        }
+
+        ini_set('session.save_path', $local);
+    }
+}
+
 if (!function_exists('session_request_is_https')) {
     function session_request_is_https(): bool
     {
@@ -37,6 +95,8 @@ if (!function_exists('session_configure_persistent')) {
         if (session_status() !== PHP_SESSION_NONE) {
             return;
         }
+
+        session_ensure_save_path();
 
         $lifetime = session_persistent_lifetime();
 

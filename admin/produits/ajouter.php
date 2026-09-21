@@ -876,12 +876,9 @@ if ($effective_categorie_id > 0) {
             }
 
             if (parentSelect.value) {
-                var subs = subsByParent[parentSelect.value] || subsByParent[String(parentSelect.value)] || [];
-                if (subs.length > 0) {
-                    populateSubcategories(parentSelect.value, prefillSubId);
-                    subGroup.hidden = false;
-                    syncCategorieValue();
-                } else {
+                onParentChange();
+                if (prefillSubId > 0) {
+                    subSelect.value = String(prefillSubId);
                     syncCategorieValue();
                 }
             }

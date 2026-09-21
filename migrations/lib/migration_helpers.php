@@ -3,6 +3,22 @@
  * Fonctions utilitaires pour les migrations BDD (idempotentes, sans suppression de données).
  */
 
+if (!class_exists('MigrationEmbeddedExit', false)) {
+    class MigrationEmbeddedExit extends Exception
+    {
+    }
+}
+
+if (!function_exists('mig_cli_exit')) {
+    function mig_cli_exit(int $code = 0): void
+    {
+        if (defined('MIGRATION_EMBEDDED') && MIGRATION_EMBEDDED) {
+            throw new MigrationEmbeddedExit('migration_exit', $code);
+        }
+        exit($code);
+    }
+}
+
 if (!function_exists('mig_connect')) {
     function mig_connect() {
         static $pdo = null;
@@ -13,7 +29,7 @@ if (!function_exists('mig_connect')) {
         require __DIR__ . '/../../conn/conn.php';
         if (!$db instanceof PDO) {
             fwrite(STDERR, "Connexion BDD impossible. Vérifiez conn/conn.php\n");
-            exit(1);
+            mig_cli_exit(1);
         }
         $db->exec('SET NAMES utf8mb4');
         $pdo = $db;
@@ -276,6 +292,20 @@ if (!function_exists('mig_run_php_script')) {
         if (!is_file($script_path)) {
             echo "! Script absent : $script_path\n";
             return 1;
+        }
+        if (defined('MIGRATION_EMBEDDED') && MIGRATION_EMBEDDED) {
+            ob_start();
+            $code = 0;
+            try {
+                include $script_path;
+            } catch (MigrationEmbeddedExit $e) {
+                $code = (int) $e->getCode();
+            } catch (Throwable $e) {
+                echo 'ERREUR include : ' . $e->getMessage() . "\n";
+                $code = 1;
+            }
+            echo (string) ob_get_clean();
+            return $code;
         }
         $cmd = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script_path);
         passthru($cmd, $code);

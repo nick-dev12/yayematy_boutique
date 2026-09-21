@@ -4,18 +4,15 @@
  * CLI : php migrations/run_add_categories_parent_id.php
  */
 
-require_once __DIR__ . '/../conn/conn.php';
+require_once __DIR__ . '/lib/migration_helpers.php';
 
-if (!isset($db) || !($db instanceof PDO)) {
-    fwrite(STDERR, "Connexion BDD indisponible.\n");
-    exit(1);
-}
+$db = mig_connect();
 
 try {
     $stmt = $db->query("SHOW COLUMNS FROM categories LIKE 'parent_id'");
     if ($stmt->fetch(PDO::FETCH_ASSOC)) {
         echo "Colonne parent_id déjà présente.\n";
-        exit(0);
+        mig_cli_exit(0);
     }
 
     $db->exec("ALTER TABLE categories ADD COLUMN parent_id INT(11) NULL DEFAULT NULL AFTER id");
@@ -28,6 +25,6 @@ try {
     ");
     echo "Colonne parent_id ajoutée.\n";
 } catch (PDOException $e) {
-    fwrite(STDERR, $e->getMessage() . "\n");
-    exit(1);
+    echo $e->getMessage() . "\n";
+    mig_cli_exit(1);
 }

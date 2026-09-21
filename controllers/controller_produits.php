@@ -79,7 +79,23 @@ function process_add_produit() {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         return ['success' => false, 'message' => ''];
     }
-    
+
+    if (!app_db()) {
+        return ['success' => false, 'message' => 'Connexion à la base de données impossible. Vérifiez conn/conn.php.'];
+    }
+    if (!produits_table_exists()) {
+        return [
+            'success' => false,
+            'message' => 'La table « produits » est absente. Ouvrez /admin/install_migrations.php ou exécutez php migrations/run_import_schema_base.php',
+        ];
+    }
+    if (!categories_table_exists()) {
+        return [
+            'success' => false,
+            'message' => 'La table « categories » est absente. Créez d\'abord au moins une catégorie.',
+        ];
+    }
+
     // Récupération et validation des données (stock géré via produits.stock)
     $nom = isset($_POST['nom']) ? trim($_POST['nom']) : '';
     $description = isset($_POST['description']) ? trim($_POST['description']) : '';
@@ -164,13 +180,39 @@ function process_add_produit() {
     $image_principale = null;
     $images_supp = [];
     if (isset($_FILES['images_produit']) && is_array($_FILES['images_produit']['name'])) {
-        $uploaded = upload_produit_images_multiples($_FILES, 'images_produit');
-        if (!empty($uploaded)) {
-            $image_principale = $uploaded[0];
-            $images_supp = array_slice($uploaded, 1);
+        $upload_dir = __DIR__ . '/../upload/produits/';
+        if (!is_dir($upload_dir) && !mkdir($upload_dir, 0755, true) && !is_dir($upload_dir)) {
+            $errors[] = 'Impossible de créer le dossier upload/produits (vérifiez les droits d\'écriture).';
+        } else {
+            $uploaded = [];
+            $count = count($_FILES['images_produit']['name']);
+            for ($i = 0; $i < $count; $i++) {
+                if ((int) ($_FILES['images_produit']['error'][$i] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+                    continue;
+                }
+                $file = [
+                    'name' => $_FILES['images_produit']['name'][$i],
+                    'type' => $_FILES['images_produit']['type'][$i] ?? '',
+                    'tmp_name' => $_FILES['images_produit']['tmp_name'][$i] ?? '',
+                    'error' => $_FILES['images_produit']['error'][$i] ?? UPLOAD_ERR_NO_FILE,
+                    'size' => $_FILES['images_produit']['size'][$i] ?? 0,
+                ];
+                $result = upload_optimize_image_file($file, $upload_dir, 'produits', 'produit_');
+                if (!empty($result['success']) && !empty($result['relative_path'])) {
+                    $uploaded[] = (string) $result['relative_path'];
+                } elseif ($i === 0) {
+                    $errors[] = 'Image : ' . (string) ($result['message'] ?? 'échec de l\'upload.');
+                }
+            }
+            if (!empty($uploaded)) {
+                $image_principale = $uploaded[0];
+                $images_supp = array_slice($uploaded, 1);
+            }
         }
     }
-    if (!$image_principale) {
+    if (!$image_principale && empty(array_filter($errors, static function ($e) {
+        return stripos($e, 'Image :') === 0 || stripos($e, 'upload/produits') !== false;
+    }))) {
         $errors[] = 'Au moins une image est obligatoire.';
     }
     
@@ -239,16 +281,19 @@ function process_add_produit() {
                 }
             }
         } else {
-            $errors[] = 'Une erreur est survenue lors de l\'ajout du produit.';
+            $dbErr = produits_last_db_error();
+            $errors[] = $dbErr !== ''
+                ? 'Enregistrement impossible : ' . $dbErr
+                : 'Une erreur est survenue lors de l\'ajout du produit.';
         }
     }
     
     if ($success) {
         return ['success' => true, 'message' => $message];
-    } else {
-        $message = !empty($errors) ? implode('<br>', $errors) : 'Une erreur est survenue.';
-        return ['success' => false, 'message' => $message];
     }
+
+    $message = !empty($errors) ? implode('<br>', $errors) : 'Une erreur est survenue.';
+    return ['success' => false, 'message' => $message];
 }
 
 /**

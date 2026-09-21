@@ -135,12 +135,12 @@ if (!$opts['dry_run']) {
     $scan_code = mig_run_php_script($migrations_dir . '/scan_schema.php');
     if ($scan_code !== 0) {
         echo "\nLe schéma n'est pas encore complet. Relancez : php migrations/run_all_migrations.php --force\n";
-        exit(1);
+        mig_cli_exit(1);
     }
 }
 
 if ($errors > 0 && !$opts['continue']) {
-    exit(1);
+    mig_cli_exit(1);
 }
 
 echo "\nToutes les migrations sont à jour.\n";

@@ -37,6 +37,32 @@ function categories_db()
 }
 
 /**
+ * Indique si la table categories existe.
+ */
+function categories_table_exists(): bool
+{
+    static $cached = null;
+    if ($cached !== null) {
+        return $cached;
+    }
+
+    $db = categories_db();
+    if (!$db) {
+        $cached = false;
+        return false;
+    }
+
+    try {
+        $stmt = $db->query("SHOW TABLES LIKE 'categories'");
+        $cached = (bool) $stmt->fetch(PDO::FETCH_NUM);
+        return $cached;
+    } catch (PDOException $e) {
+        $cached = false;
+        return false;
+    }
+}
+
+/**
  * Indique si la colonne parent_id existe (sous-catégories).
  */
 function categories_has_parent_id_column()

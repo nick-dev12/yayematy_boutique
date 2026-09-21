@@ -1,3 +1,6 @@
+# Identifiants admin (fichier rules local)
+.cursor/rules/admin-credentials.mdc
+
 # Fichiers sensibles - NE JAMAIS committer
 # Clés privées Firebase (service account)
 sugar-paper-*.json

@@ -15,6 +15,11 @@ return [
         'script' => 'run_alter_colonnes_manquantes.php',
     ],
     [
+        'id' => 'categories_parent_id',
+        'label' => 'Sous-catégories (parent_id sur categories)',
+        'script' => 'run_add_categories_parent_id.php',
+    ],
+    [
         'id' => 'zones_livraison_cp',
         'label' => 'Zones livraison commandes personnalisées',
         'script' => 'run_add_zone_livraison_commandes_personnalisees.php',

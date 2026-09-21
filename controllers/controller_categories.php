@@ -43,7 +43,21 @@ function process_add_categorie() {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         return ['success' => false, 'message' => ''];
     }
-    
+
+    if (!categories_db()) {
+        return [
+            'success' => false,
+            'message' => 'Connexion à la base de données impossible. Vérifiez conn/conn.php.',
+        ];
+    }
+
+    if (!categories_table_exists()) {
+        return [
+            'success' => false,
+            'message' => 'La table « categories » est absente. Importez admin/create_tables.sql ou exécutez : php scripts/setup_categories_cli.php',
+        ];
+    }
+
     // Récupération et validation des données
     $nom = isset($_POST['nom']) ? trim($_POST['nom']) : '';
     $description = isset($_POST['description']) ? trim($_POST['description']) : '';

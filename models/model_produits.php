@@ -8,6 +8,43 @@
 require_once __DIR__ . '/../conn/conn.php';
 require_once __DIR__ . '/../includes/db_helpers.php';
 
+if (!function_exists('produits_last_db_error')) {
+    function produits_last_db_error(): string
+    {
+        return (string) ($GLOBALS['_produits_last_db_error'] ?? '');
+    }
+}
+
+if (!function_exists('produits_set_db_error')) {
+    function produits_set_db_error(string $message): void
+    {
+        $GLOBALS['_produits_last_db_error'] = $message;
+    }
+}
+
+if (!function_exists('produits_table_exists')) {
+    function produits_table_exists(): bool
+    {
+        static $cached = null;
+        if ($cached !== null) {
+            return $cached;
+        }
+        $db = app_db();
+        if (!$db) {
+            $cached = false;
+            return false;
+        }
+        try {
+            $stmt = $db->query("SHOW TABLES LIKE 'produits'");
+            $cached = (bool) $stmt->fetch(PDO::FETCH_NUM);
+            return $cached;
+        } catch (PDOException $e) {
+            $cached = false;
+            return false;
+        }
+    }
+}
+
 /**
  * Récupère tous les produits
  * @param string $statut Filtrer par statut (optionnel)
@@ -639,6 +676,12 @@ function create_produit($data)
 {
     global $db;
 
+    produits_set_db_error('');
+    if (!$db instanceof PDO) {
+        produits_set_db_error('Connexion BDD indisponible.');
+        return false;
+    }
+
     try {
         $cols = "nom, description, prix, prix_promotion, stock, categorie_id, image_principale, images, poids, unite, date_creation, statut";
         $vals = ":nom, :description, :prix, :prix_promotion, :stock, :categorie_id, :image_principale, :images, :poids, :unite, NOW(), :statut";
@@ -685,6 +728,7 @@ function create_produit($data)
 
         return false;
     } catch (PDOException $e) {
+        produits_set_db_error($e->getMessage());
         return false;
     }
 }

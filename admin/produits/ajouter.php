@@ -89,8 +89,13 @@ if ($effective_categorie_id > 0) {
                 <span><?php echo $result['message']; ?></span>
             </div>
         <?php endif; ?>
+
+        <div id="form-add-client-error" class="message error" role="alert" hidden>
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="form-add-client-error-text"></span>
+        </div>
         
-            <form method="POST" action="" enctype="multipart/form-data" class="form-add">
+            <form method="POST" action="" enctype="multipart/form-data" class="form-add" id="form-add-produit">
             <div class="form-add-block">
                 <h3 class="form-add-section-title"><i class="fas fa-info-circle"></i> Informations générales</h3>
                 <div class="form-group">
@@ -130,9 +135,9 @@ if ($effective_categorie_id > 0) {
                     </div>
 
                     <div class="form-group form-group--sous-categorie" id="sous-categorie-group" hidden>
-                        <label for="sous_categorie_id">Sous-catégorie <span class="required">*</span></label>
+                        <label for="sous_categorie_id">Sous-catégorie <span class="form-optional">(optionnel)</span></label>
                         <select id="sous_categorie_id">
-                            <option value="">Sélectionner une sous-catégorie</option>
+                            <option value="">Aucune — catégorie principale</option>
                         </select>
                     </div>
                 </div>
@@ -177,7 +182,7 @@ if ($effective_categorie_id > 0) {
                                 <span>Cliquer pour ajouter des images</span>
                                 <small>JPG, PNG, GIF, WEBP — plusieurs fichiers possibles</small>
                             </label>
-                            <input type="file" id="images_produit" name="images_produit[]" accept="image/*" multiple required hidden>
+                            <input type="file" id="images_produit" name="images_produit[]" accept="image/*" multiple hidden>
                             <div id="preview-images" class="image-preview-accumulator"></div>
                             <p class="product-gallery-panel__formats">Au moins une image est obligatoire.</p>
                         </div>
@@ -557,16 +562,54 @@ if ($effective_categorie_id > 0) {
     </style>
     <script>
         (function () {
+            var form = document.getElementById('form-add-produit');
+            var errorBox = document.getElementById('form-add-client-error');
+            var errorText = document.getElementById('form-add-client-error-text');
+
+            function showFormError(message) {
+                if (!errorBox || !errorText) {
+                    alert(message);
+                    return;
+                }
+                errorText.textContent = message;
+                errorBox.hidden = false;
+                errorBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            function hideFormError() {
+                if (errorBox) {
+                    errorBox.hidden = true;
+                }
+            }
+
+            window.formAddShowError = showFormError;
+            window.formAddHideError = hideFormError;
+
             var input = document.getElementById('images_produit');
             var container = document.getElementById('preview-images');
             var accumulatedFiles = [];
+            window.__formAddAccumulatedFiles = accumulatedFiles;
 
             function updateInputFiles() {
-                var dt = new DataTransfer();
-                for (var i = 0; i < accumulatedFiles.length; i++) {
-                    dt.items.add(accumulatedFiles[i]);
+                if (typeof DataTransfer === 'undefined' || !input) {
+                    return;
                 }
-                input.files = dt.files;
+                try {
+                    var dt = new DataTransfer();
+                    for (var i = 0; i < accumulatedFiles.length; i++) {
+                        dt.items.add(accumulatedFiles[i]);
+                    }
+                    input.files = dt.files;
+                } catch (err) {
+                    // Safari / navigateurs anciens : le submit utilisera accumulatedFiles via re-sync
+                }
+            }
+
+            function hasSelectedImages() {
+                if (accumulatedFiles.length > 0) {
+                    return true;
+                }
+                return !!(input && input.files && input.files.length > 0);
             }
 
             function addPreviews(newFiles) {
@@ -625,13 +668,10 @@ if ($effective_categorie_id > 0) {
                 }
             });
 
-            document.querySelector('.form-add').addEventListener('submit', function (e) {
-                if (accumulatedFiles.length === 0) {
-                    e.preventDefault();
-                    alert('Veuillez ajouter au moins une image.');
-                    return false;
-                }
-            });
+            if (form) {
+                form.addEventListener('input', hideFormError);
+                form.addEventListener('change', hideFormError);
+            }
         })();
         (function () {
             var couleurInput = document.getElementById('couleur-input');
@@ -795,16 +835,17 @@ if ($effective_categorie_id > 0) {
             var subGroup = document.getElementById('sous-categorie-group');
             var subSelect = document.getElementById('sous_categorie_id');
             var hiddenCategorie = document.getElementById('categorie_id');
-            var form = document.querySelector('form.form-add');
+            var form = document.getElementById('form-add-produit');
             var prefillSubId = <?php echo (int) $prefill_sub_id; ?>;
+            var imagesInput = document.getElementById('images_produit');
 
-            if (!parentSelect || !hiddenCategorie || !subGroup || !subSelect) {
+            if (!parentSelect || !hiddenCategorie || !subGroup || !subSelect || !form) {
                 return;
             }
 
             function populateSubcategories(parentId, selectedSubId) {
                 var subs = subsByParent[parentId] || subsByParent[String(parentId)] || [];
-                subSelect.innerHTML = '<option value="">Sélectionner une sous-catégorie</option>';
+                subSelect.innerHTML = '<option value="">Aucune — catégorie principale</option>';
                 subs.forEach(function (sc) {
                     if (!sc || !sc.id) {
                         return;
@@ -826,8 +867,8 @@ if ($effective_categorie_id > 0) {
                     return;
                 }
                 var subs = subsByParent[parentId] || subsByParent[String(parentId)] || [];
-                if (subs.length > 0) {
-                    hiddenCategorie.value = subSelect.value || '';
+                if (subs.length > 0 && subSelect.value) {
+                    hiddenCategorie.value = subSelect.value;
                 } else {
                     hiddenCategorie.value = parentId;
                 }
@@ -845,7 +886,7 @@ if ($effective_categorie_id > 0) {
                 if (subs.length > 0) {
                     populateSubcategories(parentId, 0);
                     subGroup.hidden = false;
-                    hiddenCategorie.value = '';
+                    hiddenCategorie.value = parentId;
                 } else {
                     subGroup.hidden = true;
                     subSelect.value = '';
@@ -856,24 +897,59 @@ if ($effective_categorie_id > 0) {
             parentSelect.addEventListener('change', onParentChange);
             subSelect.addEventListener('change', syncCategorieValue);
 
-            if (form) {
-                form.addEventListener('submit', function (e) {
-                    syncCategorieValue();
-                    var parentId = parentSelect.value;
-                    if (!parentId) {
-                        e.preventDefault();
-                        parentSelect.focus();
-                        return;
+            form.addEventListener('submit', function (e) {
+                if (typeof window.formAddHideError === 'function') {
+                    window.formAddHideError();
+                }
+                syncCategorieValue();
+
+                var parentId = parentSelect.value;
+                if (!parentId) {
+                    e.preventDefault();
+                    if (typeof window.formAddShowError === 'function') {
+                        window.formAddShowError('Veuillez sélectionner une catégorie.');
                     }
-                    var subs = subsByParent[parentId] || subsByParent[String(parentId)] || [];
-                    if (subs.length > 0 && !subSelect.value) {
-                        e.preventDefault();
-                        subGroup.hidden = false;
-                        subSelect.focus();
-                        return;
+                    parentSelect.focus();
+                    return;
+                }
+
+                if (!hiddenCategorie.value) {
+                    e.preventDefault();
+                    if (typeof window.formAddShowError === 'function') {
+                        window.formAddShowError('Catégorie invalide. Resélectionnez la catégorie du produit.');
                     }
-                });
-            }
+                    return;
+                }
+
+                var hasImages = false;
+                var fileList = window.__formAddAccumulatedFiles || [];
+                if (fileList.length > 0) {
+                    hasImages = true;
+                    if (typeof DataTransfer !== 'undefined' && imagesInput) {
+                        try {
+                            var dt = new DataTransfer();
+                            fileList.forEach(function (f) {
+                                dt.items.add(f);
+                            });
+                            imagesInput.files = dt.files;
+                        } catch (err) {
+                            // Le navigateur enverra quand même si input.files déjà rempli
+                        }
+                    }
+                } else if (imagesInput && imagesInput.files && imagesInput.files.length > 0) {
+                    hasImages = true;
+                }
+
+                if (!hasImages) {
+                    e.preventDefault();
+                    if (typeof window.formAddShowError === 'function') {
+                        window.formAddShowError('Veuillez ajouter au moins une image du produit.');
+                    }
+                    if (imagesInput) {
+                        imagesInput.click();
+                    }
+                }
+            });
 
             if (parentSelect.value) {
                 onParentChange();

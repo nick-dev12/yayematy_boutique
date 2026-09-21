@@ -336,9 +336,9 @@ if ($effective_categorie_id > 0) {
                         </select>
                     </div>
                     <div class="form-group form-group--sous-categorie" id="sous-categorie-group" hidden>
-                        <label for="sous_categorie_id">Sous-catégorie <span class="required">*</span></label>
+                        <label for="sous_categorie_id">Sous-catégorie <span class="form-optional">(optionnel)</span></label>
                         <select id="sous_categorie_id">
-                            <option value="">Sélectionner une sous-catégorie</option>
+                            <option value="">Aucune — catégorie principale</option>
                         </select>
                     </div>
                 </div>
@@ -723,7 +723,7 @@ if ($effective_categorie_id > 0) {
 
             function populateSubcategories(parentId, selectedSubId) {
                 var subs = subsByParent[parentId] || subsByParent[String(parentId)] || [];
-                subSelect.innerHTML = '<option value="">Sélectionner une sous-catégorie</option>';
+                subSelect.innerHTML = '<option value="">Aucune — catégorie principale</option>';
                 subs.forEach(function (sc) {
                     if (!sc || !sc.id) {
                         return;
@@ -745,8 +745,8 @@ if ($effective_categorie_id > 0) {
                     return;
                 }
                 var subs = subsByParent[parentId] || subsByParent[String(parentId)] || [];
-                if (subs.length > 0) {
-                    hiddenCategorie.value = subSelect.value || '';
+                if (subs.length > 0 && subSelect.value) {
+                    hiddenCategorie.value = subSelect.value;
                 } else {
                     hiddenCategorie.value = parentId;
                 }
@@ -764,7 +764,7 @@ if ($effective_categorie_id > 0) {
                 if (subs.length > 0) {
                     populateSubcategories(parentId, 0);
                     subGroup.hidden = false;
-                    hiddenCategorie.value = '';
+                    hiddenCategorie.value = parentId;
                 } else {
                     subGroup.hidden = true;
                     subSelect.value = '';
@@ -782,13 +782,6 @@ if ($effective_categorie_id > 0) {
                     if (!parentId) {
                         e.preventDefault();
                         parentSelect.focus();
-                        return;
-                    }
-                    var subs = subsByParent[parentId] || subsByParent[String(parentId)] || [];
-                    if (subs.length > 0 && !subSelect.value) {
-                        e.preventDefault();
-                        subGroup.hidden = false;
-                        subSelect.focus();
                         return;
                     }
                 });

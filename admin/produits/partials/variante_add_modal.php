@@ -33,7 +33,7 @@
                     <label for="variante-modal-image">Image <span class="required">*</span></label>
                     <div class="variante-image-wrap">
                         <div class="variante-image-area">
-                            <input type="file" id="variante-modal-image" accept="image/*" class="variante-image-input" required>
+                            <input type="file" id="variante-modal-image" accept="image/*" class="variante-image-input">
                             <span class="variante-image-label"><i class="fas fa-image"></i> Choisir une image</span>
                             <img class="variante-preview-img" src="" alt="" hidden>
                         </div>
